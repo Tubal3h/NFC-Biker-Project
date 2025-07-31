@@ -1,0 +1,117 @@
+$color1: #1D1616;
+$color2: #8E1616;
+$color3: #D84040;
+$color4: #EEEEEE;
+
+app-logo-gif {
+  position: absolute;
+  overflow: hidden;
+  top: 0;
+  right: 0;
+  z-index: -1;
+//   width: 40rem;
+    height: 100%;
+}
+
+.homepage-content {
+    position: relative;
+    // z-index: 1;
+    // padding: 20px;
+    
+    color: $color4;
+    h1 {
+        color: $color2;
+        font-size: 2.5rem;
+        margin-bottom: 20px;
+    }
+    .sos {
+        color: $color3;
+    }
+    .helmet {
+        color: $color4;
+        font-weight: bold;
+    }
+    p {
+        background-color: $color2;
+        font-size: 1.2rem;
+        font-weight: 500;
+        line-height: 1.5;
+    }
+}
+
+
+.roadmap {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.roadmap-title {
+  text-align: center;
+  margin-bottom: 2rem;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--color-accent, #d84040);
+  letter-spacing: 1px;
+}
+
+.roadmap-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  position: relative;
+  border-left: 3px solid var(--color-accent, #d84040);
+}
+
+.roadmap-step {
+  position: relative;
+  margin-bottom: 2.5rem;
+  padding-left: 2.5rem;
+  min-height: 60px;
+}
+
+.roadmap-bullet {
+  position: absolute;
+  left: -13px;
+  top: 8px;
+  width: 20px;
+  height: 20px;
+  background: var(--color-accent, #d84040);
+  border-radius: 50%;
+  border: 3px solid #fff;
+  box-shadow: 0 0 0 2px var(--color-accent, #d84040);
+}
+
+.roadmap-content h3 {
+  margin: 0 0 0.25rem 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.roadmap-content p {
+  margin: 0;
+  color: #eee;
+  font-size: 1rem;
+}
+
+
+
+/* Responsive */
+@media (max-width: 600px) {
+  .roadmap {
+    max-width: 100%;
+    padding: 1rem 0.2rem;
+  }
+  .roadmap-list {
+    border-left-width: 2px;
+  }
+  .roadmap-step {
+    padding-left: 1.5rem;
+  }
+  .roadmap-bullet {
+    width: 14px;
+    height: 14px;
+    left: -8px;
+    top: 8px;
+  }
+}

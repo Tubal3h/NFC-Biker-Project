@@ -1,0 +1,118 @@
+<app-navbar></app-navbar>
+
+<div class="profile-wrapper">
+  <h2>La tua Scheda Sanitaria</h2>
+
+  <!-- Scheda sanitaria generica: puoi lasciarla template-driven! -->
+  <form (ngSubmit)="save()">
+    <div class="form-group">
+      <label>Gruppo sanguigno</label>
+      <select [(ngModel)]="medicalData.bloodType" name="bloodType" required>
+        <option value="" disabled>Seleziona...</option>
+        <option value="0+">0+</option>
+        <option value="0-">0-</option>
+        <option value="A+">A+</option>
+        <option value="A-">A-</option>
+        <option value="B+">B+</option>
+        <option value="B-">B-</option>
+        <option value="AB+">AB+</option>
+        <option value="AB-">AB-</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Allergie</label>
+      <input [(ngModel)]="medicalData.allergies" name="allergies" placeholder="Allergie (separate da virgola)" />
+    </div>
+    <div class="form-group">
+      <label>Patologie</label>
+      <input [(ngModel)]="medicalData.conditions" name="conditions" placeholder="Patologie (separate da virgola)" />
+    </div>
+    <div class="form-group">
+      <label>Note</label>
+      <input [(ngModel)]="medicalData.notes" name="notes" placeholder="Note importanti" />
+    </div>
+    <button type="submit">Salva dati sanitari</button>
+    <div *ngIf="message" class="success-msg">{{ message }}</div>
+    <div *ngIf="errorMsg" class="error-msg">{{ errorMsg }}</div>
+  </form>
+
+  <!-- CONTATTI D'EMERGENZA: REACTIVE FORMS -->
+
+  <div class="form-group contacts-section">
+    <label>Contatti d'emergenza</label>
+
+    <!-- Lista contatti già inseriti -->
+    <div *ngFor="let contact of medicalData.emergencyContacts; let i = index" class="contact-row">
+      <!-- VISUALIZZAZIONE -->
+      <ng-container *ngIf="editIndex !== i">
+        <b>{{ contact.name }}</b> ({{ contact.relation }})<br>
+        Tel: {{ contact.phone }}
+        <button type="button" class="edit-btn" (click)="startEdit(i)">Modifica</button>
+        <button type="button" class="remove-btn" (click)="removeContact(i)">✕</button>
+      </ng-container>
+
+      <!-- MODIFICA -->
+      <form *ngIf="editIndex === i" [formGroup]="contactForm" (ngSubmit)="onContactSave()" class="edit-contact-form">
+        <input formControlName="name" placeholder="Nome" />
+        <div *ngIf="contactForm.get('name')?.invalid && contactForm.get('name')?.touched" class="error-msg">
+          Inserisci solo lettere!
+        </div>
+
+        <select formControlName="relation">
+          <option value="">Relazione</option>
+          <option>Genitore</option>
+          <option>Coniuge</option>
+          <option>Figlio/a</option>
+          <option>Fratello/Sorella</option>
+          <option>Amico/a</option>
+          <option>Collega</option>
+          <option>Altro</option>
+        </select>
+        <div *ngIf="contactForm.get('relation')?.invalid && contactForm.get('relation')?.touched" class="error-msg">
+          Scegli la relazione!
+        </div>
+
+        <input formControlName="phone" placeholder="Telefono" />
+        <div *ngIf="contactForm.get('phone')?.invalid && contactForm.get('phone')?.touched" class="error-msg">
+          Solo cifre, max 10!
+        </div>
+
+        <button type="submit" class="save-btn" [disabled]="contactForm.invalid">Salva</button>
+        <button type="button" class="cancel-btn" (click)="cancelEdit()">Annulla</button>
+      </form>
+    </div>
+
+    <!-- FORM per aggiunta nuovo contatto -->
+    <form *ngIf="editIndex === null" [formGroup]="contactForm" (ngSubmit)="onContactSave()" class="add-contact-form">
+      <input formControlName="name" placeholder="Nome" />
+      <div *ngIf="contactForm.get('name')?.invalid && contactForm.get('name')?.touched" class="error-msg">
+        Inserisci solo lettere!
+      </div>
+
+      <select formControlName="relation">
+        <option value="">Relazione</option>
+        <option>Genitore</option>
+        <option>Coniuge</option>
+        <option>Figlio/a</option>
+        <option>Fratello/Sorella</option>
+        <option>Amico/a</option>
+        <option>Collega</option>
+        <option>Altro</option>
+      </select>
+      <div *ngIf="contactForm.get('relation')?.invalid && contactForm.get('relation')?.touched" class="error-msg">
+        Scegli la relazione!
+      </div>
+
+      <input formControlName="phone" placeholder="Telefono" />
+      <div *ngIf="contactForm.get('phone')?.invalid && contactForm.get('phone')?.touched" class="error-msg">
+        Solo cifre, max 10!
+      </div>
+
+      <button type="submit" class="add-btn" [disabled]="contactForm.invalid">+ Aggiungi contatto</button>
+    </form>
+  </div>
+</div>
+
+
+<app-footer></app-footer>

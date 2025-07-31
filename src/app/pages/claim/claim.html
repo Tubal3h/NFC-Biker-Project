@@ -1,0 +1,74 @@
+<app-navbar></app-navbar>
+
+
+<div class="claim-container">
+
+
+<div *ngIf="step === 'checking'">Verifica tag NFC...</div>
+
+<div *ngIf="step === 'notfound'" class="text-danger">
+  Questo tag NFC non è valido o non è stato generato da noi.
+</div>
+
+<!-- STEP: Casco già associato -->
+<!-- STEP: Casco già associato – Popup compare SUBITO -->
+<div *ngIf="step === 'claimed'">
+  <div class="privacy-popup-backdrop">
+    <div class="privacy-popup">
+      <h3>Dati sensibili – Accesso riservato</h3>
+      <p>
+        Stai per visualizzare la scheda medica associata a questo casco.<br>
+        L’accesso è consentito <b>esclusivamente</b> in caso di emergenza sanitaria, come previsto dal GDPR (art. 9, 32) e dal D.Lgs. 196/2003.<br>
+        Ogni accesso viene registrato e verrà salvato il tuo IP e la posizione approssimativa.<br>
+        <i>Proseguendo dichiari di essere personale sanitario, soccorritore o comunque di agire in situazione di reale emergenza.</i>
+      </p>
+      <div class="info-box mb-2">
+        <b>IP rilevato:</b> {{ visitorIp || '...' }}<br>
+        <b>Posizione:</b> {{ visitorLocation || '...' }}
+      </div>
+      <button (click)="acceptPrivacy()" class="btn-access">Accetto e accedi alla scheda medica</button>
+      <button (click)="goBack()" class="btn-cancel">Annulla</button>
+    </div>
+  </div>
+</div>
+
+
+
+
+<!-- LOGIN & SIGNUP -->
+<div *ngIf="step === 'ok' && !user">
+  <h2>Collega il tuo casco!</h2>
+  <div class="auth-tabs">
+    <button [class.active]="authTab==='login'" (click)="authTab='login'">Login</button>
+    <button [class.active]="authTab==='register'" (click)="authTab='register'">Registrati</button>
+  </div>
+  <!-- LOGIN FORM -->
+  <form *ngIf="authTab==='login'" (ngSubmit)="login()" class="mt-2">
+    <input [(ngModel)]="loginEmail" name="loginEmail" placeholder="Email" required>
+    <input [(ngModel)]="loginPassword" name="loginPassword" type="password" placeholder="Password" required>
+    <button type="submit">Accedi</button>
+    <div *ngIf="loginError" class="text-danger mt-1">{{ loginError }}</div>
+  </form>
+  <!-- REGISTER FORM -->
+  <form *ngIf="authTab==='register'" (ngSubmit)="register()" class="mt-2">
+    <input [(ngModel)]="regEmail" name="regEmail" type="email" placeholder="Email" required>
+    <input [(ngModel)]="regPassword" name="regPassword" type="password" placeholder="Password" required>
+    <input [(ngModel)]="regPassword2" name="regPassword2" type="password" placeholder="Ripeti Password" required minlength="6">
+    <button type="submit">Registrati</button>
+    <div *ngIf="registerError" class="text-danger mt-1">{{ registerError }}</div>
+  </form>
+</div>
+
+<!-- CLAIM -->
+<form *ngIf="step === 'ok' && user" (ngSubmit)="claimAuto()" class="mt-3">
+  <div>Stai associando l'adesivo NFC al tuo account <b>{{ user.name }}.</b></div>
+  <button type="submit">Associa Casco</button>
+  <button *ngIf="user" class="logout-btn" (click)="logout()" type="button">Logout</button>
+
+  <div *ngIf="claimResult" class="mt-2">{{ claimResult }}</div>
+</form>
+
+</div>
+
+
+<app-footer></app-footer>

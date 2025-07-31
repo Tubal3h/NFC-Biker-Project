@@ -1,1 +1,62 @@
-/* You can add global styles to this file, and also import other style files */
+$color1: #1D1616;
+$color2: #8E1616;
+$color3: #D84040;
+$color4: #EEEEEE;
+
+
+body{
+
+  // max-width: 1080px;
+  height: 100%;
+  background-color: $color1!important;
+  color: $color4!important;
+  margin: 0;
+  padding: 0;
+  font-family: "League Spartan", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 700;
+  font-style: normal;
+}
+
+body.light-theme {
+  height: 100%;
+  background-color: $color1!important;
+  color: $color4;
+  margin: 0;
+  padding: 0;
+}
+
+body.dark-theme {
+  height: 100%;
+  background-color: $color1!important;
+  color: $color4;
+  margin: 0;
+  padding: 0;
+}
+
+h1, h2, h3 {
+  font-family: "League Spartan", Arial, sans-serif;
+  font-weight: 700;
+}
+
+
+
+.box {
+  border: 1px solid $color2;
+}
+
+a {
+  text-decoration: none;
+
+  // &:hover {
+  // color: $color3;
+  // }
+}
+
+ul {
+  list-style: none;
+}
+
+// app-homepage {
+//   overflow: hidden;
+// }

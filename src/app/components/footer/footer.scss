@@ -1,0 +1,19 @@
+$color1: #1D1616;
+$color2: #8E1616;
+$color3: #D84040;
+$color4: #EEEEEE;
+
+.footer {
+    background-color: $color3;
+    color: $color4;
+    
+    a {
+        color: $color4;
+        transition: color 0.3s;
+
+        &:hover {
+        color: $color3;
+        }
+    }
+    // border-top-right-radius: 20px;
+}

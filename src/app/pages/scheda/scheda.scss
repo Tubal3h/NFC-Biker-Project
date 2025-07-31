@@ -1,0 +1,63 @@
+$color1: #1D1616;
+$color2: #8E1616;
+$color3: #D84040;
+$color4: #EEEEEE;
+
+.scheda-wrapper {
+  background: $color4;
+  max-width: 420px;
+  margin: 2rem auto;
+  padding: 2.3rem 1.2rem;
+  border-radius: 1.4rem;
+  box-shadow: 0 4px 28px 0 rgba($color1, 0.07);
+
+  h2 {
+    color: $color2;
+    font-size: 1.45rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    letter-spacing: 1.2px;
+  }
+
+  .alert {
+    background: $color3;
+    color: $color4;
+    padding: 0.9rem 1.1rem;
+    border-radius: 0.8rem;
+    margin-bottom: 1.4rem;
+    font-weight: 600;
+    text-align: center;
+  }
+
+  div, ul, li {
+    color: $color1;
+    font-size: 1.05rem;
+    line-height: 1.35;
+  }
+
+  ul {
+    padding-left: 1.2rem;
+    margin: 0.5rem 0 0.8rem 0;
+    list-style: disc;
+  }
+
+  button {
+    display: block;
+    width: 100%;
+    margin: 1.1rem 0 0 0;
+    padding: 0.82rem;
+    background: linear-gradient(90deg, $color2 0%, $color3 100%);
+    color: $color4;
+    border: none;
+    border-radius: 0.85rem;
+    font-weight: 600;
+    font-size: 1.08rem;
+    cursor: pointer;
+    letter-spacing: 1.1px;
+    transition: background 0.18s;
+    &:hover {
+      background: linear-gradient(90deg, $color3 0%, $color2 100%);
+    }
+  }
+}

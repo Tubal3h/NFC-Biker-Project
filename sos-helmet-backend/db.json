@@ -1,0 +1,67 @@
+{
+  "users": [
+    {
+      "id": "1753813207901",
+      "email": "123@123.rt",
+      "password": "Royalma2c",
+      "premium": false,
+      "nfcTags": [
+        "NFC-FA397D8EF2"
+      ],
+      "medicalData": {
+        "bloodType": "0+",
+        "allergies": "Allergie, prova1, prova2,prova 3",
+        "conditions": "Patologie, prova1, prova2,prova 3",
+        "notes": "Patologie, prova1, prova2,prova 3Patologie, prova1, prova2,prova 3Patologie, prova1, prova2,prova 3",
+        "emergencyContacts": [
+          {
+            "name": "Marco Rossi",
+            "relation": "Figlio/a",
+            "phone": "3213213214"
+          }
+        ]
+      }
+    },
+    {
+      "id": "1753997315378",
+      "email": "test2@live.com",
+      "password": "Royalma2c.",
+      "premium": false,
+      "nfcTags": [
+        "NFC-81DF71DEB4"
+      ],
+      "medicalData": {
+        "bloodType": "A+",
+        "allergies": "gdffgdghf",
+        "conditions": "jmbjhjkbkl",
+        "notes": "jhkbvhjgvhjv",
+        "emergencyContacts": [
+          {
+            "name": "marco",
+            "relation": "Figlio/a",
+            "phone": "3213213214"
+          },
+          {
+            "name": "kate",
+            "relation": "Genitore",
+            "phone": "3213213214"
+          }
+        ]
+      }
+    }
+  ],
+  "tags": [
+    {
+      "id": "NFC-FA397D8EF2",
+      "userId": "1753813207901"
+    },
+    {
+      "id": "NFC-81DF71DEB4",
+      "userId": "1753997315378"
+    },
+    {
+      "id": "NFC-4DA1EEA62A",
+      "userId": null
+    }
+  ]
+}
