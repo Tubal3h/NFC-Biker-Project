@@ -1,15 +1,13 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ApiService } from '../../services/api';
-import { MedicalData, ApiResponse, NfcTag } from '../../models';
-import { Navbar } from "../../components/navbar/navbar";
-import { Footer } from "../../components/footer/footer";
+import { ApiService } from '../../core/services/api';
+import { MedicalData, ApiResponse, NfcTag } from '../../core/models';
 
 @Component({
   selector: 'app-scheda',
   standalone: true,
-  imports: [CommonModule, Navbar, Footer],
+  imports: [CommonModule,],
   templateUrl: './scheda.html',
   styleUrl: './scheda.scss'
 })

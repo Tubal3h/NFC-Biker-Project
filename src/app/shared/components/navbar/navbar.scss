@@ -1,0 +1,83 @@
+$color1: #1D1616;
+$color2: #8E1616;
+$color3: #D84040;
+$color4: #EEEEEE;
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.6rem 2rem;
+//   background: $color4;
+  box-shadow: 0 2px 12px #1d161618;
+  min-height: 110px;
+
+  .logo a h1 {
+    color: $color3;
+    font-size: 2.6rem;
+    margin: 0;
+    line-height: 1.1;
+    font-weight: 900;
+    letter-spacing: 1px;
+  }
+
+    .section {
+    display: flex;
+    gap: 2.2rem;
+    align-items: center;
+    padding: 0.8rem 2.4rem;
+    background: $color3;
+    border-radius: 1.5rem;
+
+    li {
+        display: flex;
+        align-items: center;
+        // gap tra Profilo e Logout se vuoi
+
+        a {
+        color: $color4;
+        font-size: 1.3rem;
+        font-weight: 700;
+        padding: 0.5rem 0.8rem;
+        border-radius: 0.5rem;
+        text-decoration: none;
+        transition: color 0.23s, background 0.23s;
+
+        &:hover, &:focus {
+            color: $color1;
+            background: lighten($color3, 18%);
+        }
+        }
+
+        .logout-btn {
+        background: none;
+        border: none;
+        color: $color4;
+        font-size: 1.1rem;
+        margin-left: 0;
+        cursor: pointer;
+        font-weight: 600;
+        padding: 0.4rem 1.1rem;
+        border-radius: 0.5rem;
+        transition: background 0.2s;
+        &:hover {
+            background: lighten($color3, 16%);
+            color: $color1;
+        }
+        }
+    }
+    }
+
+}
+
+/* Responsive */
+@media (max-width: 700px) {
+  .navbar {
+    flex-direction: column;
+    .section {
+      gap: 1.1rem;
+      padding: 0.8rem 0.7rem;
+    }
+    .logo a h1 { font-size: 2rem; }
+  }
+}

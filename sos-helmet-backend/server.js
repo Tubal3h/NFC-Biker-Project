@@ -18,13 +18,14 @@ function writeDB(data) {
 
 // Registrazione
 app.post('/api/register', (req, res) => {
-  const { name, email, password } = req.body;
+  const { email, password } = req.body;
   const db = readDB();
   if (db.users.some(u => u.email === email))
     return res.status(400).json({ success: false, error: 'Email già registrata' });
   const user = {
     id: Date.now().toString(),
-    name, email, password,
+    email,
+    password,
     premium: false,
     nfcTags: [],
     medicalData: {
@@ -106,15 +107,30 @@ app.get('/api/user/:userId/medical', (req, res) => {
   res.json({ success: true, data: user.medicalData || {} });
 });
 
+
 // Aggiorna dati sanitari (inclusi contatti emergenza)
 app.put('/api/user/:userId/medical', (req, res) => {
   const db = readDB();
   const user = db.users.find(u => u.id === req.params.userId);
   if (!user) return res.status(404).json({ success: false, error: 'Utente non trovato' });
-  user.medicalData = req.body;
+
+  // Se il frontend passa anche "name" o "surname", aggiorna il profilo utente
+  if (req.body.name !== undefined) user.name = req.body.name;
+  if (req.body.surname !== undefined) user.surname = req.body.surname;
+
+  // Aggiorna la scheda medica
+  user.medicalData = {
+    bloodType: req.body.bloodType || "",
+    allergies: req.body.allergies || "",
+    conditions: req.body.conditions || "",
+    notes: req.body.notes || "",
+    emergencyContacts: req.body.emergencyContacts || []
+  };
+
   writeDB(db);
   res.json({ success: true, data: user.medicalData });
 });
+
 
 app.listen(PORT, () => {
   console.log(`S.O.S. Helmet backend attivo su http://localhost:${PORT}`);

@@ -1,20 +1,20 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Navbar } from "../../components/navbar/navbar";
-import { Footer } from "../../components/footer/footer";
-import { MedicalData, User } from '../../models';
-import { ApiService } from '../../services/api';
+import { MedicalData, User } from '../../core/models';
+import { ApiService } from '../../core/services/api';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-profile',
-  imports: [Navbar, Footer, CommonModule, ReactiveFormsModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './profile.html',
   styleUrl: './profile.scss'
 })
 export class Profile {
   user: User | null = null;
+  name = '';
+  surname = '';
   medicalData: MedicalData = {
     bloodType: '',
     allergies: '',
@@ -61,16 +61,29 @@ export class Profile {
   }
 
   // Salva dati sanitari (scheda generale)
-  save() {
-    if (!this.user) return;
-    this.api.updateMedicalData(this.user.id, this.medicalData).subscribe({
-      next: () => {
-        this.message = 'Dati aggiornati!';
-        setTimeout(() => this.message = '', 2000);
-      },
-      error: () => { this.errorMsg = 'Errore durante il salvataggio.'; }
-    });
-  }
+save() {
+  if (!this.user) return;
+
+  // Prendi i campi dal form (aggiungi i campi name e surname nella UI!)
+  const dataToSend = {
+    name: this.name,                       // <-- campo nuovo (aggiungi nella UI!)
+    surname: this.surname,                 // <-- campo nuovo (separato, opzionale)
+    bloodType: this.medicalData.bloodType,
+    allergies: this.medicalData.allergies,
+    conditions: this.medicalData.conditions,
+    notes: this.medicalData.notes,
+    emergencyContacts: this.medicalData.emergencyContacts
+  };
+
+  this.api.updateMedicalData(this.user.id, dataToSend).subscribe({
+    next: () => {
+      this.message = 'Dati aggiornati!';
+      setTimeout(() => this.message = '', 2000);
+    },
+    error: () => { this.errorMsg = 'Errore durante il salvataggio.'; }
+  });
+}
+
 
   // Inizio modifica di un contatto già salvato
   startEdit(i: number) {

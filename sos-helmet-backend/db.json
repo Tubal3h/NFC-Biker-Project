@@ -1,63 +1,43 @@
 {
   "users": [
     {
-      "id": "1753813207901",
-      "email": "123@123.rt",
-      "password": "Royalma2c",
+      "id": "1754406376462",
+      "email": "test2@live.com",
+      "password": "Royalma2c.",
       "premium": false,
       "nfcTags": [
         "NFC-FA397D8EF2"
       ],
       "medicalData": {
-        "bloodType": "0+",
-        "allergies": "Allergie, prova1, prova2,prova 3",
-        "conditions": "Patologie, prova1, prova2,prova 3",
-        "notes": "Patologie, prova1, prova2,prova 3Patologie, prova1, prova2,prova 3Patologie, prova1, prova2,prova 3",
+        "bloodType": "B+",
+        "allergies": "Allergia 1, Allergia 2, Allergia 3",
+        "conditions": "Patologie 1, Patologie 2, Patologie 3",
+        "notes": "",
         "emergencyContacts": [
           {
-            "name": "Marco Rossi",
-            "relation": "Figlio/a",
-            "phone": "3213213214"
-          }
-        ]
-      }
-    },
-    {
-      "id": "1753997315378",
-      "email": "test2@live.com",
-      "password": "Royalma2c.",
-      "premium": false,
-      "nfcTags": [
-        "NFC-81DF71DEB4"
-      ],
-      "medicalData": {
-        "bloodType": "A+",
-        "allergies": "gdffgdghf",
-        "conditions": "jmbjhjkbkl",
-        "notes": "jhkbvhjgvhjv",
-        "emergencyContacts": [
-          {
-            "name": "marco",
-            "relation": "Figlio/a",
+            "name": "Mak",
+            "relation": "Fratello/Sorella",
             "phone": "3213213214"
           },
           {
-            "name": "kate",
+            "name": "Mamma",
             "relation": "Genitore",
-            "phone": "3213213214"
+            "phone": "3213213213"
           }
         ]
-      }
+      },
+      "name": "Macwell",
+      "surname": "Tubale"
     }
   ],
   "tags": [
     {
       "id": "NFC-FA397D8EF2",
-      "userId": "1753813207901"
+      "userId": "1754406376462"
     },
     {
       "id": "NFC-81DF71DEB4",
-      "userId": "1753997315378"
+      "userId": null
     },
     {
       "id": "NFC-4DA1EEA62A",

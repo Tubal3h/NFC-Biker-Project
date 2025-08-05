@@ -1,0 +1,97 @@
+<!-- Nuovo scheda.html -->
+<div class="scheda-wrapper">
+  <!-- STATO DI CARICAMENTO -->
+  <div *ngIf="!isLoaded" class="scheda-state">
+    <div class="spinner"></div>
+    Caricamento in corso...
+  </div>
+
+  <!-- STATO DI ERRORE -->
+  <div *ngIf="isLoaded && errorMsg" class="scheda-state">
+    <div class="icon-error">!</div>
+    <div class="alert">{{ errorMsg }}</div>
+    <button *ngIf="errorMsg.includes('non compilata')" (click)="goToClaim()">
+      Login e Compila Scheda
+    </button>
+  </div>
+
+  <!-- SCHEDA MEDICA VISIBILE -->
+  <div *ngIf="isLoaded && !errorMsg && medicalData" class="scheda-content">
+
+    <!-- ======================================================= -->
+    <!--  ECCO IL NUOVO DIV DI AVVISO (NON È UN POPUP)          -->
+    <!-- ======================================================= -->
+    <div class="warning-banner">
+      <div class="warning-icon">
+        <i class="fas fa-exclamation-triangle"></i>
+      </div>
+      <div class="warning-text">
+        <b>Accesso Riservato:</b> Stai visualizzando dati sanitari sensibili. L'utilizzo è consentito solo in caso di reale emergenza.
+      </div>
+    </div>
+    <!-- ======================================================= -->
+
+    <div class="scheda-header">
+      <i class="icon-header fas fa-id-card"></i>
+      <h2>Scheda Sanitaria</h2>
+    </div>
+
+    <!-- Gruppo Sanguigno (Importante) -->
+    <div class="info-item info-item--critical">
+      <div class="icon"><i class="fas fa-tint"></i></div>
+      <div class="text">
+        <div class="label">Gruppo Sanguigno</div>
+        <div class="value">{{ medicalData.bloodType || 'Non specificato' }}</div>
+      </div>
+    </div>
+
+    <!-- Allergie (Importante) -->
+    <div class="info-item info-item--critical">
+      <div class="icon"><i class="fas fa-allergies"></i></div>
+      <div class="text">
+        <div class="label">Allergie</div>
+        <div class="value">{{ medicalData.allergies || 'Nessuna' }}</div>
+      </div>
+    </div>
+
+    <!-- Patologie -->
+    <div class="info-item">
+      <div class="icon"><i class="fas fa-notes-medical"></i></div>
+      <div class="text">
+        <div class="label">Patologie Rilevanti</div>
+        <div class="value">{{ medicalData.conditions || 'Nessuna' }}</div>
+      </div>
+    </div>
+
+    <!-- Note -->
+    <div class="info-item">
+      <div class="icon"><i class="fas fa-sticky-note"></i></div>
+      <div class="text">
+        <div class="label">Note Aggiuntive</div>
+        <div class="value">{{ medicalData.notes || 'Nessuna' }}</div>
+      </div>
+    </div>
+
+    <!-- Contatti d'Emergenza -->
+  <!-- Contatti d'Emergenza (CORRETTO) -->
+  <div class="info-item" *ngIf="medicalData.emergencyContacts?.length">
+    <div class="icon"><i class="fas fa-address-book"></i></div>
+    <div class="text">
+      <div class="label">Contatti d'Emergenza</div>
+      <ul class="contacts-list">
+        <li *ngFor="let c of medicalData.emergencyContacts">
+          <b>{{ c.name }}</b> ({{ c.relation }})<br>
+          
+          <!-- ECCO LA MODIFICA -->
+          <a class="phone-link" [href]="'tel:' + c.phone">
+            <i class="fas fa-phone-alt"></i> <!-- Icona opzionale ma utile -->
+            {{ c.phone }}
+          </a>
+
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  </div>
+</div>

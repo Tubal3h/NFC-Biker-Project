@@ -1,0 +1,14 @@
+<div class="container">
+  <div class="auth-tabs">
+    <button [class.active]="false" (click)="gotoLogin()">Login</button>
+    <button [class.active]="true" (click)="gotoRegister()">Registrati</button>
+  </div>
+  <h2>Registrati</h2>
+  <form (ngSubmit)="doRegister()">
+    <input [(ngModel)]="email" name="registerEmail" type="email" placeholder="Email" required />
+    <input [(ngModel)]="password" name="registerPassword" type="password" placeholder="Password" required />
+    <input [(ngModel)]="password2" name="registerPassword2" type="password" placeholder="Ripeti Password" required />
+    <button type="submit">Registrati</button>
+    <div *ngIf="errorMsg" class="text-danger mt-1">{{ errorMsg }}</div>
+  </form>
+</div>

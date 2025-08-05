@@ -1,0 +1,100 @@
+$color1: #1D1616;
+$color2: #8E1616;
+$color3: #D84040;
+$color4: #EEEEEE;
+
+.container {
+  background: $color4;
+  padding: 2.2rem 1.6rem;
+  max-width: 360px;
+  margin: 2.5rem auto;
+  border-radius: 1.2rem;
+  box-shadow: 0 4px 18px 0 rgba(30,16,30,0.08);
+  font-family: "League Spartan", sans-serif;
+  color: $color1;
+  
+    .auth-tabs {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1rem;
+
+    button {
+        background: none;
+        border: none;
+        padding: 0.75rem 2rem;
+        font-size: 1.1rem;
+        color: $color1;
+        cursor: pointer;
+        transition: border-bottom 0.2s, color 0.2s;
+        border-bottom: 2px solid transparent;
+
+        &.active {
+        color: $color3;
+        border-bottom: 2px solid $color3;
+        font-weight: bold;
+        }
+
+        &:hover {
+        color: $color3;
+        }
+    }
+    }
+
+  h2 {
+    color: $color3;
+    text-align: center;
+    margin-bottom: 1.4rem;
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+  }
+
+  input {
+    padding: 0.82rem 1rem;
+    font-size: 1.05rem;
+    border-radius: 0.7rem;
+    border: 1.2px solid lighten($color1, 72%);
+    background: lighten($color1, 92%);
+    color: $color1;
+    transition: border-color 0.18s, background 0.19s;
+
+    &:focus {
+      outline: none;
+      border-color: $color2;
+      background: $color4;
+    }
+  }
+
+  button[type="submit"] {
+    background: linear-gradient(90deg, $color2 0%, $color3 100%);
+    color: $color4;
+    border: none;
+    padding: 0.75rem 1.15rem;
+    font-size: 1.1rem;
+    border-radius: 0.7rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 0.5rem;
+    transition: background 0.16s;
+    box-shadow: 0 1px 8px 0 rgba(216,64,64,0.13);
+
+    &:hover {
+      background: linear-gradient(90deg, $color1 0%, $color2 100%);
+    }
+  }
+
+  .text-danger {
+    color: $color3;
+    font-size: 0.96rem;
+    text-align: center;
+    margin-top: 0.6rem;
+  }
+
+
+}

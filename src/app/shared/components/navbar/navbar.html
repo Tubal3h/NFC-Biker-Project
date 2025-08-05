@@ -1,0 +1,18 @@
+<nav class="navbar">
+  <div class="logo">
+    <a routerLink="/homepage" aria-label="Homepage">
+      <h1>S.O.S.<br>HELMET</h1>
+    </a>
+  </div>
+  <ul class="section">
+    <li><a routerLink="/homepage">Chi Siamo</a></li>
+    <li><a routerLink="/guide">Guida</a></li>
+    <li *ngIf="!isLogged"><a routerLink="/login">Login</a></li>
+    <li *ngIf="isLogged">
+        <a routerLink="/profile">Profilo</a>
+    </li>
+    <li *ngIf="isLogged">
+        <button class="logout-btn" (click)="logout()" type="button">Logout</button>
+    </li>
+  </ul>
+</nav>

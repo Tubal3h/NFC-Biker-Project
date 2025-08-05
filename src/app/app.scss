@@ -1,0 +1,27 @@
+$color1: #1D1616;
+$color2: #8E1616;
+$color3: #D84040;
+$color4: #EEEEEE;
+
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.main-wrapper {
+  min-height: 100vh; // viewport height
+  display: flex;
+  flex-direction: column;
+}
+
+app-footer {
+  margin-top: auto; // spinge il footer in fondo se la pagina è corta
+  width: 100%;
+  background-color: $color1;
+  color: $color4;
+  text-align: center;
+  padding: 1rem;
+  position: relative; // NON absolute!
+}

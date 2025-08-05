@@ -1,10 +1,19 @@
-<app-navbar></app-navbar>
 
 <div class="profile-wrapper">
   <h2>La tua Scheda Sanitaria</h2>
 
   <!-- Scheda sanitaria generica: puoi lasciarla template-driven! -->
   <form (ngSubmit)="save()">
+    <div class="form-group">
+  <label>Nome</label>
+  <input [(ngModel)]="name" name="name" placeholder="Nome e Cognome" required />
+    </div>
+    
+    <div class="form-group">
+      <label>Cognome</label>
+      <input [(ngModel)]="surname" name="surname" placeholder="Cognome" />
+    </div>
+
     <div class="form-group">
       <label>Gruppo sanguigno</label>
       <select [(ngModel)]="medicalData.bloodType" name="bloodType" required>
@@ -113,6 +122,3 @@
     </form>
   </div>
 </div>
-
-
-<app-footer></app-footer>

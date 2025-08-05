@@ -1,0 +1,66 @@
+
+<div class="claim-container">
+
+  <div *ngIf="step === 'checking'">Verifica tag NFC...</div>
+
+  <div *ngIf="step === 'notfound'" class="text-danger">
+    Questo tag NFC non è valido o non è stato generato da noi.
+  </div>
+
+  <!-- STEP: Casco già associato – Privacy popup -->
+  <div *ngIf="step === 'claimed' && showPrivacy">
+    <div class="privacy-popup-backdrop">
+      <div class="privacy-popup">
+        <h3>Dati sensibili – Accesso riservato</h3>
+        <p>
+          Stai per visualizzare la scheda medica associata a questo casco.<br>
+          L’accesso è consentito <b>esclusivamente</b> in caso di emergenza sanitaria, come previsto dal GDPR (art. 9, 32) e dal D.Lgs. 196/2003.<br>
+          Ogni accesso viene registrato e verrà salvato il tuo IP e la posizione approssimativa.<br>
+          <i>Proseguendo dichiari di essere personale sanitario, soccorritore o comunque di agire in situazione di reale emergenza.</i>
+        </p>
+        <div class="info-box mb-2">
+          <b>IP rilevato:</b> {{ visitorIp || '...' }}<br>
+          <b>Posizione:</b> {{ visitorLocation || '...' }}
+        </div>
+        <button (click)="acceptPrivacy()" class="btn-access">Accetto e accedi alla scheda medica</button>
+        <button (click)="goBack()" class="btn-cancel">Annulla</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP: Casco libero -->
+  <div *ngIf="step === 'ok'">
+    <div *ngIf="!user">
+      <div class="container">
+        <h2>Benvenuto! Collega il tuo casco digitale</h2>
+        <div class="subtitle">
+          Per associare questo casco al tuo profilo, effettua l’accesso o crea un account gratuito.<br>
+          <small>I tuoi dati saranno sempre protetti e disponibili solo in caso di emergenza.</small>
+        </div>
+        <div class="auth-tabs">
+          <button [routerLink]="['/login', nfcId]">Login</button>
+          <button [routerLink]="['/register', nfcId]">Registrati</button>
+        </div>
+        <div class="info-box">
+          <b>Perché serve un account?</b>
+          <ul>
+            <li>Personalizzi la scheda sanitaria collegata al casco</li>
+            <li>Poi aggiungere, modificare o rimuovere caschi/NFC</li>
+            <li>I tuoi dati restano sicuri e disponibili solo a te</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="step === 'ok' && user" class="claim-form mt-3">
+      <div>
+        Stai associando l'adesivo NFC al tuo account <b>{{ user.name }}.</b>
+      </div>
+      <button type="button" (click)="claimAuto()">Associa Casco</button>
+      <button class="logout-btn" (click)="logout()" type="button">Logout</button>
+      <div *ngIf="claimResult" class="mt-2">{{ claimResult }}</div>
+    </div>
+  </div>
+</div>
+
+
+
