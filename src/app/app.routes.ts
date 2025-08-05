@@ -2,7 +2,7 @@ import { Routes } from '@angular/router';
 import { Claim } from './features/claim/claim';
 import { Homepage } from './features/homepage/homepage';
 import { Guide } from './features/guide/guide';
-import { Profile } from './features/profile/profile';
+import { Dashboard } from './features/dashboard/dashboard';
 import { Scheda } from './features/scheda/scheda';
 import { AUTH_ROUTES } from './features/auth/auth.routes';
 import { Login } from './features/auth/login/login';
@@ -16,7 +16,7 @@ export const routes: Routes = [
     { path: 'guide', component: Guide },
     { path: 'claim/:nfcId', component: Claim }, // <--- PRIMA questa!
     { path: 'claim', component: Claim },
-    { path: 'profile', component: Profile },
+    { path: 'dashboard', component: Dashboard },
     { path: 'scheda/:nfcId', component: Scheda},
     {
         path: 'register/:nfcId',

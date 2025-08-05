@@ -28,6 +28,22 @@
       },
       "name": "Macwell",
       "surname": "Tubale"
+    },
+    {
+      "id": "1754412935312",
+      "email": "123@123.rt",
+      "password": "Royalma2c",
+      "premium": false,
+      "nfcTags": [
+        "NFC-81DF71DEB4"
+      ],
+      "medicalData": {
+        "bloodType": "",
+        "allergies": "",
+        "conditions": "",
+        "notes": "",
+        "emergencyContacts": []
+      }
     }
   ],
   "tags": [
@@ -37,7 +53,7 @@
     },
     {
       "id": "NFC-81DF71DEB4",
-      "userId": null
+      "userId": "1754412935312"
     },
     {
       "id": "NFC-4DA1EEA62A",

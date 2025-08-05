@@ -6,12 +6,12 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
-  selector: 'app-profile',
+  selector: 'app-dashboard',
   imports: [CommonModule, ReactiveFormsModule, FormsModule],
-  templateUrl: './profile.html',
-  styleUrl: './profile.scss'
+  templateUrl: './dashboard.html',
+  styleUrl: './dashboard.scss'
 })
-export class Profile {
+export class Dashboard {
   user: User | null = null;
   name = '';
   surname = '';
