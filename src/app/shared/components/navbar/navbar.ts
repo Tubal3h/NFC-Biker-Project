@@ -1,22 +1,36 @@
-import { Component } from '@angular/core';
+// Sostituisci il contenuto di navbar.component.ts con questo
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { RouterModule } from '@angular/router';
+import { AuthService } from '../../../core/services/auth';
 
 @Component({
   selector: 'app-navbar',
-  imports: [CommonModule],
+  standalone: true,
+  imports: [CommonModule, RouterModule],
   templateUrl: './navbar.html',
-  styleUrl: './navbar.scss'
+  styleUrls: ['./navbar.scss']
 })
 export class Navbar {
-    get isLogged(): boolean {
-    return !!localStorage.getItem('user');
+  auth = inject(AuthService);
+  user$ = this.auth.user$;
+  
+  // Stato per il menu mobile
+  isMenuOpen = false;
+
+  // Apre e chiude il menu
+  toggleMenu() {
+    this.isMenuOpen = !this.isMenuOpen;
   }
 
-  constructor(private router: Router) {}
-
-  logout() {
-    localStorage.removeItem('user');
-    this.router.navigate(['/login']);
+  // Chiude il menu (utile quando si clicca un link)
+  closeMenu() {
+    this.isMenuOpen = false;
+  }
+  
+  // Esegue il logout e chiude il menu
+  logoutAndCloseMenu() {
+    this.auth.logout();
+    this.closeMenu();
   }
 }

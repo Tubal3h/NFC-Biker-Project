@@ -1,18 +1,37 @@
 <nav class="navbar">
-  <div class="logo">
-    <a routerLink="/homepage" aria-label="Homepage">
-      <h1>S.O.S.<br>HELMET</h1>
+  <!-- Logo -->
+  <div class="navbar-logo">
+    <a routerLink="/homepage">
+      <h1>S.O.S. <br> HELMET</h1>
     </a>
   </div>
-  <ul class="section">
-    <li><a routerLink="/homepage">Chi Siamo</a></li>
-    <li><a routerLink="/guide">Guida</a></li>
-    <li *ngIf="!isLogged"><a routerLink="/login">Login</a></li>
-    <li *ngIf="isLogged">
-        <a routerLink="/profile">Profilo</a>
-    </li>
-    <li *ngIf="isLogged">
-        <button class="logout-btn" (click)="logout()" type="button">Logout</button>
-    </li>
-  </ul>
+
+  <!-- Pulsante Hamburger (solo per mobile) -->
+  <button class="navbar-toggler" (click)="toggleMenu()" aria-label="Toggle navigation">
+    <span class="toggler-icon"></span>
+    <span class="toggler-icon"></span>
+    <span class="toggler-icon"></span>
+  </button>
+
+  <!-- Il contenitore principale del menu -->
+  <div class="navbar-menu" [class.is-open]="isMenuOpen">
+    
+    <!-- La lista dei link di navigazione -->
+    <ul class="nav-links">
+      <li><a routerLink="/homepage" (click)="closeMenu()">Chi Siamo</a></li>
+      <li><a routerLink="/guide" (click)="closeMenu()">Guida</a></li>
+    </ul>
+
+    <!-- La sezione per l'utente (login/logout) -->
+    <div class="user-section">
+      <div *ngIf="user$ | async as user; else showLoginButton" class="user-info">
+        <a [routerLink]="['/profile']" (click)="closeMenu()">{{ user.name || user.email }}</a>
+        <button (click)="logoutAndCloseMenu()">Logout</button>
+      </div>
+      <ng-template #showLoginButton>
+        <a routerLink="/login" class="btn-login" (click)="closeMenu()">Log In</a>
+      </ng-template>
+    </div>
+    
+  </div>
 </nav>

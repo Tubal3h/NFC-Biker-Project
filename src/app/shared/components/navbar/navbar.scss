@@ -1,83 +1,132 @@
+/* ================================================================
+   SCSS DEFINITIVO PER LA NAVBAR
+   - Estetica Originale
+   - Responsive (Mobile-First)
+   - Correzione allineamento testo inclusa
+   ================================================================ */
+
+// 1. VARIABILI E IMPOSTAZIONI DI BASE
+// ----------------------------------------------------------------
 $color1: #1D1616;
 $color2: #8E1616;
 $color3: #D84040;
 $color4: #EEEEEE;
+$breakpoint-desktop: 768px;
 
+// 2. STILI PER IL MOBILE (DEFAULT)
+// ----------------------------------------------------------------
 .navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1.6rem 2rem;
-//   background: $color4;
-  box-shadow: 0 2px 12px #1d161618;
-  min-height: 110px;
-
-  .logo a h1 {
-    color: $color3;
-    font-size: 2.6rem;
-    margin: 0;
-    line-height: 1.1;
-    font-weight: 900;
-    letter-spacing: 1px;
-  }
-
-    .section {
-    display: flex;
-    gap: 2.2rem;
-    align-items: center;
-    padding: 0.8rem 2.4rem;
-    background: $color3;
-    border-radius: 1.5rem;
-
-    li {
-        display: flex;
-        align-items: center;
-        // gap tra Profilo e Logout se vuoi
-
-        a {
-        color: $color4;
-        font-size: 1.3rem;
-        font-weight: 700;
-        padding: 0.5rem 0.8rem;
-        border-radius: 0.5rem;
-        text-decoration: none;
-        transition: color 0.23s, background 0.23s;
-
-        &:hover, &:focus {
-            color: $color1;
-            background: lighten($color3, 18%);
-        }
-        }
-
-        .logout-btn {
-        background: none;
-        border: none;
-        color: $color4;
-        font-size: 1.1rem;
-        margin-left: 0;
-        cursor: pointer;
-        font-weight: 600;
-        padding: 0.4rem 1.1rem;
-        border-radius: 0.5rem;
-        transition: background 0.2s;
-        &:hover {
-            background: lighten($color3, 16%);
-            color: $color1;
-        }
-        }
-    }
-    }
-
+  flex-wrap: wrap;
+  background-color: $color1;
+  padding: 1rem 1.5rem;
+  min-height: 80px;
+  position: relative;
+  z-index: 1000;
 }
 
-/* Responsive */
-@media (max-width: 700px) {
+.navbar-logo a {
+  text-decoration: none;
+  h1 { color: $color3; font-size: 2rem; margin: 0; line-height: 1.1; }
+}
+
+.navbar-toggler {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  width: 30px;
+  height: 25px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  .toggler-icon { width: 100%; height: 3px; background-color: $color4; border-radius: 2px; }
+}
+
+.navbar-menu {
+  width: 100%;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.35s ease-in-out;
+  background-color: $color3;
+  border-radius: 15px;
+  margin-top: 1rem;
+  &.is-open { max-height: 400px; padding: 1rem 0; }
+}
+
+ul.nav-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  li {
+    padding: 0.8rem 0;
+    text-align: center;
+    a { color: $color4; font-size: 1.2rem; font-weight: 700; text-decoration: none; }
+  }
+}
+
+.user-section {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid lighten($color2, 20%);
+  text-align: center;
+  a, button { color: $color4; font-weight: 700; text-decoration: none; font-size: 1.2rem; }
+  .user-info { display: flex; flex-direction: column; align-items: center; gap: 1rem; button { background: $color2; border: none; border-radius: 8px; padding: 0.5rem 1rem; cursor: pointer; } }
+  .btn-login { background-color: $color2; padding: 0.6rem 2rem; border-radius: 8px; }
+}
+
+// 3. STILI PER IL DESKTOP (oltre i 768px)
+// ----------------------------------------------------------------
+@media (min-width: $breakpoint-desktop) {
   .navbar {
-    flex-direction: column;
-    .section {
-      gap: 1.1rem;
-      padding: 0.8rem 0.7rem;
+    min-height: 160px;
+    padding: 1rem 3rem;
+    flex-wrap: nowrap;
+  }
+  
+  .navbar-logo a, .navbar-logo a:hover, .navbar-logo a:visited, .navbar-logo a.active-link {
+    text-decoration: none !important;
+    color: $color3;
+  }
+
+  .navbar-logo a h1 {
+    font-size: 3.5rem;
+    transition: transform 0.2s ease-in-out;
+    &:hover { transform: scale(1.03); }
+  }
+
+  .navbar-toggler { display: none; }
+
+  .navbar-menu {
+    width: auto;
+    max-height: none;
+    overflow: visible;
+    margin-top: 0;
+    padding: 1.2rem 2rem; // Aumentato leggermente il padding per dare più aria
+    display: flex;
+    align-items: center; // Mantiene tutto centrato verticalmente
+    gap: 2.5rem; // Aumentato lo spazio tra i gruppi di link e la sezione utente
+  }
+  
+  ul.nav-links {
+    display: flex;
+    align-items: center; // Centra verticalmente gli elementi della lista
+    gap: 2rem;
+    li { 
+      padding: 0;
+      a { 
+        transition: color 0.2s; 
+        white-space: nowrap; // <-- LA CORREZIONE DEFINITIVA
+        &:hover { color: white; } 
+      }
     }
-    .logo a h1 { font-size: 2rem; }
+  }
+
+  .user-section {
+    margin: 0; padding: 0; border: none;
+    .user-info { flex-direction: row; align-items: center; gap: 1.5rem; button { transition: background-color 0.2s; &:hover { background-color: darken($color2, 10%); } } }
+    .btn-login { transition: background-color 0.2s; &:hover { background-color: darken($color2, 10%); } }
   }
 }
