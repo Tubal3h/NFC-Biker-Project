@@ -1,124 +1,47 @@
+<div class="dashboard-container">
+  
+  <!-- Messaggio di Benvenuto Personalizzato -->
+  <div class="welcome-header" *ngIf="user$ | async as user">
+    <h1>Ciao, {{ user.name || user.email }}!</h1>
+    <p>Benvenuto nella tua area riservata. Da qui puoi gestire il tuo profilo e i tuoi dispositivi.</p>
+  </div>
 
-<div class="profile-wrapper">
-  <h2>La tua Scheda Sanitaria</h2>
+  <!-- Griglia dei Widget/Card -->
+  <div class="dashboard-grid">
 
-  <!-- Scheda sanitaria generica: puoi lasciarla template-driven! -->
-  <form (ngSubmit)="save()">
-    <div class="form-group">
-  <label>Nome</label>
-  <input [(ngModel)]="name" name="name" placeholder="Nome e Cognome" required />
-    </div>
-    
-    <div class="form-group">
-      <label>Cognome</label>
-      <input [(ngModel)]="surname" name="surname" placeholder="Cognome" />
-    </div>
-
-    <div class="form-group">
-      <label>Gruppo sanguigno</label>
-      <select [(ngModel)]="medicalData.bloodType" name="bloodType" required>
-        <option value="" disabled>Seleziona...</option>
-        <option value="0+">0+</option>
-        <option value="0-">0-</option>
-        <option value="A+">A+</option>
-        <option value="A-">A-</option>
-        <option value="B+">B+</option>
-        <option value="B-">B-</option>
-        <option value="AB+">AB+</option>
-        <option value="AB-">AB-</option>
-      </select>
-    </div>
-
-    <div class="form-group">
-      <label>Allergie</label>
-      <input [(ngModel)]="medicalData.allergies" name="allergies" placeholder="Allergie (separate da virgola)" />
-    </div>
-    <div class="form-group">
-      <label>Patologie</label>
-      <input [(ngModel)]="medicalData.conditions" name="conditions" placeholder="Patologie (separate da virgola)" />
-    </div>
-    <div class="form-group">
-      <label>Note</label>
-      <input [(ngModel)]="medicalData.notes" name="notes" placeholder="Note importanti" />
-    </div>
-    <button type="submit">Salva dati sanitari</button>
-    <div *ngIf="message" class="success-msg">{{ message }}</div>
-    <div *ngIf="errorMsg" class="error-msg">{{ errorMsg }}</div>
-  </form>
-
-  <!-- CONTATTI D'EMERGENZA: REACTIVE FORMS -->
-
-  <div class="form-group contacts-section">
-    <label>Contatti d'emergenza</label>
-
-    <!-- Lista contatti già inseriti -->
-    <div *ngFor="let contact of medicalData.emergencyContacts; let i = index" class="contact-row">
-      <!-- VISUALIZZAZIONE -->
-      <ng-container *ngIf="editIndex !== i">
-        <b>{{ contact.name }}</b> ({{ contact.relation }})<br>
-        Tel: {{ contact.phone }}
-        <button type="button" class="edit-btn" (click)="startEdit(i)">Modifica</button>
-        <button type="button" class="remove-btn" (click)="removeContact(i)">✕</button>
-      </ng-container>
-
-      <!-- MODIFICA -->
-      <form *ngIf="editIndex === i" [formGroup]="contactForm" (ngSubmit)="onContactSave()" class="edit-contact-form">
-        <input formControlName="name" placeholder="Nome" />
-        <div *ngIf="contactForm.get('name')?.invalid && contactForm.get('name')?.touched" class="error-msg">
-          Inserisci solo lettere!
-        </div>
-
-        <select formControlName="relation">
-          <option value="">Relazione</option>
-          <option>Genitore</option>
-          <option>Coniuge</option>
-          <option>Figlio/a</option>
-          <option>Fratello/Sorella</option>
-          <option>Amico/a</option>
-          <option>Collega</option>
-          <option>Altro</option>
-        </select>
-        <div *ngIf="contactForm.get('relation')?.invalid && contactForm.get('relation')?.touched" class="error-msg">
-          Scegli la relazione!
-        </div>
-
-        <input formControlName="phone" placeholder="Telefono" />
-        <div *ngIf="contactForm.get('phone')?.invalid && contactForm.get('phone')?.touched" class="error-msg">
-          Solo cifre, max 10!
-        </div>
-
-        <button type="submit" class="save-btn" [disabled]="contactForm.invalid">Salva</button>
-        <button type="button" class="cancel-btn" (click)="cancelEdit()">Annulla</button>
-      </form>
-    </div>
-
-    <!-- FORM per aggiunta nuovo contatto -->
-    <form *ngIf="editIndex === null" [formGroup]="contactForm" (ngSubmit)="onContactSave()" class="add-contact-form">
-      <input formControlName="name" placeholder="Nome" />
-      <div *ngIf="contactForm.get('name')?.invalid && contactForm.get('name')?.touched" class="error-msg">
-        Inserisci solo lettere!
+    <!-- Card 1: Modifica Scheda Medica -->
+    <a [routerLink]="['/medical-form']" class="dashboard-card">
+      <div class="card-icon">
+        <i class="fas fa-heartbeat"></i>
       </div>
-
-      <select formControlName="relation">
-        <option value="">Relazione</option>
-        <option>Genitore</option>
-        <option>Coniuge</option>
-        <option>Figlio/a</option>
-        <option>Fratello/Sorella</option>
-        <option>Amico/a</option>
-        <option>Collega</option>
-        <option>Altro</option>
-      </select>
-      <div *ngIf="contactForm.get('relation')?.invalid && contactForm.get('relation')?.touched" class="error-msg">
-        Scegli la relazione!
+      <div class="card-content">
+        <h3>Scheda Medica</h3>
+        <p>Compila o aggiorna i tuoi dati sanitari per essere sempre protetto.</p>
       </div>
+    </a>
 
-      <input formControlName="phone" placeholder="Telefono" />
-      <div *ngIf="contactForm.get('phone')?.invalid && contactForm.get('phone')?.touched" class="error-msg">
-        Solo cifre, max 10!
+    <!-- Card 2: Impostazioni Account -->
+    <a [routerLink]="['/account-settings']" class="dashboard-card">
+      <div class="card-icon">
+        <i class="fas fa-user-cog"></i>
       </div>
+      <div class="card-content">
+        <h3>Impostazioni Account</h3>
+        <p>Modifica la tua email o la tua password di accesso.</p>
+      </div>
+    </a>
 
-      <button type="submit" class="add-btn" [disabled]="contactForm.invalid">+ Aggiungi contatto</button>
-    </form>
+    <!-- Card 3: Gestione Caschi (Coming Soon) -->
+    <div class="dashboard-card is-disabled">
+      <div class="card-icon">
+        <i class="fas fa-hard-hat"></i>
+      </div>
+      <div class="card-content">
+        <h3>I Tuoi Caschi</h3>
+        <p>Gestisci i tuoi tag NFC e visualizza i dispositivi associati.</p>
+        <span class="coming-soon-badge">Coming Soon</span>
+      </div>
+    </div>
+
   </div>
 </div>

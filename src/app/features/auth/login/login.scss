@@ -1,100 +1,123 @@
-$color1: #1D1616;
-$color2: #8E1616;
-$color3: #D84040;
-$color4: #EEEEEE;
+// ======================================================
+// Stili per il Login - Usando la palette di colori definita
+// ======================================================
 
+// La tua palette
+$color1: #1D1616; // Nero profondo per testi
+$color2: #8E1616; // Rosso scuro per pulsanti primari
+$color3: #D84040; // Rosso vibrante per accenti e hover
+$color4: #EEEEEE; // Grigio chiaro per sfondi e testi chiari
+
+// Contenitore principale
 .container {
-  background: $color4;
-  padding: 2.2rem 1.6rem;
-  max-width: 360px;
-  margin: 2.5rem auto;
-  border-radius: 1.2rem;
-  box-shadow: 0 4px 18px 0 rgba(30,16,30,0.08);
-  font-family: "League Spartan", sans-serif;
-  color: $color1;
-  
-    .auth-tabs {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 1rem;
+  max-width: 450px;
+  margin: 3rem auto;
+  padding: 2.5rem;
+  background: white; // Usiamo bianco puro per il contrasto con il grigio
+  border-radius: 16px;
+  box-shadow: 0 8px 30px rgba($color1, 0.1);
+}
 
-    button {
-        background: none;
-        border: none;
-        padding: 0.75rem 2rem;
-        font-size: 1.1rem;
-        color: $color1;
-        cursor: pointer;
-        transition: border-bottom 0.2s, color 0.2s;
-        border-bottom: 2px solid transparent;
+// Tab di navigazione
+.auth-tabs {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+  background-color: $color4;
+  border-radius: 12px;
+  padding: 0.5rem;
 
-        &.active {
-        color: $color3;
-        border-bottom: 2px solid $color3;
-        font-weight: bold;
-        }
-
-        &:hover {
-        color: $color3;
-        }
-    }
-    }
-
-  h2 {
-    color: $color3;
+  button, a.tab-link {
+    flex: 1;
+    padding: 0.8rem;
+    border: none;
+    background: transparent;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: lighten($color1, 40%); // Testo grigio scuro
+    cursor: pointer;
+    border-radius: 8px;
+    text-decoration: none;
     text-align: center;
-    margin-bottom: 1.4rem;
-    font-size: 2rem;
-    font-weight: 700;
-    letter-spacing: 0.03em;
-  }
+    transition: all 0.2s ease-in-out;
 
-  form {
-    display: flex;
-    flex-direction: column;
-    gap: 1.1rem;
+    &.active {
+      background-color: $color3;
+      color: white;
+      box-shadow: 0 4px 10px rgba($color3, 0.3);
+    }
   }
+}
 
-  input {
-    padding: 0.82rem 1rem;
-    font-size: 1.05rem;
-    border-radius: 0.7rem;
-    border: 1.2px solid lighten($color1, 72%);
-    background: lighten($color1, 92%);
+h2 {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: $color1;
+}
+
+// Stile per ogni gruppo di form
+.form-group {
+  margin-bottom: 1.5rem;
+  label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
     color: $color1;
-    transition: border-color 0.18s, background 0.19s;
-
+  }
+  input {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    border: 1px solid darken($color4, 15%); // Bordo leggermente più scuro del grigio
+    border-radius: 8px;
+    font-size: 1rem;
+    background-color: lighten($color4, 2%);
+    transition: border-color 0.2s, box-shadow 0.2s;
     &:focus {
       outline: none;
-      border-color: $color2;
-      background: $color4;
+      border-color: $color3;
+    }
+    // Stile per evidenziare l'errore
+    &.is-invalid {
+      border-color: $color3;
     }
   }
+}
 
-  button[type="submit"] {
-    background: linear-gradient(90deg, $color2 0%, $color3 100%);
-    color: $color4;
-    border: none;
-    padding: 0.75rem 1.15rem;
-    font-size: 1.1rem;
-    border-radius: 0.7rem;
-    font-weight: 600;
-    cursor: pointer;
-    margin-top: 0.5rem;
-    transition: background 0.16s;
-    box-shadow: 0 1px 8px 0 rgba(216,64,64,0.13);
+// Messaggi di errore
+.error-feedback {
+  color: $color2; // Rosso scuro per gli errori di campo
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
 
-    &:hover {
-      background: linear-gradient(90deg, $color1 0%, $color2 100%);
-    }
+.error-general {
+  background-color: lighten($color3, 35%);
+  color: $color2;
+  border-radius: 8px;
+  padding: 1rem;
+  text-align: center;
+  margin-top: 1.5rem;
+  font-weight: 600;
+}
+
+// Pulsante di invio
+.btn-submit {
+  width: 100%;
+  padding: 1rem;
+  background-color: $color2;
+  color: $color4;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.2rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.2s;
+
+  &:hover:not(:disabled) {
+    background-color: $color3; // Passa al rosso più vibrante in hover
   }
-
-  .text-danger {
-    color: $color3;
-    font-size: 0.96rem;
-    text-align: center;
-    margin-top: 0.6rem;
+  &:disabled {
+    background-color: lighten($color2, 20%);
+    cursor: not-allowed;
   }
-
-
 }

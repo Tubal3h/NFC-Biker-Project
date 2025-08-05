@@ -1,9 +1,12 @@
-import { Component, inject } from '@angular/core';
+// in src/app/features/claim/claim.ts
+
+import { Component, inject, OnInit } from '@angular/core'; // Aggiunto OnInit
 import { CommonModule } from '@angular/common';
-import { ApiService } from '../../core/services/api';
-import { ActivatedRoute, Router } from '@angular/router';
-import { ApiResponse, NfcTag, User } from '../../core/models';
-import { RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { ApiService } from '@app/core/services/api';
+import { AuthService } from '@app/core/services/auth'; // Importiamo AuthService
+import { ApiResponse, NfcTag, AuthUser } from '@app/core/models'; // <-- MODIFICA 1: Importa AuthUser
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-claim',
@@ -12,38 +15,51 @@ import { RouterModule } from '@angular/router';
   templateUrl: './claim.html',
   styleUrl: './claim.scss'
 })
-export class Claim {
+export class Claim implements OnInit {
   private api = inject(ApiService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
+  private authService = inject(AuthService); // <-- Inietta AuthService
 
-  nfcId = this.route.snapshot.paramMap.get('nfcId') || '';
+  nfcId: string | null = null;
   step: 'checking' | 'ok' | 'claimed' | 'notfound' = 'checking';
-  user: User | null = null;
+  
+  // MODIFICA 2: La variabile 'user' ora è un Observable!
+  user$: Observable<AuthUser | null>;
+
   claimResult = '';
-  claimedUserId: string | null = null;
   showPrivacy = false;
   visitorIp: string | null = null;
   visitorLocation: string | null = null;
-
+  
   constructor() {
-    // Verifica nfcId nella route
+    // Il constructor ora è più pulito.
+    // L'utente viene gestito in modo reattivo dall'AuthService.
+    this.user$ = this.authService.user$;
+  }
+
+  ngOnInit(): void {
+    this.nfcId = this.route.snapshot.paramMap.get('nfcId');
     if (!this.nfcId) {
       this.step = 'notfound';
       return;
     }
+    this.checkTagStatus(this.nfcId);
+  }
 
-    // Verifica tag NFC
-    this.api.getTag(this.nfcId).subscribe({
-      next: (res: ApiResponse<NfcTag>) => {
-        if (res.success && res.data) {
-          if (res.data.userId) {
-            this.claimedUserId = res.data.userId;
-            this.step = 'claimed';
-            this.showPrivacy = true;
-            this.loadVisitorIp();
-            this.loadVisitorLocation();
+  /**
+   * Controlla lo stato del tag NFC (libero, associato, non valido).
+   */
+  private checkTagStatus(nfcId: string): void {
+    this.api.getTag(nfcId).subscribe({
+      next: (response) => {
+        if (response.success && response.data) {
+          if (response.data.userId) {
+            // Se il tag è già associato, reindirizza direttamente alla scheda.
+            // L'avviso di privacy verrà gestito da 'SchedaComponent'.
+            this.router.navigate(['/scheda', nfcId], { state: { showPrivacyWarning: true } });
           } else {
+            // Se il tag è libero, la pagina è pronta per il claim.
             this.step = 'ok';
           }
         } else {
@@ -54,87 +70,41 @@ export class Claim {
         this.step = 'notfound';
       }
     });
-
-    // Recupera utente se loggato
-    const userStr = localStorage.getItem('user');
-    if (userStr) {
-      this.user = JSON.parse(userStr);
-    }
   }
 
-  claimAuto() {
-    console.log('Claiming NFC tag:', this.nfcId, 'for user:', this.user?.id);
-    if (!this.user?.id) {
-      this.router.navigate(['/login'], { queryParams: { redirect: `/claim/${this.nfcId}` } });
+  /**
+   * Associa il tag NFC all'utente attualmente loggato.
+   */
+  claimAuto(): void {
+    const currentUserId = this.authService.user?.id;
+    if (!this.nfcId || !currentUserId) {
+      console.error("Impossibile associare: ID del tag o dell'utente mancante.");
+      // Se l'utente non è loggato, per sicurezza lo mandiamo al login.
+      this.router.navigate(['/login'], { queryParams: { nfcId: this.nfcId } });
       return;
     }
-    this.api.claimNfc(this.nfcId, this.user.id).subscribe({
+
+    this.api.claimNfc(this.nfcId, currentUserId).subscribe({
       next: () => {
-        this.claimResult = 'Casco associato al profilo con successo!';
-        setTimeout(() => this.router.navigate(['/profile']), 1200);
+        console.log('Casco associato con successo!');
+        // Reindirizza l'utente direttamente al form medico per completare il profilo.
+        // Questa è una UX fantastica per i nuovi utenti.
+        this.router.navigate(['/medical-form']);
       },
-      error: err => {
-        this.claimResult = err.error?.error || 'Errore durante l’associazione';
+      error: (err) => {
+        this.claimResult = err.error?.error || 'Errore durante l’associazione del casco.';
       }
     });
   }
 
-  logout() {
-    localStorage.removeItem('user');
-    this.user = null;
-    this.router.navigate(['/login']);
+  /**
+   * Esegue il logout tramite AuthService e reindirizza.
+   */
+  logout(): void {
+    this.authService.logout();
+    this.router.navigate(['/']); // Torna alla homepage dopo il logout
   }
 
-  acceptPrivacy() {
-    this.showPrivacy = false;
-    if (this.claimedUserId && this.nfcId) {
-      this.router.navigate(['/scheda', this.nfcId]);
-    }
-  }
-
-  loadVisitorIp() {
-    fetch('https://api.ipify.org/?format=json')
-      .then(r => r.json())
-      .then(data => this.visitorIp = data.ip)
-      .catch(() => this.visitorIp = null);
-  }
-
-  loadVisitorLocation() {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        pos => {
-          const lat = pos.coords.latitude;
-          const lon = pos.coords.longitude;
-          fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`)
-            .then(r => r.json())
-            .then(data => {
-              if (data && data.address) {
-                this.visitorLocation =
-                  data.address.city ||
-                  data.address.town ||
-                  data.address.village ||
-                  data.address.hamlet ||
-                  data.address.county ||
-                  data.address.state ||
-                  data.display_name ||
-                  `Lat: ${lat.toFixed(4)}, Lon: ${lon.toFixed(4)}`;
-              } else {
-                this.visitorLocation = `Lat: ${lat.toFixed(4)}, Lon: ${lon.toFixed(4)}`;
-              }
-            })
-            .catch(() => {
-              this.visitorLocation = `Lat: ${lat.toFixed(4)}, Lon: ${lon.toFixed(4)}`;
-            });
-        },
-        () => { this.visitorLocation = 'Posizione non autorizzata'; }
-      );
-    } else {
-      this.visitorLocation = 'Non supportata';
-    }
-  }
-
-  goBack() {
-    this.showPrivacy = false;
-    this.router.navigate(['/homepage']);
-  }
+  // Abbiamo rimosso la logica del popup della privacy da qui,
+  // perché ora è gestita correttamente dal componente 'Scheda'.
 }

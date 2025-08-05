@@ -1,13 +1,68 @@
 <div class="container">
+  
+  <!-- Tab di navigazione -->
   <div class="auth-tabs">
-    <button [class.active]="true" (click)="gotoLogin()">Login</button>
-    <button [class.active]="false" (click)="gotoRegister()">Registrati</button>
+    <!-- Il pulsante Login è sempre attivo su questa pagina -->
+    <button class="active">Login</button>
+    <!-- Il pulsante Registrati ora usa routerLink per una navigazione pulita -->
+    <a routerLink="/register" class="tab-link">Registrati</a>
   </div>
-  <h2>Accedi</h2>
-  <form (ngSubmit)="doLogin()">
-    <input [(ngModel)]="email" name="loginEmail" type="email" placeholder="Email" required />
-    <input [(ngModel)]="password" name="loginPassword" type="password" placeholder="Password" required />
-    <button type="submit">Accedi</button>
-    <div *ngIf="errorMsg" class="text-danger mt-1">{{ errorMsg }}</div>
+
+  <h2>Accedi al tuo account</h2>
+  
+  <!-- Aggiungiamo #loginForm="ngForm" per avere un riferimento al form -->
+  <form #loginForm="ngForm" (ngSubmit)="doLogin()">
+
+    <!-- Email -->
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input 
+        id="email"
+        name="email" 
+        type="email" 
+        placeholder="iltuo@indirizzo.email" 
+        required
+        email 
+        [(ngModel)]="email"
+        #emailInput="ngModel"
+        [class.is-invalid]="emailInput.invalid && emailInput.touched"
+      />
+      <!-- Messaggio di errore specifico per l'email -->
+      <div *ngIf="emailInput.invalid && emailInput.touched" class="error-feedback">
+        <span *ngIf="emailInput.errors?.['required']">L'email è obbligatoria.</span>
+        <span *ngIf="emailInput.errors?.['email']">Inserisci un indirizzo email valido.</span>
+      </div>
+    </div>
+
+    <!-- Password -->
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input 
+        id="password"
+        name="password"
+        type="password" 
+        placeholder="La tua password" 
+        required 
+        [(ngModel)]="password"
+        #passwordInput="ngModel"
+        [class.is-invalid]="passwordInput.invalid && passwordInput.touched"
+      />
+      <!-- Messaggio di errore specifico per la password -->
+      <div *ngIf="passwordInput.invalid && passwordInput.touched" class="error-feedback">
+        <span *ngIf="passwordInput.errors?.['required']">La password è obbligatoria.</span>
+      </div>
+    </div>
+
+    <!-- Pulsante di Invio -->
+    <button type="submit" class="btn-submit" [disabled]="loginForm.invalid || isLoggingIn">
+      <span *ngIf="!isLoggingIn">Accedi</span>
+      <span *ngIf="isLoggingIn">Accesso in corso...</span>
+    </button>
+    
+    <!-- Messaggio di errore generale (es. per credenziali errate) -->
+    <div *ngIf="errorMsg" class="error-general">
+      {{ errorMsg }}
+    </div>
+
   </form>
 </div>

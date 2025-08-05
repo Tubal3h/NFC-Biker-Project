@@ -26,23 +26,47 @@
           }
         ]
       },
-      "name": "Macwell",
-      "surname": "Tubale"
+      "name": "Mac",
+      "surname": "Rossi"
     },
     {
-      "id": "1754412935312",
+      "id": "1754418931477",
       "email": "123@123.rt",
       "password": "Royalma2c",
       "premium": false,
-      "nfcTags": [
-        "NFC-81DF71DEB4"
-      ],
+      "nfcTags": [],
       "medicalData": {
-        "bloodType": "",
+        "bloodType": "A+",
         "allergies": "",
         "conditions": "",
         "notes": "",
-        "emergencyContacts": []
+        "emergencyContacts": [
+          {
+            "name": "",
+            "relation": "",
+            "phone": ""
+          },
+          {
+            "name": "",
+            "relation": "",
+            "phone": ""
+          },
+          {
+            "name": "",
+            "relation": "",
+            "phone": ""
+          },
+          {
+            "name": "",
+            "relation": "",
+            "phone": ""
+          },
+          {
+            "name": "",
+            "relation": "",
+            "phone": ""
+          }
+        ]
       }
     }
   ],
@@ -53,7 +77,7 @@
     },
     {
       "id": "NFC-81DF71DEB4",
-      "userId": "1754412935312"
+      "userId": null
     },
     {
       "id": "NFC-4DA1EEA62A",

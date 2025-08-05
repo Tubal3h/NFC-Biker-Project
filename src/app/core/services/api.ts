@@ -1,49 +1,54 @@
+// in src/app/core/services/api.service.ts
+
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { User, NfcTag, MedicalData, ApiResponse } from '../models'; // Assicurati che il percorso sia corretto
+import { AuthUser, NfcTag, MedicalData, ApiResponse } from '@app/core/models';
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
-  private apiUrl = 'http://localhost:3000/api'; // Cambia se metti il backend online
+  // L'URL base ora punta alla radice delle tue API definite in server.js
+  private apiUrl = 'http://localhost:3000/api';
 
   constructor(private http: HttpClient) {}
 
-  // Registrazione
-  register(user: { email: string; password: string }): Observable<ApiResponse<User>> {
-    return this.http.post<ApiResponse<User>>(`${this.apiUrl}/register`, user);
+  // --- Funzioni di Autenticazione ---
+  register(user: { email: string; password: string }): Observable<ApiResponse<AuthUser>> {
+    return this.http.post<ApiResponse<AuthUser>>(`${this.apiUrl}/register`, user);
   }
 
-  // Login
-  login(email: string, password: string): Observable<ApiResponse<User>> {
-    return this.http.post<ApiResponse<User>>(`${this.apiUrl}/login`, { email, password });
+  login(email: string, password: string): Observable<ApiResponse<AuthUser>> {
+    return this.http.post<ApiResponse<AuthUser>>(`${this.apiUrl}/login`, { email, password });
   }
 
-  // Claim NFC
-  claimNfc(nfcId: string, userId: string): Observable<ApiResponse<{ success: boolean }>> {
-    return this.http.post<ApiResponse<{ success: boolean }>>(`${this.apiUrl}/claim`, { nfcId, userId });
+  // --- Funzioni per i Tag NFC ---
+  claimNfc(nfcId: string, userId: string): Observable<ApiResponse<void>> {
+    return this.http.post<ApiResponse<void>>(`${this.apiUrl}/claim`, { nfcId, userId });
   }
-
-// Aggiorna dati sanitari
-updateMedicalData(userId: string, data: MedicalData): Observable<ApiResponse<MedicalData>> {
-  return this.http.put<ApiResponse<MedicalData>>(`${this.apiUrl}/user/${userId}/medical`, data);
-}
-
-// Recupera dati sanitari
-getMedicalData(userId: string): Observable<ApiResponse<MedicalData>> {
-  return this.http.get<ApiResponse<MedicalData>>(`${this.apiUrl}/user/${userId}/medical`);
-}
-
-  // Visualizza caschi associati
-  getUserTags(userId: string): Observable<ApiResponse<NfcTag[]>> {
-    return this.http.get<ApiResponse<NfcTag[]>>(`${this.apiUrl}/user/${userId}/tags`);
-  }
-
-  // Recupera info tag NFC
+  
   getTag(nfcId: string): Observable<ApiResponse<NfcTag>> {
     return this.http.get<ApiResponse<NfcTag>>(`${this.apiUrl}/tag/${nfcId}`);
   }
 
+  getUserTags(userId: string): Observable<ApiResponse<NfcTag[]>> {
+    return this.http.get<ApiResponse<NfcTag[]>>(`${this.apiUrl}/user/${userId}/tags`);
+  }
 
-  
+  // --- Funzioni per i Dati Medici (ORA CORRETTE) ---
+
+  /**
+   * Recupera i dati sanitari di un utente.
+   * Chiama l'endpoint GET /api/user/:userId/medical che hai creato.
+   */
+  getMedicalData(userId: string): Observable<ApiResponse<MedicalData>> {
+    return this.http.get<ApiResponse<MedicalData>>(`${this.apiUrl}/user/${userId}/medical`);
+  }
+
+  /**
+   * Aggiorna i dati sanitari di un utente.
+   * Chiama l'endpoint PUT /api/user/:userId/medical che hai creato.
+   */
+  updateMedicalData(userId: string, data: MedicalData): Observable<ApiResponse<MedicalData>> {
+    return this.http.put<ApiResponse<MedicalData>>(`${this.apiUrl}/user/${userId}/medical`, data);
+  }
 }

@@ -1,1 +1,86 @@
-<p>medical-form works!</p>
+<div class="form-container">
+  <div class="form-header">
+    <a routerLink="/dashboard" class="back-link"><i class="fas fa-arrow-left"></i> Torna alla Dashboard</a>
+    <h1>La Tua Scheda Medica</h1>
+    <p>Queste informazioni saranno visibili solo in caso di emergenza. Mantienile aggiornate.</p>
+  </div>
+
+  <form #medicalForm="ngForm" (ngSubmit)="saveMedicalData()">
+    
+    <!-- Sezione 1: Riconoscimento -->
+    <fieldset>
+      <legend><i class="fas fa-motorcycle"></i> Riconoscimento Veicolo</legend>
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="motoModel">Modello Moto</label>
+          <input type="text" id="motoModel" name="motoModel" [(ngModel)]="model.vehicle.model" placeholder="Es. Ducati Panigale V4">
+        </div>
+        <div class="form-group">
+          <label for="motoPlate">Targa</label>
+          <input type="text" id="motoPlate" name="motoPlate" [(ngModel)]="model.vehicle.plate" placeholder="Es. AA 12345">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Foto (Coming Soon)</label>
+        <div class="photo-placeholders">
+          <div class="placeholder-box"><i class="fas fa-user"></i> Foto Pilota</div>
+          <div class="placeholder-box"><i class="fas fa-motorcycle"></i> Foto Moto</div>
+        </div>
+      </div>
+    </fieldset>
+
+    <!-- Sezione 2: Dati Medici -->
+    <fieldset>
+      <legend><i class="fas fa-first-aid"></i> Dati Sanitari</legend>
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="bloodType">Gruppo Sanguigno</label>
+          <select id="bloodType" name="bloodType" [(ngModel)]="model.bloodType">
+            <option [ngValue]="null" disabled>Seleziona...</option>
+            <option value="A+">A+</option> <option value="A-">A-</option>
+            <option value="B+">B+</option> <option value="B-">B-</option>
+            <option value="AB+">AB+</option> <option value="AB-">AB-</option>
+            <option value="0+">0+</option> <option value="0-">0-</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="allergies">Allergie Note</label>
+        <textarea id="allergies" name="allergies" [(ngModel)]="model.allergies" rows="3" placeholder="Es. Penicillina, polline, etc..."></textarea>
+      </div>
+      <div class="form-group">
+        <label for="conditions">Patologie Rilevanti</label>
+        <textarea id="conditions" name="conditions" [(ngModel)]="model.conditions" rows="3" placeholder="Es. Diabete, ipertensione, etc..."></textarea>
+      </div>
+      <div class="form-group">
+        <label for="notes">Note Aggiuntive per i Soccorritori</label>
+        <textarea id="notes" name="notes" [(ngModel)]="model.notes" rows="4" placeholder="Qualsiasi altra informazione che ritieni importante..."></textarea>
+      </div>
+    </fieldset>
+
+    <!-- Sezione 3: Contatti d'Emergenza -->
+    <fieldset>
+      <legend><i class="fas fa-address-book"></i> Contatti d'Emergenza</legend>
+      <div *ngFor="let contact of model.emergencyContacts; let i = index" class="contact-row">
+        <input type="text" name="contactName_{{i}}" [(ngModel)]="contact.name" placeholder="Nome">
+        <input type="text" name="contactRelation_{{i}}" [(ngModel)]="contact.relation" placeholder="Relazione (Es. Padre)">
+        <input type="tel" name="contactPhone_{{i}}" [(ngModel)]="contact.phone" placeholder="Telefono">
+        <button type="button" class="btn-remove-contact" (click)="removeContact(i)" title="Rimuovi contatto">
+          <i class="fas fa-trash"></i>
+        </button>
+      </div>
+      <button type="button" class="btn-add-contact" (click)="addContact()">
+        <i class="fas fa-plus"></i> Aggiungi Contatto
+      </button>
+    </fieldset>
+
+    <!-- Pulsante di Salvataggio -->
+    <div class="form-actions">
+      <button type="submit" class="btn-save" [disabled]="isSaving">
+        <span *ngIf="!isSaving">Salva le Modifiche</span>
+        <span *ngIf="isSaving">Salvataggio in corso...</span>
+      </button>
+    </div>
+
+  </form>
+</div>

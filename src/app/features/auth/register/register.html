@@ -1,14 +1,88 @@
 <div class="container">
+  
+  <!-- Tab di navigazione -->
   <div class="auth-tabs">
-    <button [class.active]="false" (click)="gotoLogin()">Login</button>
-    <button [class.active]="true" (click)="gotoRegister()">Registrati</button>
+    <a routerLink="/login" class="tab-link">Login</a>
+    <!-- Il pulsante Registrati è sempre attivo su questa pagina -->
+    <button class="active">Registrati</button>
   </div>
-  <h2>Registrati</h2>
-  <form (ngSubmit)="doRegister()">
-    <input [(ngModel)]="email" name="registerEmail" type="email" placeholder="Email" required />
-    <input [(ngModel)]="password" name="registerPassword" type="password" placeholder="Password" required />
-    <input [(ngModel)]="password2" name="registerPassword2" type="password" placeholder="Ripeti Password" required />
-    <button type="submit">Registrati</button>
-    <div *ngIf="errorMsg" class="text-danger mt-1">{{ errorMsg }}</div>
+
+  <h2>Crea un nuovo account</h2>
+  
+  <!-- Aggiungiamo #registerForm="ngForm" per avere un riferimento al form -->
+  <form #registerForm="ngForm" (ngSubmit)="doRegister()">
+
+    <!-- Email -->
+    <div class="form-group">
+      <label for="email">La tua Email</label>
+      <input 
+        id="email"
+        name="email" 
+        type="email" 
+        placeholder="indirizzo@email.com" 
+        required
+        email 
+        [(ngModel)]="email"
+        #emailInput="ngModel"
+        [class.is-invalid]="emailInput.invalid && emailInput.touched"
+      />
+      <!-- Messaggi di errore specifici per l'email -->
+      <div *ngIf="emailInput.invalid && emailInput.touched" class="error-feedback">
+        <span *ngIf="emailInput.errors?.['required']">L'email è obbligatoria.</span>
+        <span *ngIf="emailInput.errors?.['email']">Inserisci un indirizzo email valido.</span>
+      </div>
+    </div>
+
+    <!-- Password -->
+    <div class="form-group">
+      <label for="password">Crea una Password</label>
+      <input 
+        id="password"
+        name="password"
+        type="password" 
+        placeholder="Almeno 6 caratteri" 
+        required 
+        minlength="6"
+        [(ngModel)]="password"
+        #passwordInput="ngModel"
+        [class.is-invalid]="passwordInput.invalid && passwordInput.touched"
+      />
+      <!-- Messaggi di errore specifici per la password -->
+      <div *ngIf="passwordInput.invalid && passwordInput.touched" class="error-feedback">
+        <span *ngIf="passwordInput.errors?.['required']">La password è obbligatoria.</span>
+        <span *ngIf="passwordInput.errors?.['minlength']">La password deve contenere almeno 6 caratteri.</span>
+      </div>
+    </div>
+    
+    <!-- Ripeti Password -->
+    <div class="form-group">
+      <label for="password2">Ripeti la Password</label>
+      <input 
+        id="password2"
+        name="password2"
+        type="password" 
+        placeholder="Conferma la password" 
+        required 
+        [(ngModel)]="password2"
+        #password2Input="ngModel"
+        [class.is-invalid]="(password !== password2) && password2Input.touched"
+      />
+      <!-- Messaggio di errore specifico per la conferma password -->
+      <div *ngIf="(password !== password2) && password2Input.touched" class="error-feedback">
+        <span>Le password non coincidono.</span>
+      </div>
+    </div>
+
+    <!-- Pulsante di Invio -->
+    <button type="submit" class="btn-submit" [disabled]="registerForm.invalid || isRegistering || (password !== password2)">
+      <span *ngIf="!isRegistering">Registrati</span>
+      <span *ngIf="isRegistering">Registrazione in corso...</span>
+    </button>
+    
+    <!-- Messaggio di errore generale (es. per email già in uso) -->
+    <div *ngIf="errorMsg" class="error-general">
+      {{ errorMsg }}
+    </div>
+
   </form>
 </div>

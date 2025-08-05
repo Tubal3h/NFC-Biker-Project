@@ -1,69 +1,75 @@
-import { Component, Output, EventEmitter, inject } from '@angular/core';
+// in src/app/features/auth/register/register.ts
+
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ApiService } from '../../../core/services/api';
-import { User } from '../../../core/models';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { ApiService } from '@app/core/services/api';
+import { AuthService } from '@app/core/services/auth';
 
 @Component({
   selector: 'app-register',
-  imports: [CommonModule, FormsModule],
+  standalone: true,
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './register.html',
   styleUrl: './register.scss'
 })
-export class Register {
+export class Register implements OnInit {
 
   private api = inject(ApiService);
+  private authService = inject(AuthService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
-  @Output() registerSuccess = new EventEmitter<User>();
 
   email = '';
   password = '';
   password2 = '';
   errorMsg = '';
-  nfcId = '';
+  isRegistering = false;
+  
+  private nfcId: string | null = null;
 
-  constructor() {
-    // Inizializza eventuali dati dalla route
-    this.nfcId = this.route.snapshot.paramMap.get('nfcId') || '';
+  ngOnInit(): void {
+    this.nfcId = this.route.snapshot.paramMap.get('nfcId');
   }
 
-  gotoLogin() { this.router.navigate(['/login']); }
-  gotoRegister() {} // facoltativo, resta sulla stessa
+  doRegister(): void {
+    if (this.isRegistering) return;
 
-  doRegister() {
     this.errorMsg = '';
     if (!this.email || !this.password || !this.password2) {
-      this.errorMsg = 'Compila tutti i campi';
-      return;
-    }
-    if (!this.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
-      this.errorMsg = 'Email non valida';
-      return;
-    }
-    if (this.password.length < 6) {
-      this.errorMsg = 'Password troppo corta';
+      this.errorMsg = 'Compila tutti i campi.';
       return;
     }
     if (this.password !== this.password2) {
-      this.errorMsg = 'Le password non coincidono';
+      this.errorMsg = 'Le password non coincidono.';
       return;
     }
+    
+    this.isRegistering = true;
+
     this.api.register({ email: this.email, password: this.password }).subscribe({
-      next: res => {
-        if (res.success && res.data) {
-          this.registerSuccess.emit(res.data);
-          // Salva l'utente, se serve
-          localStorage.setItem('user', JSON.stringify(res.data));
-          // Redirect a /claim/:nfcId
-          this.router.navigate(['/claim', this.nfcId]);
+      next: (response) => {
+        if (response.success && response.data) {
+          // Passiamo 'response.data' direttamente al servizio.
+          // TypeScript sa già che è di tipo AuthUser grazie alla definizione nell'ApiService.
+          this.authService.login(response.data);
+          
+          if (this.nfcId) {
+            this.router.navigate(['/claim', this.nfcId]);
+          } else {
+            this.router.navigate(['/dashboard']);
+          }
+
         } else {
-          this.errorMsg = res.error || 'Errore di registrazione';
+          this.errorMsg = response.error || 'Errore durante la registrazione.';
         }
+        this.isRegistering = false;
       },
       error: (err) => {
-        this.errorMsg = err.error?.error || 'Errore di rete';
+        console.error("Errore durante la registrazione:", err);
+        this.errorMsg = err.error?.error || 'Errore di connessione con il server.';
+        this.isRegistering = false;
       }
     });
   }

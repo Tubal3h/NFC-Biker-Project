@@ -1,0 +1,123 @@
+// Variabili
+$form-bg: #ffffff;
+$form-border: #dcdfe6;
+$label-color: #606266;
+$input-focus-border: #D84040;
+$btn-save-bg: #8E1616;
+$btn-add-bg: #337ab7;
+$btn-remove-bg: #dc3545;
+
+.form-container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: $form-bg;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.form-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+  .back-link {
+    display: inline-block;
+    color: $label-color;
+    text-decoration: none;
+    margin-bottom: 1rem;
+    &:hover { color: $input-focus-border; }
+  }
+  h1 { font-size: 2.2rem; color: #1D1616; margin-bottom: 0.5rem; }
+  p { font-size: 1.1rem; color: #888; }
+}
+
+fieldset {
+  border: 1px solid $form-border;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  legend {
+    padding: 0 0.5rem;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: $input-focus-border;
+  }
+}
+
+.form-grid {
+  display: grid;
+  gap: 1.5rem;
+  @media (min-width: 768px) {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.form-group {
+  margin-bottom: 1.2rem;
+  label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: $label-color;
+  }
+  input, textarea, select {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    border: 1px solid $form-border;
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    &:focus {
+      outline: none;
+      border-color: $input-focus-border;
+      box-shadow: 0 0 0 2px lighten($input-focus-border, 30%);
+    }
+  }
+}
+
+.photo-placeholders {
+  display: flex;
+  gap: 1rem;
+  .placeholder-box {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 120px;
+    border: 2px dashed $form-border;
+    border-radius: 8px;
+    color: #aaa;
+    i { font-size: 2rem; margin-bottom: 0.5rem; }
+  }
+}
+
+.contact-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr auto;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.btn-add-contact, .btn-remove-contact, .btn-save {
+  border: none;
+  padding: 0.8rem 1.2rem;
+  border-radius: 6px;
+  color: white;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  &:hover { opacity: 0.85; }
+}
+
+.btn-add-contact { background-color: $btn-add-bg; }
+.btn-remove-contact { background-color: $btn-remove-bg; padding: 0.8rem; }
+.btn-save {
+  display: block;
+  width: 100%;
+  font-size: 1.2rem;
+  font-weight: 600;
+  background-color: $btn-save-bg;
+  &:disabled { background-color: lighten($btn-save-bg, 20%); cursor: not-allowed; }
+}
+
+.form-actions { margin-top: 2rem; }

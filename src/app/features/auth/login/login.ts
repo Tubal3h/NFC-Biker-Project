@@ -1,46 +1,65 @@
 import { Component, Output, EventEmitter, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ApiService } from '../../../core/services/api';
-import { User } from '../../../core/models';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router'; // Aggiungi RouterModule per routerLink
+import { ApiService } from '@app/core/services/api';
+import { AuthService } from '@app/core/services/auth'; // Importiamo anche AuthService
+import { AuthUser } from '@app/core/models'; // <-- MODIFICA 1: Importa AuthUser, non User
 
 @Component({
   selector: 'app-login',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './login.html',
   styleUrl: './login.scss'
 })
 export class Login {
-  @Output() loginSuccess = new EventEmitter<User>();
+  // NON CI SERVE PIÙ QUESTO OUTPUT. La gestione del login ora è centralizzata.
+  // @Output() loginSuccess = new EventEmitter<AuthUser>();
 
   email = '';
   password = '';
   errorMsg = '';
+  isLoggingIn = false; // Per disabilitare il pulsante durante la chiamata
 
+  // Iniezione dei servizi necessari
   private api = inject(ApiService);
-   private router = inject(Router);
+  private authService = inject(AuthService); // <-- Inietta il servizio di autenticazione
+  private router = inject(Router);
 
-  
-  gotoRegister() { this.router.navigate(['/register']); }
-  gotoLogin() {} // facoltativo, resta sulla stessa
-
+  /**
+   * Gestisce il tentativo di login dell'utente.
+   */
   doLogin() {
+    if (this.isLoggingIn) return; // Previene doppi click
+
     this.errorMsg = '';
     if (!this.email || !this.password) {
       this.errorMsg = 'Compila tutti i campi';
       return;
     }
+
+    this.isLoggingIn = true;
+
     this.api.login(this.email, this.password).subscribe({
-      next: res => {
-        if (res.success && res.data) {
-          this.loginSuccess.emit(res.data); // QUI EMETTI L'EVENTO!
+      next: (response) => {
+        if (response.success && response.data) {
+          // --- MODIFICA 2 (LOGICA CENTRALE) ---
+          // Se il login ha successo, non emettiamo più un evento.
+          // Chiamiamo direttamente l'AuthService per salvare lo stato dell'utente.
+          this.authService.login(response.data);
+          
+          // Dopo il login, reindirizziamo l'utente alla sua dashboard.
+          this.router.navigate(['/dashboard']);
+          
         } else {
-          this.errorMsg = res.error || 'Login fallito';
+          this.errorMsg = response.error || 'Credenziali non valide.';
         }
+        this.isLoggingIn = false;
       },
-      error: () => {
-        this.errorMsg = 'Errore di rete';
+      error: (err) => {
+        console.error("Errore durante il login:", err);
+        this.errorMsg = 'Errore di connessione con il server.';
+        this.isLoggingIn = false;
       }
     });
   }
