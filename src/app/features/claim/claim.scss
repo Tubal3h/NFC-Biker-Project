@@ -106,36 +106,78 @@ $color-border: #e1e4e8; // Bordo sottile
 .claim-form {
   max-width: 500px;
   margin: 2rem auto;
-  padding: 2rem;
-  background: $color-bg;
-  border-radius: 12px;
+  padding: 2.5rem; // Aumentato un po' il padding
+  background: white; // Usiamo bianco per coerenza con l'altra card
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
   text-align: center;
-  h3 { margin-top: 0; }
-  p { line-height: 1.6; color: $color1; }
-  b { color: $color2; }
-  button {
+
+  // ====================================================
+  // --- ECCO LA CORREZIONE ---
+  // Definiamo i colori per h3 e p
+  // ====================================================
+  h3 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: lighten($color1, 40%); // Grigio scuro, leggibile ma non troppo forte
+    margin-top: 0;
+    margin-bottom: 1rem;
+  }
+
+  p {
+    font-size: 1.2rem;
+    color: $color1; // Nero profondo per il testo principale
+    line-height: 1.6;
+    margin-bottom: 2rem;
+  }
+  
+  b {
+    color: $color2; // Rosso scuro per evidenziare l'email
+    font-size: 1.3rem;
+  }
+
+  // Stile del pulsante primario (Associa Casco)
+  button[type="button"] {
     background: linear-gradient(90deg, $color2 0%, $color3 100%);
     color: white;
     border: none;
-    padding: 0.8rem 1.5rem;
-    font-size: 1.1rem;
-    border-radius: 8px;
+    padding: 1rem 1.5rem;
+    font-size: 1.2rem;
+    border-radius: 10px;
     font-weight: 600;
     cursor: pointer;
-    margin-top: 1.5rem;
     width: 100%;
     transition: all 0.2s ease-in-out;
-    &:hover { transform: scale(1.02); }
+
+    &:hover {
+      transform: scale(1.02);
+      box-shadow: 0 7px 20px rgba($color3, 0.3);
+    }
   }
+
+  // Stile del pulsante secondario (Logout)
   .logout-btn {
     background: transparent;
     color: $color3;
-    border: 2px solid $color-border;
+    border: 2px solid darken($color4, 15%);
     margin-top: 1rem;
-    font-weight: 500;
-    &:hover { background: white; border-color: $color3; }
+    font-weight: 600;
+    font-size: 1.1rem;
+    padding: 0.8rem 1.5rem;
+
+    &:hover {
+      background: $color4;
+      border-color: $color3;
+    }
   }
-  .mt-2 { margin-top: 1rem; font-size: 1rem; font-weight: 500; }
+
+  // Stile per il messaggio di risultato/errore
+  .mt-2 {
+    margin-top: 1.5rem;
+    font-size: 1rem;
+    font-weight: 500;
+    color: $color2;
+  }
 }
 
 // 5. BOX INFORMATIVO (RIUTILIZZABILE)

@@ -34,7 +34,7 @@ export class ApiService {
     return this.http.get<ApiResponse<NfcTag[]>>(`${this.apiUrl}/user/${userId}/tags`);
   }
 
-  // --- Funzioni per i Dati Medici (ORA CORRETTE) ---
+  // --- Funzioni per i Dati Medici (ORA ALLINEATE AL TUO server.js) ---
 
   /**
    * Recupera i dati sanitari di un utente.
@@ -49,6 +49,12 @@ export class ApiService {
    * Chiama l'endpoint PUT /api/user/:userId/medical che hai creato.
    */
   updateMedicalData(userId: string, data: MedicalData): Observable<ApiResponse<MedicalData>> {
+    // Il tuo backend si aspetta un PUT e restituisce i dati medici aggiornati
     return this.http.put<ApiResponse<MedicalData>>(`${this.apiUrl}/user/${userId}/medical`, data);
   }
+
+  getUser(userId: string): Observable<ApiResponse<AuthUser>> {
+    return this.http.get<ApiResponse<AuthUser>>(`${this.apiUrl}/user/${userId}`);
+  }
 }
+

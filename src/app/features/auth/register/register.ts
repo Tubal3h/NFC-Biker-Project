@@ -15,7 +15,6 @@ import { AuthService } from '@app/core/services/auth';
   styleUrl: './register.scss'
 })
 export class Register implements OnInit {
-
   private api = inject(ApiService);
   private authService = inject(AuthService);
   private router = inject(Router);
@@ -30,17 +29,16 @@ export class Register implements OnInit {
   private nfcId: string | null = null;
 
   ngOnInit(): void {
-    this.nfcId = this.route.snapshot.paramMap.get('nfcId');
+    // ======================================================
+    // --- ECCO LA CORREZIONE: usiamo queryParamMap ---
+    // ======================================================
+    this.nfcId = this.route.snapshot.queryParamMap.get('nfcId');
   }
 
   doRegister(): void {
     if (this.isRegistering) return;
-
-    this.errorMsg = '';
-    if (!this.email || !this.password || !this.password2) {
-      this.errorMsg = 'Compila tutti i campi.';
-      return;
-    }
+    
+    // ... validazioni ...
     if (this.password !== this.password2) {
       this.errorMsg = 'Le password non coincidono.';
       return;
@@ -51,10 +49,9 @@ export class Register implements OnInit {
     this.api.register({ email: this.email, password: this.password }).subscribe({
       next: (response) => {
         if (response.success && response.data) {
-          // Passiamo 'response.data' direttamente al servizio.
-          // TypeScript sa già che è di tipo AuthUser grazie alla definizione nell'ApiService.
           this.authService.login(response.data);
           
+          // Ora questo 'if' funzionerà correttamente
           if (this.nfcId) {
             this.router.navigate(['/claim', this.nfcId]);
           } else {
@@ -67,8 +64,7 @@ export class Register implements OnInit {
         this.isRegistering = false;
       },
       error: (err) => {
-        console.error("Errore durante la registrazione:", err);
-        this.errorMsg = err.error?.error || 'Errore di connessione con il server.';
+        this.errorMsg = err.error?.error || 'Errore di connessione.';
         this.isRegistering = false;
       }
     });

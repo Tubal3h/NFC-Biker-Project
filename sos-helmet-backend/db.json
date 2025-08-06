@@ -3,70 +3,46 @@
     {
       "id": "1754406376462",
       "email": "test2@live.com",
-      "password": "Royalma2c.",
+      "password": "Royalma2c",
+      "name": "Mac",
+      "surname": "Rossi",
       "premium": false,
       "nfcTags": [
         "NFC-FA397D8EF2"
       ],
       "medicalData": {
         "bloodType": "B+",
-        "allergies": "Allergia 1, Allergia 2, Allergia 3",
-        "conditions": "Patologie 1, Patologie 2, Patologie 3",
-        "notes": "",
+        "allergies": "Allergia 1",
+        "conditions": "Patologie 1",
+        "notes": "Dati dal DB originale",
         "emergencyContacts": [
           {
             "name": "Mak",
-            "relation": "Fratello/Sorella",
+            "relation": "Genitore",
             "phone": "3213213214"
           },
           {
-            "name": "Mamma",
-            "relation": "Genitore",
-            "phone": "3213213213"
+            "name": "RRR",
+            "relation": "Figlio/a",
+            "phone": "3123213211"
           }
         ]
-      },
-      "name": "Mac",
-      "surname": "Rossi"
+      }
     },
     {
-      "id": "1754418931477",
+      "id": "1754505132761",
       "email": "123@123.rt",
       "password": "Royalma2c",
       "premium": false,
-      "nfcTags": [],
+      "nfcTags": [
+        "NFC-81DF71DEB4"
+      ],
       "medicalData": {
-        "bloodType": "A+",
+        "bloodType": "",
         "allergies": "",
         "conditions": "",
         "notes": "",
-        "emergencyContacts": [
-          {
-            "name": "",
-            "relation": "",
-            "phone": ""
-          },
-          {
-            "name": "",
-            "relation": "",
-            "phone": ""
-          },
-          {
-            "name": "",
-            "relation": "",
-            "phone": ""
-          },
-          {
-            "name": "",
-            "relation": "",
-            "phone": ""
-          },
-          {
-            "name": "",
-            "relation": "",
-            "phone": ""
-          }
-        ]
+        "emergencyContacts": []
       }
     }
   ],
@@ -76,12 +52,12 @@
       "userId": "1754406376462"
     },
     {
-      "id": "NFC-81DF71DEB4",
+      "id": "NFC-FA397D8EF3",
       "userId": null
     },
     {
-      "id": "NFC-4DA1EEA62A",
-      "userId": null
+      "id": "NFC-81DF71DEB4",
+      "userId": "1754505132761"
     }
   ]
 }

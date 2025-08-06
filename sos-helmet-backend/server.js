@@ -136,4 +136,21 @@ app.listen(PORT, () => {
   console.log(`S.O.S. Helmet backend attivo su http://localhost:${PORT}`);
 });
 
+// in backend/server.js
+// Aggiungi questa rotta, per esempio dopo quella di login
+
+// Ottieni i dati di un singolo utente (PROFILO PUBBLICO)
+app.get('/api/user/:userId', (req, res) => {
+  const db = readDB();
+  const user = db.users.find(u => u.id === req.params.userId);
+  
+  if (!user) {
+    return res.status(404).json({ success: false, error: 'Utente non trovato' });
+  }
+
+  // Per sicurezza, non restituiamo MAI la password
+  const { password, ...userWithoutPassword } = user;
+  res.json({ success: true, data: userWithoutPassword });
+});
+
 

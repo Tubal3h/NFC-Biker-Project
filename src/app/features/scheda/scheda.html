@@ -1,42 +1,84 @@
-<!-- Nuovo scheda.html -->
-<div class="scheda-wrapper">
-  <!-- STATO DI CARICAMENTO -->
-  <div *ngIf="!isLoaded" class="scheda-state">
+<!-- ====================================================== -->
+<!-- 1. POPUP DI PRIVACY (DA AGGIUNGERE ALL'INIZIO) -->
+<!-- ====================================================== -->
+<div *ngIf="showPrivacyPopup" class="privacy-popup-backdrop">
+  <div class="privacy-popup">
+    <h3><i class="fas fa-exclamation-triangle"></i> Accesso Riservato</h3>
+    <p>
+      Stai per visualizzare dati sanitari sensibili. L'accesso è consentito 
+      <b>esclusivamente in caso di emergenza sanitaria</b>.
+      Ogni accesso viene registrato.
+    </p>
+    <div class="info-box">
+      <b>IP rilevato:</b> {{ visitorIp || 'Rilevamento...' }}<br>
+      <b>Posizione:</b> {{ visitorLocation || 'Rilevamento...' }}
+    </div>
+    <div class="popup-actions">
+      <button (click)="acceptPrivacy()" class="btn-access">Accetto e Accedi</button>
+      <button (click)="cancelAndGoBack()" class="btn-cancel">Annulla</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ====================================================== -->
+<!-- 2. CONTENUTO DELLA SCHEDA -->
+<!-- (Logica di visualizzazione aggiornata) -->
+<!-- ====================================================== -->
+<div *ngIf="!showPrivacyPopup" class="scheda-container">
+
+  <!-- Indicatore di Caricamento (Usa `isLoading`) -->
+  <div *ngIf="isLoading" class="scheda-state">
     <div class="spinner"></div>
     Caricamento in corso...
   </div>
 
-  <!-- STATO DI ERRORE -->
-  <div *ngIf="isLoaded && errorMsg" class="scheda-state">
-    <div class="icon-error">!</div>
-    <div class="alert">{{ errorMsg }}</div>
-    <button *ngIf="errorMsg.includes('non compilata')" (click)="goToClaim()">
-      Login e Compila Scheda
+<div *ngIf="!isLoading && errorMsg" class="scheda-state">
+  <div class="icon-error">!</div>
+  <div class="alert">{{ errorMsg }}</div>
+  
+  <!-- Mostra i pulsanti solo se l'errore è "non compilata" -->
+  <div *ngIf="errorMsg.includes('non compilata')">
+
+    <!-- SCENARIO 1: L'utente è loggato ED è il proprietario -->
+    <button *ngIf="isLoggedIn && isOwner" class="btn-action" (click)="goToDashboard()">
+      Vai alla Dashboard per Compilare
     </button>
+
+    <!-- SCENARIO 2: L'utente NON è loggato -->
+    <button *ngIf="!isLoggedIn" class="btn-action" (click)="goToLogin()">
+      Fai il Login per Compilare
+    </button>
+    
+    <!-- SCENARIO 3: Utente loggato ma non proprietario -> Nessun pulsante (corretto) -->
   </div>
 
-  <!-- SCHEDA MEDICA VISIBILE -->
-  <div *ngIf="isLoaded && !errorMsg && medicalData" class="scheda-content">
-
-    <!-- ======================================================= -->
-    <!--  ECCO IL NUOVO DIV DI AVVISO (NON È UN POPUP)          -->
-    <!-- ======================================================= -->
+  <!-- Contenuto della Scheda Medica (Usa `!isLoading`) -->
+  <div *ngIf="!isLoading && !errorMsg && medicalData && user" class="scheda-wrapper">
+    
+    <!-- Banner di Avviso Fisso (Il tuo codice) -->
     <div class="warning-banner">
-      <div class="warning-icon">
-        <i class="fas fa-exclamation-triangle"></i>
-      </div>
+      <div class="warning-icon"><i class="fas fa-exclamation-triangle"></i></div>
       <div class="warning-text">
         <b>Accesso Riservato:</b> Stai visualizzando dati sanitari sensibili. L'utilizzo è consentito solo in caso di reale emergenza.
       </div>
     </div>
-    <!-- ======================================================= -->
 
     <div class="scheda-header">
       <i class="icon-header fas fa-id-card"></i>
       <h2>Scheda Sanitaria</h2>
     </div>
 
-    <!-- Gruppo Sanguigno (Importante) -->
+    <!-- NOME E COGNOME (DA AGGIUNGERE QUI) -->
+    <div class="info-item">
+      <div class="icon"><i class="fas fa-user"></i></div>
+      <div class="text">
+        <div class="label">Nome e Cognome</div>
+        <div class="value">{{ user.name }} {{ user.surname }}</div>
+      </div>
+    </div>
+    
+    <!-- Il resto della tua scheda (Gruppo Sanguigno, Allergie, etc.) rimane invariato -->
     <div class="info-item info-item--critical">
       <div class="icon"><i class="fas fa-tint"></i></div>
       <div class="text">
@@ -44,8 +86,7 @@
         <div class="value">{{ medicalData.bloodType || 'Non specificato' }}</div>
       </div>
     </div>
-
-    <!-- Allergie (Importante) -->
+    
     <div class="info-item info-item--critical">
       <div class="icon"><i class="fas fa-allergies"></i></div>
       <div class="text">
@@ -53,8 +94,7 @@
         <div class="value">{{ medicalData.allergies || 'Nessuna' }}</div>
       </div>
     </div>
-
-    <!-- Patologie -->
+    
     <div class="info-item">
       <div class="icon"><i class="fas fa-notes-medical"></i></div>
       <div class="text">
@@ -62,8 +102,7 @@
         <div class="value">{{ medicalData.conditions || 'Nessuna' }}</div>
       </div>
     </div>
-
-    <!-- Note -->
+    
     <div class="info-item">
       <div class="icon"><i class="fas fa-sticky-note"></i></div>
       <div class="text">
@@ -71,27 +110,22 @@
         <div class="value">{{ medicalData.notes || 'Nessuna' }}</div>
       </div>
     </div>
-
-    <!-- Contatti d'Emergenza -->
-  <!-- Contatti d'Emergenza (CORRETTO) -->
-  <div class="info-item" *ngIf="medicalData.emergencyContacts?.length">
-    <div class="icon"><i class="fas fa-address-book"></i></div>
-    <div class="text">
-      <div class="label">Contatti d'Emergenza</div>
-      <ul class="contacts-list">
-        <li *ngFor="let c of medicalData.emergencyContacts">
-          <b>{{ c.name }}</b> ({{ c.relation }})<br>
-          
-          <!-- ECCO LA MODIFICA -->
-          <a class="phone-link" [href]="'tel:' + c.phone">
-            <i class="fas fa-phone-alt"></i> <!-- Icona opzionale ma utile -->
-            {{ c.phone }}
-          </a>
-
-        </li>
-      </ul>
+    
+    <div class="info-item" *ngIf="medicalData.emergencyContacts?.length">
+      <div class="icon"><i class="fas fa-address-book"></i></div>
+      <div class="text">
+        <div class="label">Contatti d'Emergenza</div>
+        <ul class="contacts-list">
+          <li *ngFor="let c of medicalData.emergencyContacts">
+            <b>{{ c.name }}</b> ({{ c.relation }})<br>
+            <a class="phone-link" [href]="'tel:' + c.phone">
+              <i class="fas fa-phone-alt"></i>
+              {{ c.phone }}
+            </a>
+          </li>
+        </ul>
+      </div>
     </div>
-  </div>
 
   </div>
 </div>

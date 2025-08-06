@@ -1,1 +1,75 @@
-<p>account-settings works!</p>
+<div class="settings-container">
+  <div class="settings-header">
+    <a routerLink="/dashboard" class="back-link"><i class="fas fa-arrow-left"></i> Torna alla Dashboard</a>
+    <h1>Impostazioni Account</h1>
+    <p>Da qui puoi modificare i tuoi dati personali e le credenziali di accesso.</p>
+  </div>
+
+  <!-- Mostra un indicatore di caricamento se necessario -->
+  <div *ngIf="isLoading" class="loading-indicator">Caricamento...</div>
+
+  <!-- Mostra l'interfaccia solo quando il caricamento è completato -->
+  <div *ngIf="!isLoading">
+
+    <!-- Card 1: Dati Anagrafici -->
+    <form #profileForm="ngForm" (ngSubmit)="saveProfileDetails()">
+      <fieldset>
+        <legend><i class="fas fa-user-edit"></i> Dati Anagrafici</legend>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="name">Nome</label>
+            <input id="name" name="name" type="text" [(ngModel)]="profileModel.name" required>
+          </div>
+          <div class="form-group">
+            <label for="surname">Cognome</label>
+            <input id="surname" name="surname" type="text" [(ngModel)]="profileModel.surname" required>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="email">Indirizzo Email (non modificabile)</label>
+          <input id="email" name="email" type="email" [value]="profileModel.email" disabled>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn-save" [disabled]="profileForm.invalid || isSavingProfile">
+            <span *ngIf="!isSavingProfile">Salva Dati Anagrafici</span>
+            <span *ngIf="isSavingProfile">Salvataggio...</span>
+          </button>
+        </div>
+      </fieldset>
+    </form>
+
+    <!-- Card 2: Cambio Password -->
+    <form #passwordForm="ngForm" (ngSubmit)="changePassword(passwordForm)">
+    <fieldset>
+        <legend><i class="fas fa-key"></i> Sicurezza</legend>
+
+        <div class="form-group">
+        <label for="currentPassword">Password Attuale</label>
+        <input id="currentPassword" name="currentPassword" type="password" [(ngModel)]="passwordModel.currentPassword" required>
+        </div>
+        
+        <div class="form-grid">
+        <div class="form-group">
+            <label for="newPassword">Nuova Password</label>
+            <input id="newPassword" name="newPassword" type="password" [(ngModel)]="passwordModel.newPassword" required minlength="6">
+        </div>
+        <div class="form-group">
+            <label for="confirmPassword">Conferma Nuova Password</label>
+            <input id="confirmPassword" name="confirmPassword" type="password" [(ngModel)]="passwordModel.confirmPassword" required>
+        </div>
+        </div>
+        
+        <div class="form-actions">
+        <button type="submit" class="btn-save" [disabled]="passwordForm.invalid || isSavingPassword || (passwordModel.newPassword !== passwordModel.confirmPassword)">
+            <span *ngIf="!isSavingPassword">Cambia Password</span>
+            <span *ngIf="isSavingPassword">Aggiornamento...</span>
+        </button>
+        </div>
+    </fieldset>
+    </form>
+
+  </div>
+</div>

@@ -25,8 +25,8 @@
     <!-- La sezione per l'utente (login/logout) -->
     <div class="user-section">
       <div *ngIf="user$ | async as user; else showLoginButton" class="user-info">
-        <a [routerLink]="['/profile']" (click)="closeMenu()">{{ user.name || user.email }}</a>
-        <button (click)="logoutAndCloseMenu()">Logout</button>
+        <a [routerLink]="['/dashboard']" (click)="closeMenu()">{{ user.name || user.email }}</a>
+        <button [routerLink]="['/homepage']" (click)="logoutAndCloseMenu()">Logout</button>
       </div>
       <ng-template #showLoginButton>
         <a routerLink="/login" class="btn-login" (click)="closeMenu()">Log In</a>

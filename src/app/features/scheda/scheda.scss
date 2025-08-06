@@ -1,4 +1,9 @@
-// Nuovo scheda.scss
+// ======================================================
+// STILI DEFINITIVI PER LA SCHEDA MEDICA
+// ======================================================
+
+// 1. VARIABILI E IMPOSTAZIONI DI BASE
+// ------------------------------------------------------
 $color1: #1D1616;
 $color2: #8E1616;
 $color3: #D84040;
@@ -7,43 +12,62 @@ $color-bg: #f9f9f9;
 $color-border: #e0e0e0;
 $color-accent-light: lighten($color3, 35%);
 
-// Wrapper principale
+// Contenitore esterno (utile per lo sfondo della pagina)
+.scheda-container {
+  padding: 1rem; // Un po' di spazio su schermi piccoli
+}
+
+// Wrapper principale della card
 .scheda-wrapper {
   max-width: 450px;
   margin: 2rem auto;
   background: white;
   border-radius: 16px;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
-  overflow: hidden; // Nasconde angoli che potrebbero sporgere
+  box-shadow: 0 8px 30px rgba($color1, 0.1);
+  overflow: hidden;
 }
 
+// in src/app/features/scheda/scheda.scss
 
-// In scheda.scss, aggiungi questo nuovo blocco
+// ... metti questo dopo il blocco .scheda-wrapper ...
 
+// Stile per il banner di avviso fisso
 .warning-banner {
   display: flex;
   align-items: center;
   gap: 1rem;
-  background-color: lighten($color3, 38%); // Un rosso molto chiaro
-  color: darken($color2, 10%); // Testo rosso scuro
+  
+  // Usiamo i tuoi colori per un look coerente
+  background-color: lighten($color3, 38%); // Un rosso molto chiaro, quasi rosa
+  color: darken($color2, 10%); // Testo rosso scuro per un buon contrasto
+  
   border: 1px solid lighten($color3, 20%);
-  border-left: 5px solid $color3;
+  border-left: 5px solid $color3; // Bordo sinistro più marcato
+  
   padding: 1rem;
   border-radius: 8px;
-  margin-bottom: 1.5rem; // Spazio prima del titolo della scheda
+  // Lo posizioniamo dentro la card, prima dell'header
+  margin: 1rem 1rem 0 1rem;
 
   .warning-icon {
     font-size: 1.8rem;
-    color: $color3;
+    color: $color3; // Icona rossa
   }
 
   .warning-text {
     font-size: 0.95rem;
     line-height: 1.4;
+    text-align: left; // Assicura che il testo sia allineato a sinistra
+    
+    b {
+      color: $color2; // Titolo in grassetto ancora più scuro
+    }
   }
 }
 
-// Header
+// ... il resto del tuo codice (.scheda-header, .info-item, etc.) ...
+
+// Header colorato
 .scheda-header {
   background: linear-gradient(135deg, $color2, $color3);
   color: white;
@@ -52,17 +76,11 @@ $color-accent-light: lighten($color3, 35%);
   align-items: center;
   gap: 1rem;
   
-  .icon-header {
-    font-size: 1.8rem;
-  }
-
-  h2 {
-    margin: 0;
-    font-size: 1.5rem;
-    font-weight: 600;
-  }
+  .icon-header { font-size: 1.8rem; }
+  h2 { margin: 0; font-size: 1.5rem; font-weight: 600; }
 }
 
+// Contenuto interno della card
 .scheda-content {
   padding: 1rem;
 }
@@ -70,14 +88,11 @@ $color-accent-light: lighten($color3, 35%);
 // Stile per ogni blocco di informazione
 .info-item {
   display: flex;
-  align-items: flex-start; // Allinea all'inizio se il testo va a capo
+  align-items: flex-start;
   padding: 1rem 0.5rem;
   gap: 1rem;
   border-bottom: 1px solid $color-border;
-
-  &:last-child {
-    border-bottom: none;
-  }
+  &:last-child { border-bottom: none; }
 
   .icon {
     flex-shrink: 0;
@@ -104,11 +119,11 @@ $color-accent-light: lighten($color3, 35%);
     .value {
       font-size: 1.1rem;
       color: #333;
-      white-space: pre-wrap; // Mantiene gli a capo nel testo delle note
+      white-space: pre-wrap;
     }
   }
 
-  // Stile per info critiche (allergie, gruppo sanguigno)
+  // Stile per info critiche (gruppo sanguigno, allergie)
   &.info-item--critical {
     .icon {
       background-color: $color-accent-light;
@@ -122,7 +137,7 @@ $color-accent-light: lighten($color3, 35%);
   }
 }
 
-// Lista contatti
+// Stile per la lista dei contatti
 .contacts-list {
   list-style: none;
   padding: 0;
@@ -134,59 +149,84 @@ $color-accent-light: lighten($color3, 35%);
     border-radius: 8px;
     margin-top: 0.5rem;
     border-left: 4px solid $color2;
-    color: $color1; // <-- FIX 1: Forziamo il colore del testo a essere scuro
-
+    color: $color1;
     b { font-size: 1.1rem; }
-    
-    // Stile per il link del telefono
     .phone-link {
-      display: inline-flex; // Per allineare icona e testo
+      display: inline-flex;
       align-items: center;
-      gap: 0.5rem; // Spazio tra icona e numero
+      gap: 0.5rem;
       font-size: 1.1rem;
       font-weight: 600;
       color: #333;
-      text-decoration: none; // Rimuove la sottolineatura
+      text-decoration: none;
       cursor: pointer;
-      padding: 0.2rem 0; // Aumenta un po' l'area cliccabile
+      padding: 0.2rem 0;
       transition: color 0.2s ease-in-out;
-
-      &:hover {
-        color: $color2; // Diventa rosso al passaggio del mouse
-      }
+      &:hover { color: $color2; }
     }
   }
 }
 
-// Stili per gli stati (loading/error)
+// 2. STATI DI CARICAMENTO ED ERRORE
+// ------------------------------------------------------
+// 2. STATI DI CARICAMENTO ED ERRORE (MIGLIORATI)
+// ------------------------------------------------------
 .scheda-state {
-  padding: 3rem 1rem;
-  text-align: center;
-  font-size: 1.2rem;
-  color: #666;
+  // Lo stilizziamo come una card per coerenza
+  max-width: 500px;
+  margin: 4rem auto;
+  padding: 2.5rem;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 8px 30px rgba($color1, 0.1);
+  
+  // Usiamo flexbox per centrare e spaziare bene i contenuti
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
 
   .icon-error {
     background: $color3;
     color: white;
-    width: 50px;
-    height: 50px;
+    width: 60px;
+    height: 60px;
     border-radius: 50%;
     display: grid;
     place-items: center;
-    font-size: 2rem;
+    font-size: 2.5rem;
     font-weight: bold;
-    margin: 0 auto 1rem auto;
+    margin-bottom: 0.5rem;
   }
 
   .alert {
-    color: $color2;
-    font-weight: bold;
-    margin-bottom: 1rem;
+    color: $color1;
+    font-weight: 600;
+    font-size: 1.25rem;
+    line-height: 1.6;
   }
-  
 }
 
-// Spinner per il caricamento
+// Pulsante d'azione per gli errori (MIGLIORATO)
+.btn-action {
+  background: $color2;
+  color: white;
+  border: none;
+  padding: 0.8rem 2rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 1rem;
+  transition: background-color 0.2s, transform 0.2s;
+
+  &:hover {
+    background: $color3;
+    transform: translateY(-2px);
+  }
+}
+
+// Spinner animato per il caricamento
 .spinner {
   width: 40px;
   height: 40px;
@@ -196,7 +236,85 @@ $color-accent-light: lighten($color3, 35%);
   animation: spin 1s linear infinite;
   margin: 0 auto 1rem auto;
 }
-
 @keyframes spin {
   to { transform: rotate(360deg); }
+}
+
+// 3. STILI PER IL POPUP DELLA PRIVACY (AGGIUNTI)
+// ------------------------------------------------------
+.privacy-popup-backdrop {
+  position: fixed;
+  z-index: 1050;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba($color1, 0.6);
+  backdrop-filter: blur(5px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.privacy-popup {
+  background: white;
+  padding: 2rem;
+  border-radius: 16px;
+  max-width: 500px;
+  box-shadow: 0 10px 50px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  color: #333;
+  line-height: 1.6;
+
+  h3 {
+    color: $color2;
+    margin-top: 0;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+  }
+
+  .info-box {
+    background: $color4;
+    border: 1px solid $color-border;
+    border-radius: 8px;
+    padding: 0.75rem;
+    font-size: 0.9rem;
+    text-align: left;
+    margin: 1.5rem 0;
+  }
+}
+
+.popup-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+  @media (min-width: 768px) {
+    flex-direction: row;
+    justify-content: center;
+  }
+}
+
+.btn-access, .btn-cancel {
+  border: none;
+  padding: 0.8rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-access {
+  background: $color2;
+  color: white;
+  &:hover { background: $color1; }
+}
+
+.btn-cancel {
+  background: $color4;
+  color: $color1;
+  &:hover { background: darken($color4, 10%); }
 }
