@@ -2,13 +2,15 @@
 
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { environment } from 'src/environments/environment';
 import { Observable } from 'rxjs';
 import { AuthUser, NfcTag, MedicalData, ApiResponse } from '@app/core/models';
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
   // L'URL base ora punta alla radice delle tue API definite in server.js
-  private apiUrl = 'http://localhost:3000/api';
+  // private apiUrl = 'http://localhost:3000/api';
+  private apiUrl = environment.apiUrl; // Usa l'URL definito nell'ambiente
 
   constructor(private http: HttpClient) {}
 
