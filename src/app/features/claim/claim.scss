@@ -5,12 +5,8 @@
 
 // 1. VARIABILI E IMPOSTAZIONI GLOBALI
 // ------------------------------------------------------
-$color1: #1D1616; // Nero profondo
-$color2: #8E1616; // Rosso scuro
-$color3: #D84040; // Rosso vibrante
-$color4: #EEEEEE; // Grigio chiaro
-$color-bg: #f8f9fa; // Sfondo neutro
-$color-border: #e1e4e8; // Bordo sottile
+@use 'styles/variables' as var;
+
 
 // Contenitore principale della pagina
 .claim-container {
@@ -29,9 +25,9 @@ $color-border: #e1e4e8; // Bordo sottile
   color: #6c757d;
 }
 .text-danger {
-  background-color: lighten($color3, 35%);
-  color: $color2;
-  border: 1px solid lighten($color3, 20%);
+  background-color: lighten(var.$color3, 35%);
+  color: var.$color2;
+  border: 1px solid lighten(var.$color3, 20%);
   border-radius: 12px;
   max-width: 600px;
   margin: 2rem auto;
@@ -54,14 +50,14 @@ $color-border: #e1e4e8; // Bordo sottile
   // all'interno del container bianco.
   // ====================================================
   h2 {
-    color: $color1; // DEVE essere nero profondo
+    color: var.$color1; // DEVE essere nero profondo
     font-weight: 700;
     font-size: 2rem;
     margin-bottom: 0.5rem;
   }
 
   .subtitle {
-    color: lighten($color1, 40%); // Un grigio scuro, non bianco
+    color: lighten(var.$color1, 40%); // Un grigio scuro, non bianco
     font-size: 1.1rem;
     line-height: 1.6;
     margin-bottom: 2.5rem;
@@ -70,7 +66,7 @@ $color-border: #e1e4e8; // Bordo sottile
       display: block;
       margin-top: 0.5rem;
       font-size: 0.95rem;
-      color: lighten($color1, 50%); // Un grigio ancora più chiaro ma leggibile
+      color: lighten(var.$color1, 50%); // Un grigio ancora più chiaro ma leggibile
     }
   }
 
@@ -81,7 +77,7 @@ $color-border: #e1e4e8; // Bordo sottile
     margin-bottom: 2.5rem;
 
     a.auth-button {
-      background: linear-gradient(135deg, $color2, $color3);
+      background: linear-gradient(135deg, var.$color2, var.$color3);
       color: white;
       text-decoration: none;
       border: none;
@@ -91,11 +87,11 @@ $color-border: #e1e4e8; // Bordo sottile
       border-radius: 10px;
       cursor: pointer;
       transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
-      box-shadow: 0 4px 15px rgba($color3, 0.2);
+      box-shadow: 0 4px 15px rgba(var.$color3, 0.2);
 
       &:hover {
         transform: translateY(-3px);
-        box-shadow: 0 7px 20px rgba($color3, 0.3);
+        box-shadow: 0 7px 20px rgba(var.$color3, 0.3);
       }
     }
   }
@@ -119,26 +115,26 @@ $color-border: #e1e4e8; // Bordo sottile
   h3 {
     font-size: 2rem;
     font-weight: 700;
-    color: lighten($color1, 40%); // Grigio scuro, leggibile ma non troppo forte
+    color: lighten(var.$color1, 40%); // Grigio scuro, leggibile ma non troppo forte
     margin-top: 0;
     margin-bottom: 1rem;
   }
 
   p {
     font-size: 1.2rem;
-    color: $color1; // Nero profondo per il testo principale
+    color: var.$color1; // Nero profondo per il testo principale
     line-height: 1.6;
     margin-bottom: 2rem;
   }
   
   b {
-    color: $color2; // Rosso scuro per evidenziare l'email
+    color: var.$color2; // Rosso scuro per evidenziare l'email
     font-size: 1.3rem;
   }
 
   // Stile del pulsante primario (Associa Casco)
   button[type="button"] {
-    background: linear-gradient(90deg, $color2 0%, $color3 100%);
+    background: linear-gradient(90deg, var.$color2 0%, var.$color3 100%);
     color: white;
     border: none;
     padding: 1rem 1.5rem;
@@ -151,23 +147,23 @@ $color-border: #e1e4e8; // Bordo sottile
 
     &:hover {
       transform: scale(1.02);
-      box-shadow: 0 7px 20px rgba($color3, 0.3);
+      box-shadow: 0 7px 20px rgba(var.$color3, 0.3);
     }
   }
 
   // Stile del pulsante secondario (Logout)
   .logout-btn {
     background: transparent;
-    color: $color3;
-    border: 2px solid darken($color4, 15%);
+    color: var.$color3;
+    border: 2px solid darken(var.$color4, 15%);
     margin-top: 1rem;
     font-weight: 600;
     font-size: 1.1rem;
     padding: 0.8rem 1.5rem;
 
     &:hover {
-      background: $color4;
-      border-color: $color3;
+      background: var.$color4;
+      border-color: var.$color3;
     }
   }
 
@@ -176,15 +172,15 @@ $color-border: #e1e4e8; // Bordo sottile
     margin-top: 1.5rem;
     font-size: 1rem;
     font-weight: 500;
-    color: $color2;
+    color: var.$color2;
   }
 }
 
 // 5. BOX INFORMATIVO (RIUTILIZZABILE)
 // ... (questa parte è corretta) ...
 .info-box {
-  background-color: $color-bg;
-  border: 1px solid $color-border;
+  background-color: var.$color-bg;
+  border: 1px solid var.$color-border;
   border-radius: 12px;
   padding: 1.5rem;
   text-align: left;
@@ -192,7 +188,7 @@ $color-border: #e1e4e8; // Bordo sottile
   font-size: 0.95rem;
 
   b {
-    color: $color2;
+    color: var.$color2;
     font-size: 1.1rem;
     font-weight: 700;
     display: block;
@@ -206,13 +202,13 @@ $color-border: #e1e4e8; // Bordo sottile
       display: flex;
       align-items: flex-start;
       gap: 0.75rem;
-      color: $color1; // Assicuriamoci che anche questo testo sia scuro
+      color: var.$color1; // Assicuriamoci che anche questo testo sia scuro
       line-height: 1.5;
       &::before {
         content: '✓';
         font-weight: bold;
         color: white;
-        background-color: $color3;
+        background-color: var.$color3;
         border-radius: 50%;
         width: 22px;
         height: 22px;

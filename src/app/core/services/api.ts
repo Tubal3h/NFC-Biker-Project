@@ -38,7 +38,10 @@ export class ApiService {
     return this.http.get<ApiResponse<NfcTag>>(`${this.apiUrl}/tag/${nfcId}`);
   }
 
-  getUserTags(userId: string): Observable<ApiResponse<NfcTag[]>> {
+/**
+ * Recupera la lista di tutti i tag NFC (come oggetti completi) associati a un utente.
+ */
+  getUserTags(userId: string): Observable<ApiResponse<NfcTag[]>> { // <-- Il tipo di ritorno è già corretto!
     return this.http.get<ApiResponse<NfcTag[]>>(`${this.apiUrl}/user/${userId}/tags`);
   }
 
@@ -75,5 +78,9 @@ export class ApiService {
   upgradeToPremium(userId: string): Observable<ApiResponse<AuthUser>> {
     return this.http.post<ApiResponse<AuthUser>>(`${this.apiUrl}/upgrade`, { userId });
   }
+
+  dissociateTag(nfcId: string): Observable<ApiResponse<void>> {
+  return this.http.delete<ApiResponse<void>>(`${this.apiUrl}/tags/${nfcId}/dissociate`);
+}
 }
 

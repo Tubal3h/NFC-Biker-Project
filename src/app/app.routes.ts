@@ -17,6 +17,7 @@ import { AUTH_ROUTES } from '@app/features/auth/auth.routes';
 import { Dashboard } from '@app/features/dashboard/dashboard';
 import { MedicalForm } from '@app/features/medical-form/medical-form';
 import { AccountSettings } from '@app/features/account-settings/account-settings';
+import { TagManagement } from './features/tag-management/tag-management';
 
 
 export const routes: Routes = [
@@ -35,6 +36,7 @@ export const routes: Routes = [
   { path: 'dashboard', component: Dashboard, canActivate: [authGuard] },
   { path: 'medical-form', component: MedicalForm, canActivate: [authGuard] },
   { path: 'account-settings', component: AccountSettings, canActivate: [authGuard] },
+  { path: 'tag-management', component: TagManagement, canActivate: [authGuard] }, 
 
   // --- REDIRECTS & FALLBACK ---
   { path: '', redirectTo: 'homepage', pathMatch: 'full' },

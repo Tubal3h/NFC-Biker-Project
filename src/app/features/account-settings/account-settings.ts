@@ -6,6 +6,7 @@ import { FormsModule, NgForm } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { ApiService } from '@app/core/services/api';
 import { AuthService } from '@app/core/services/auth';
+import { NotificationService } from '@app/core/services/notification';
 import { AuthUser } from '@app/core/models';
 import { take } from 'rxjs';
 
@@ -17,6 +18,7 @@ import { take } from 'rxjs';
   styleUrl: './account-settings.scss'
 })
 export class AccountSettings implements OnInit {
+  private notification = inject(NotificationService)
   private api = inject(ApiService);
   auth = inject(AuthService);
 
@@ -97,52 +99,44 @@ export class AccountSettings implements OnInit {
     });
   }
 
-  /**
-   * Gestisce il tentativo di cambio password (attualmente simulato).
-   */
-// in src/app/features/account-settings/account-settings.ts
-
-changePassword(passwordForm: NgForm): void {
-  // Controlli preliminari nel frontend
-  if (this.passwordModel.newPassword !== this.passwordModel.confirmPassword) {
-    // Qui dovresti mostrare un errore all'utente, per ora usiamo un alert
-    alert("Errore: Le nuove password non coincidono.");
-    return;
-  }
-  if (this.passwordModel.newPassword.length < 6) {
-    alert("Errore: La nuova password deve essere di almeno 6 caratteri.");
-    return;
-  }
-
-  this.isSavingPassword = true;
-  const currentUser = this.auth.user;
-  if (!currentUser) return;
-
-  // Prepariamo i dati da inviare
-  const dataToSend = {
-    currentPassword: this.passwordModel.currentPassword,
-    newPassword: this.passwordModel.newPassword
-  };
-
-  // Chiamiamo la nostra nuova funzione API
-  this.api.changePassword(currentUser.id, dataToSend).subscribe({
-    next: (response) => {
-      if (response.success) {
-        alert('Password aggiornata con successo!');
-        passwordForm.resetForm(); // Svuota i campi dopo il successo
-      } else {
-        // Mostra l'errore specifico inviato dal backend (es. "Password attuale non corretta")
-        alert(`Errore: ${response.error}`);
-      }
-      this.isSavingPassword = false;
-    },
-    error: (err) => {
-      // Mostra l'errore specifico inviato dal backend (es. per password errata)
-      alert(`Errore: ${err.error?.error || 'Errore di connessione.'}`);
-      this.isSavingPassword = false;
+  changePassword(passwordForm: NgForm): void {
+    if (this.passwordModel.newPassword !== this.passwordModel.confirmPassword) {
+      // 3. Sostituisci alert() con una notifica di errore
+      this.notification.showError('Le nuove password non coincidono.');
+      return;
     }
-  });
-}
+    if (this.passwordModel.newPassword.length < 6) {
+      this.notification.showError('La nuova password deve essere di almeno 6 caratteri.');
+      return;
+    }
+
+    this.isSavingPassword = true;
+    const currentUser = this.auth.user;
+    if (!currentUser) { this.isSavingPassword = false; return; }
+
+    const dataToSend = {
+      currentPassword: this.passwordModel.currentPassword,
+      newPassword: this.passwordModel.newPassword
+    };
+
+    this.api.changePassword(currentUser.id, dataToSend).subscribe({
+      next: (response) => {
+        if (response.success) {
+          // 4. Sostituisci alert() con una notifica di successo
+          this.notification.showSuccess('Password aggiornata con successo!');
+          passwordForm.resetForm();
+        } else {
+          this.notification.showError(response.error || 'Si è verificato un errore.');
+        }
+        this.isSavingPassword = false;
+      },
+      error: (err) => {
+        // 5. Sostituisci alert() con una notifica di errore
+        this.notification.showError(err.error?.error || 'Errore di connessione con il server.');
+        this.isSavingPassword = false;
+      }
+    });
+  } 
 
   upgradeToPremium(): void {
     const userId = this.auth.user?.id;

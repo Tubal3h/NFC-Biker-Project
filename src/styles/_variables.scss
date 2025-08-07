@@ -1,0 +1,22 @@
+// in src/styles/_variables.scss
+
+// ======================================================
+// Palette di Colori Principale
+// ======================================================
+$color1: #1D1616; // Nero profondo
+$color2: #8E1616; // Rosso scuro
+$color3: #D84040; // Rosso vibrante
+$color4: #EEEEEE; // Grigio chiaro
+
+// ======================================================
+// Colori di Sistema (derivati dalla palette)
+// ======================================================
+$color-bg: #f8f9fa;       // Sfondo neutro per le card
+$color-border: #e1e4e8;   // Bordo sottile e neutro
+
+// Colori per feedback all'utente
+$color-success: #28a745;
+$color-info: #17a2b8;
+$color-warning-bg: #fff3cd;
+$color-warning-text: #664d03;
+$color-warning-border: #ffc107;

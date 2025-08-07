@@ -1,0 +1,64 @@
+<div class="management-container">
+  <div class="page-header">
+    <a routerLink="/dashboard" class="back-link"><i class="fas fa-arrow-left"></i> Torna alla Dashboard</a>
+    <h1>Gestione Caschi</h1>
+    <p>Visualizza e gestisci tutti i tuoi dispositivi NFC associati al tuo account.</p>
+  </div>
+
+  <!-- STATO DI CARICAMENTO -->
+  @if (isLoading) {
+    <div class="state-container">
+      <div class="spinner"></div>
+      <p>Caricamento dei tuoi dispositivi...</p>
+    </div>
+  }
+
+  <!-- STATO DI ERRORE -->
+  @if (!isLoading && errorMsg) {
+    <div class="state-container">
+      <div class="icon-error">!</div>
+      <p class="alert">{{ errorMsg }}</p>
+    </div>
+  }
+
+  <!-- STATO PRINCIPALE (CARICAMENTO COMPLETATO) -->
+  @if (!isLoading && !errorMsg) {
+    
+    <!-- SOTTO-STATO: NESSUN TAG TROVATO -->
+    @if (tags.length === 0) {
+      <div class="state-container empty-state">
+        <h3>Nessun Casco Associato</h3>
+        <p>Non hai ancora collegato nessun dispositivo NFC al tuo account. <br> Per iniziare, scansiona un nuovo adesivo S.O.S. Helmet.</p>
+      </div>
+    } @else {
+      <!-- SOTTO-STATO: LISTA DEI TAG -->
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>ID Dispositivo NFC</th>
+              <th>Data di Associazione</th>
+              <th>Azioni</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (tag of tags; track tag.id) {
+              <tr>
+                <td class="nfc-id">{{ tag.nfcId }}</td>
+                <td>{{ tag.createdAt | date:'dd/MM/yyyy' }}</td>
+                <td class="actions">
+                  <button (click)="renameTag(tag)" class="btn-rename" title="Rinomina (Coming Soon)">
+                    <i class="fas fa-pencil-alt"></i>
+                  </button>
+                  <button (click)="dissociateTag(tag)" class="btn-dissociate" title="Dissocia Casco">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  }
+</div>

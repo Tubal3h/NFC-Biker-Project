@@ -57,6 +57,10 @@ ul {
   list-style: none;
 }
 
-// app-homepage {
-//   overflow: hidden;
-// }
+// Selettore per il toast in alto al centro
+.toast-bottom-center {
+  bottom: 12px;
+  margin: 0 auto;
+  left: 50%;
+  transform: translateX(-50%);
+}

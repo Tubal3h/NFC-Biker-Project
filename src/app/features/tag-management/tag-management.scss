@@ -1,0 +1,86 @@
+// in src/app/features/tag-management/tag-management.scss
+
+// 1. Importiamo i nostri strumenti condivisi
+@use 'styles/variables' as var;
+@use 'styles/mixins';
+
+// 3. Applichiamo gli stili
+.management-container {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 1rem;
+
+  // ====================================================
+  // --- ECCO LA CORREZIONE ---
+  // Applichiamo i mixin direttamente alle classi usate nell'HTML
+  // ====================================================
+  .page-header {
+    @include mixins.page-header;
+  }
+  .state-container {
+    @include mixins.page-state-container;
+  }
+}
+
+// Stile specifico per la tabella
+.table-container {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  overflow-x: auto;
+  margin-top: 2rem;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  th, td {
+    padding: 1rem 1.25rem;
+    text-align: left;
+    border-bottom: 1px solid var.$color-border;
+  }
+  thead {
+    background-color: var.$color-bg;
+    th {
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      color: #6c757d;
+    }
+  }
+  tbody {
+    tr:last-child {
+      td { border-bottom: none; }
+    }
+    .nfc-id {
+      font-family: monospace;
+      font-weight: 600;
+      color: var.$color1;
+    }
+  }
+}
+
+// Stile per i pulsanti di azione
+.actions {
+  display: flex;
+  gap: 0.75rem;
+  
+  button {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 1.1rem;
+    padding: 0.5rem;
+    border-radius: 6px;
+    transition: background-color 0.2s, color 0.2s;
+
+    &.btn-rename {
+      color: #337ab7;
+      &:hover { background-color: lighten(#337ab7, 40%); }
+    }
+    &.btn-dissociate {
+      color: var.$color3;
+      &:hover { background-color: lighten(var.$color3, 35%); }
+    }
+  }
+}

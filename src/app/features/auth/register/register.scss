@@ -3,10 +3,7 @@
 // ======================================================
 
 // La tua palette
-$color1: #1D1616; // Nero profondo per testi
-$color2: #8E1616; // Rosso scuro per pulsanti primari
-$color3: #D84040; // Rosso vibrante per accenti e hover
-$color4: #EEEEEE; // Grigio chiaro per sfondi e testi chiari
+@use 'styles/variables' as var;
 
 // Contenitore principale
 .container {
@@ -15,7 +12,7 @@ $color4: #EEEEEE; // Grigio chiaro per sfondi e testi chiari
   padding: 2.5rem;
   background: white;
   border-radius: 16px;
-  box-shadow: 0 8px 30px rgba($color1, 0.1);
+  box-shadow: 0 8px 30px rgba(var.$color1, 0.1);
 }
 
 // Tab di navigazione
@@ -23,7 +20,7 @@ $color4: #EEEEEE; // Grigio chiaro per sfondi e testi chiari
   display: flex;
   justify-content: center;
   margin-bottom: 1.5rem;
-  background-color: $color4;
+  background-color: var.$color4;
   border-radius: 12px;
   padding: 0.5rem;
 
@@ -34,7 +31,7 @@ $color4: #EEEEEE; // Grigio chiaro per sfondi e testi chiari
     background: transparent;
     font-size: 1.1rem;
     font-weight: 600;
-    color: lighten($color1, 40%);
+    color: lighten(var.$color1, 40%);
     cursor: pointer;
     border-radius: 8px;
     text-decoration: none;
@@ -42,9 +39,9 @@ $color4: #EEEEEE; // Grigio chiaro per sfondi e testi chiari
     transition: all 0.2s ease-in-out;
 
     &.active {
-      background-color: $color3;
+      background-color: var.$color3;
       color: white;
-      box-shadow: 0 4px 10px rgba($color3, 0.3);
+      box-shadow: 0 4px 10px rgba(var.$color3, 0.3);
     }
   }
 }
@@ -52,7 +49,7 @@ $color4: #EEEEEE; // Grigio chiaro per sfondi e testi chiari
 h2 {
   text-align: center;
   margin-bottom: 2rem;
-  color: $color1;
+  color: var.$color1;
 }
 
 // Stile per ogni gruppo di form
@@ -62,37 +59,37 @@ h2 {
     display: block;
     font-weight: 600;
     margin-bottom: 0.5rem;
-    color: $color1;
+    color: var.$color1;
   }
   input {
     width: 100%;
     padding: 0.8rem 1rem;
-    border: 1px solid darken($color4, 15%);
+    border: 1px solid darken(var.$color4, 15%);
     border-radius: 8px;
     font-size: 1rem;
-    background-color: lighten($color4, 2%);
+    background-color: lighten(var.$color4, 2%);
     transition: border-color 0.2s, box-shadow 0.2s;
     &:focus {
       outline: none;
-      border-color: $color3;
+      border-color: var.$color3;
     }
     // Stile per evidenziare l'errore
     &.is-invalid {
-      border-color: $color2;
+      border-color: var.$color2;
     }
   }
 }
 
 // Messaggi di errore
 .error-feedback {
-  color: $color2;
+  color: var.$color2;
   font-size: 0.875rem;
   margin-top: 0.25rem;
 }
 
 .error-general {
-  background-color: lighten($color3, 35%);
-  color: $color2;
+  background-color: lighten(var.$color3, 35%);
+  color: var.$color2;
   border-radius: 8px;
   padding: 1rem;
   text-align: center;
@@ -104,8 +101,8 @@ h2 {
 .btn-submit {
   width: 100%;
   padding: 1rem;
-  background-color: $color2;
-  color: $color4;
+  background-color: var.$color2;
+  color: var.$color4;
   border: none;
   border-radius: 8px;
   font-size: 1.2rem;
@@ -115,10 +112,10 @@ h2 {
   margin-top: 0.5rem; // Aggiunto un po' di spazio sopra
 
   &:hover:not(:disabled) {
-    background-color: $color3;
+    background-color: var.$color3;
   }
   &:disabled {
-    background-color: lighten($color2, 20%);
+    background-color: lighten(var.$color2, 20%);
     cursor: not-allowed;
   }
 }
