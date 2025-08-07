@@ -7,6 +7,7 @@ import { Router, RouterModule } from '@angular/router';
 import { ApiService } from '@app/core/services/api';
 import { AuthService } from '@app/core/services/auth';
 import { MedicalData, AuthUser } from '@app/core/models';
+import { filter, switchMap, take } from 'rxjs'; // <-- Importa gli operatori RxJS
 
 @Component({
   selector: 'app-medical-form',
@@ -39,29 +40,66 @@ export class MedicalForm implements OnInit {
     this.loadData();
   }
 
-  // ================================================================
-  // --- FUNZIONE loadData() COMPLETA E CORRETTA ---
-  // ================================================================
+  /**
+   * Carica i dati in modo reattivo, aspettando che l'utente sia disponibile.
+   */
   loadData(): void {
-    const currentUser: AuthUser | null = this.auth.user;
-    if (!currentUser) {
-      this.isLoading = false;
-      this.router.navigate(['/login']);
-      return;
-    }
-
     this.isLoading = true;
-    this.api.getMedicalData(currentUser.id).subscribe({
+    
+    this.auth.user$.pipe(
+      // Aspetta finché l'utente non è più null
+      filter((user): user is AuthUser => user !== null),
+      // Prendi solo il primo utente valido per evitare chiamate multiple
+      take(1),
+      // Passa alla chiamata API usando l'ID dell'utente che abbiamo ricevuto
+      switchMap(currentUser => this.api.getMedicalData(currentUser.id))
+    ).subscribe({
       next: (response) => {
         if (response.success && response.data) {
           this.model = response.data;
         }
-        this.isLoading = false; // <-- Ecco dove si sblocca il caricamento!
+        this.isLoading = false;
       },
       error: (err) => {
-        console.error("Errore durante il caricamento dei dati:", err);
-        this.isLoading = false; // <-- E anche qui in caso di errore!
+        console.error("Errore definitivo durante il caricamento dei dati:", err);
+        this.isLoading = false;
       }
+    });
+  }
+
+  /**
+   * Salva i dati in modo reattivo, assicurandosi di avere l'utente prima di salvare.
+   */
+  saveMedicalData(): void {
+    this.isSaving = true;
+
+    // Usiamo lo stesso pattern reattivo per la massima sicurezza
+    this.auth.user$.pipe(take(1)).subscribe(currentUser => {
+      if (!currentUser) {
+        console.error("Impossibile salvare: utente non loggato.");
+        this.isSaving = false;
+        return;
+      }
+
+      // Filtra i contatti vuoti prima di salvare
+      this.model.emergencyContacts = this.model.emergencyContacts.filter(
+        contact => contact.name && contact.phone
+      );
+
+      this.api.updateMedicalData(currentUser.id, this.model).subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.router.navigate(['/dashboard']);
+          } else {
+            console.error('Salvataggio fallito (API):', response.error);
+          }
+          this.isSaving = false;
+        },
+        error: (err) => {
+          console.error('Errore di rete durante il salvataggio:', err);
+          this.isSaving = false;
+        }
+      });
     });
   }
   
@@ -74,34 +112,5 @@ export class MedicalForm implements OnInit {
 
   removeContact(index: number): void {
     this.model.emergencyContacts.splice(index, 1);
-  }
-
-  // ================================================================
-  // --- FUNZIONE saveMedicalData() COMPLETA E CORRETTA ---
-  // ================================================================
-  saveMedicalData(): void {
-    const currentUser = this.auth.user;
-    if (!currentUser) return;
-    
-    this.isSaving = true;
-    
-    this.model.emergencyContacts = this.model.emergencyContacts.filter(
-      contact => contact.name && contact.phone
-    );
-
-    this.api.updateMedicalData(currentUser.id, this.model).subscribe({
-      next: (response) => {
-        if (response.success) {
-          this.router.navigate(['/dashboard']);
-        } else {
-          console.error('Salvataggio fallito (API):', response.error);
-        }
-        this.isSaving = false;
-      },
-      error: (err) => {
-        console.error('Errore di rete durante il salvataggio:', err);
-        this.isSaving = false;
-      }
-    });
   }
 }

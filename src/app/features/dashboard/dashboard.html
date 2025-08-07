@@ -2,6 +2,10 @@
   
   <!-- Messaggio di Benvenuto Personalizzato -->
   <div class="welcome-header" *ngIf="user$ | async as user">
+      <!-- NUOVO: Badge per lo stato dell'account -->
+    <div class="account-status-badge" [class.is-premium]="user.premium">
+      {{ user.premium ? 'Account Premium' : 'Account Gratuito' }}
+    </div>
     <h1>Ciao, {{ user.name || user.email }}!</h1>
     <p>Benvenuto nella tua area riservata. Da qui puoi gestire il tuo profilo e i tuoi dispositivi.</p>
   </div>

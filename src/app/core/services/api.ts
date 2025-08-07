@@ -21,6 +21,14 @@ export class ApiService {
     return this.http.post<ApiResponse<AuthUser>>(`${this.apiUrl}/login`, { email, password });
   }
 
+  /* -------------------------------------------------------------------------- */
+  /*                               CAMBIO PASSWORD                              */
+  /* -------------------------------------------------------------------------- */
+
+  changePassword(userId: string, passwordData: any): Observable<ApiResponse<void>> {
+    return this.http.post<ApiResponse<void>>(`${this.apiUrl}/user/${userId}/change-password`, passwordData);
+  }
+
   // --- Funzioni per i Tag NFC ---
   claimNfc(nfcId: string, userId: string): Observable<ApiResponse<void>> {
     return this.http.post<ApiResponse<void>>(`${this.apiUrl}/claim`, { nfcId, userId });
@@ -53,8 +61,19 @@ export class ApiService {
     return this.http.put<ApiResponse<MedicalData>>(`${this.apiUrl}/user/${userId}/medical`, data);
   }
 
+  /**
+   * Aggiorna i dati anagrafici (nome/cognome) di un utente.
+   */
+  updateUserProfile(userId: string, profileData: { name: string; surname: string }): Observable<ApiResponse<AuthUser>> {
+    return this.http.patch<ApiResponse<AuthUser>>(`${this.apiUrl}/user/${userId}/profile`, profileData);
+  }  
+
   getUser(userId: string): Observable<ApiResponse<AuthUser>> {
     return this.http.get<ApiResponse<AuthUser>>(`${this.apiUrl}/user/${userId}`);
+  }
+  // in api.service.ts
+  upgradeToPremium(userId: string): Observable<ApiResponse<AuthUser>> {
+    return this.http.post<ApiResponse<AuthUser>>(`${this.apiUrl}/upgrade`, { userId });
   }
 }
 

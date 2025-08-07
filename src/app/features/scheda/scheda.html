@@ -1,5 +1,5 @@
 <!-- ====================================================== -->
-<!-- 1. POPUP DI PRIVACY (DA AGGIUNGERE ALL'INIZIO) -->
+<!-- 1. POPUP DI PRIVACY (Bloccante) -->
 <!-- ====================================================== -->
 <div *ngIf="showPrivacyPopup" class="privacy-popup-backdrop">
   <div class="privacy-popup">
@@ -22,41 +22,43 @@
 
 
 <!-- ====================================================== -->
-<!-- 2. CONTENUTO DELLA SCHEDA -->
-<!-- (Logica di visualizzazione aggiornata) -->
+<!-- 2. CONTENUTO DELLA PAGINA -->
+<!-- Appare solo se il popup NON è attivo -->
 <!-- ====================================================== -->
 <div *ngIf="!showPrivacyPopup" class="scheda-container">
 
-  <!-- Indicatore di Caricamento (Usa `isLoading`) -->
+  <!-- STATO DI CARICAMENTO -->
   <div *ngIf="isLoading" class="scheda-state">
     <div class="spinner"></div>
     Caricamento in corso...
   </div>
 
-<div *ngIf="!isLoading && errorMsg" class="scheda-state">
-  <div class="icon-error">!</div>
-  <div class="alert">{{ errorMsg }}</div>
-  
-  <!-- Mostra i pulsanti solo se l'errore è "non compilata" -->
-  <div *ngIf="errorMsg.includes('non compilata')">
-
-    <!-- SCENARIO 1: L'utente è loggato ED è il proprietario -->
-    <button *ngIf="isLoggedIn && isOwner" class="btn-action" (click)="goToDashboard()">
-      Vai alla Dashboard per Compilare
-    </button>
-
-    <!-- SCENARIO 2: L'utente NON è loggato -->
-    <button *ngIf="!isLoggedIn" class="btn-action" (click)="goToLogin()">
-      Fai il Login per Compilare
-    </button>
-    
-    <!-- SCENARIO 3: Utente loggato ma non proprietario -> Nessun pulsante (corretto) -->
+  <!-- STATO DI ERRORE VERO E PROPRIO -->
+  <div *ngIf="!isLoading && errorMsg && !isCardEmpty" class="scheda-state">
+    <div class="icon-error">!</div>
+    <div class="alert">{{ errorMsg }}</div>
   </div>
 
-  <!-- Contenuto della Scheda Medica (Usa `!isLoading`) -->
-  <div *ngIf="!isLoading && !errorMsg && medicalData && user" class="scheda-wrapper">
+  <!-- STATO "SCHEDA VUOTA" -->
+  <div *ngIf="!isLoading && isCardEmpty" class="scheda-state">
+    <div class="icon-error">!</div>
+    <div class="alert">Scheda medica non compilata.</div>
     
-    <!-- Banner di Avviso Fisso (Il tuo codice) -->
+    <!-- Pulsanti intelligenti, mostrati solo in questo stato -->
+    <div>
+      <button *ngIf="isLoggedIn && isOwner" class="btn-action" (click)="goToDashboard()">
+        Vai alla Dashboard per Compilare
+      </button>
+      <button *ngIf="!isLoggedIn" class="btn-action" (click)="goToLogin()">
+        Fai il Login per Compilare
+      </button>
+    </div>
+  </div>
+
+  <!-- SCHEDA MEDICA COMPILATA E VISIBILE -->
+  <div *ngIf="!isLoading && !errorMsg && !isCardEmpty && medicalData && user" class="scheda-wrapper">
+    
+    <!-- Banner di Avviso Fisso -->
     <div class="warning-banner">
       <div class="warning-icon"><i class="fas fa-exclamation-triangle"></i></div>
       <div class="warning-text">
@@ -69,7 +71,7 @@
       <h2>Scheda Sanitaria</h2>
     </div>
 
-    <!-- NOME E COGNOME (DA AGGIUNGERE QUI) -->
+    <!-- Nome e Cognome -->
     <div class="info-item">
       <div class="icon"><i class="fas fa-user"></i></div>
       <div class="text">
@@ -78,7 +80,7 @@
       </div>
     </div>
     
-    <!-- Il resto della tua scheda (Gruppo Sanguigno, Allergie, etc.) rimane invariato -->
+    <!-- Gruppo Sanguigno -->
     <div class="info-item info-item--critical">
       <div class="icon"><i class="fas fa-tint"></i></div>
       <div class="text">
@@ -87,6 +89,7 @@
       </div>
     </div>
     
+    <!-- Allergie -->
     <div class="info-item info-item--critical">
       <div class="icon"><i class="fas fa-allergies"></i></div>
       <div class="text">
@@ -95,6 +98,7 @@
       </div>
     </div>
     
+    <!-- Patologie -->
     <div class="info-item">
       <div class="icon"><i class="fas fa-notes-medical"></i></div>
       <div class="text">
@@ -103,6 +107,7 @@
       </div>
     </div>
     
+    <!-- Note -->
     <div class="info-item">
       <div class="icon"><i class="fas fa-sticky-note"></i></div>
       <div class="text">
@@ -111,6 +116,7 @@
       </div>
     </div>
     
+    <!-- Contatti d'Emergenza -->
     <div class="info-item" *ngIf="medicalData.emergencyContacts?.length">
       <div class="icon"><i class="fas fa-address-book"></i></div>
       <div class="text">

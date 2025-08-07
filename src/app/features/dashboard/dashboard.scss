@@ -26,6 +26,22 @@ $coming-soon-bg: #6c757d;
   }
 }
 
+.account-status-badge {
+  display: inline-block;
+  padding: 0.3rem 0.8rem;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  background-color: #6c757d; // Grigio per account gratuito
+  color: white;
+
+  &.is-premium {
+    background-color: #ffc107; // Oro per account premium
+    color: #1D1616;
+  }
+}
+
 // Griglia delle card, responsive
 .dashboard-grid {
   display: grid;

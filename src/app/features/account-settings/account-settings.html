@@ -71,5 +71,16 @@
     </fieldset>
     </form>
 
+    <!-- Card 3: Upgrade a Premium -->
+    <div *ngIf="auth.user?.premium === false">
+      <fieldset>
+        <legend><i class="fas fa-star"></i> Passa a Premium</legend>
+        <div class="premium-promo">
+          <p>Sblocca funzionalità avanzate! Con l'account Premium puoi associare un numero illimitato di caschi e dispositivi NFC.</p>
+          <button class="btn-premium" (click)="upgradeToPremium()">Diventa Premium Ora</button>
+        </div>
+      </fieldset>
+    </div>
+
   </div>
 </div>

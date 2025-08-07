@@ -84,15 +84,18 @@ export class Claim implements OnInit {
       return;
     }
 
-    this.api.claimNfc(this.nfcId, currentUserId).subscribe({
+    this.api.claimNfc(this.nfcId!, currentUserId).subscribe({
       next: () => {
-        console.log('Casco associato con successo!');
-        // Reindirizza l'utente direttamente al form medico per completare il profilo.
-        // Questa è una UX fantastica per i nuovi utenti.
         this.router.navigate(['/medical-form']);
       },
       error: (err) => {
-        this.claimResult = err.error?.error || 'Errore durante l’associazione del casco.';
+        // Intercettiamo l'errore specifico dal backend
+        if (err.error?.error?.includes('Limite massimo raggiunto')) {
+          this.claimResult = 'Hai raggiunto il limite di 1 casco per l\'account gratuito.';
+          // Qui potremmo aggiungere un pulsante che porta alla pagina di upgrade
+        } else {
+          this.claimResult = err.error?.error || 'Errore durante l’associazione.';
+        }
       }
     });
   }
