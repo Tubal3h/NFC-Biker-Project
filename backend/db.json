@@ -1,0 +1,69 @@
+{
+  "users": [
+    {
+      "id": "1754406376462",
+      "email": "test2@live.com",
+      "password": "Royalma2c",
+      "premium": false,
+      "nfcTags": [
+        "NFC-FA397D8EF2"
+      ],
+      "medicalData": {
+        "bloodType": "B+",
+        "allergies": "Allergia 1",
+        "conditions": "Patologie 1",
+        "notes": "Dati dal DB originale",
+        "emergencyContacts": [
+          {
+            "name": "Mak",
+            "relation": "Genitore",
+            "phone": "3213213214"
+          },
+          {
+            "name": "RRR",
+            "relation": "Figlio/a",
+            "phone": "3123213211"
+          }
+        ]
+      },
+      "name": "Mark",
+      "surname": "Rossini"
+    },
+    {
+      "id": "1754516368028",
+      "email": "123@123.rt",
+      "password": "Royalma2c",
+      "premium": false,
+      "nfcTags": [
+        "NFC-81DF71DEB4"
+      ],
+      "medicalData": {
+        "bloodType": "A+",
+        "allergies": "",
+        "conditions": "",
+        "notes": "",
+        "emergencyContacts": [
+          {
+            "name": "adasd",
+            "relation": "Altro",
+            "phone": "3213213214"
+          }
+        ]
+      }
+    }
+  ],
+  "tags": [
+    {
+      "id": "NFC-FA397D8EF2",
+      "userId": "1754406376462"
+    },
+    {
+      "id": "NFC-FA397D8EF3",
+      "userId": null
+    },
+    {
+      "id": "NFC-81DF71DEB4",
+      "userId": "1754516368028"
+    }
+  ]
+}
