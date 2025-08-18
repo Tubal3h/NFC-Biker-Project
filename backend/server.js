@@ -8,6 +8,12 @@ const bcrypt = require('bcryptjs');
 const User = require('./src/models/user.model.js');
 const Tag = require('./src/models/tag.model.js');
 
+<<<<<<< HEAD
+=======
+const jwt = require('jsonwebtoken');
+const nodemailer = require('nodemailer');
+
+>>>>>>> 6bdc15b4bd4e9b4fd9af89e3caa2e4e7b77f8a94
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -333,6 +339,63 @@ app.delete('/api/tags/:nfcId/dissociate', async (req, res) => {
   }
 });
 
+<<<<<<< HEAD
+=======
+
+/* -------------------------------------------------------------------------- */
+/*                 Endpoint per la richiesta di reset password                */
+/* -------------------------------------------------------------------------- */
+app.post('/api/forgot-password', async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await User.findOne({ email: email.toLowerCase() });
+    if (!user) {
+      // Per sicurezza, non diciamo se l'email esiste o no
+      return res.json({ success: true, data: { message: 'Se l\'utente esiste, riceverà un\'email di reset.' } });
+    }
+
+    // 1. Crea un token di reset segreto che scade in 1 ora
+    const resetToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+    // 2. Salva il token sull'utente (richiede una modifica allo schema)
+    user.resetPasswordToken = resetToken;
+    user.resetPasswordExpires = Date.now() + 3600000; // 1 ora in millisecondi
+    await user.save();
+
+    // 3. Invia l'email
+    const resetUrl = `https://www.soshelmet.it/reset-password/${resetToken}`; // <-- Usa il tuo dominio finale!
+    
+    // Configura il nostro "postino" (Nodemailer) per usare SendGrid
+    const transporter = nodemailer.createTransport({
+      host: 'smtp.sendgrid.net',
+      port: 587,
+      auth: {
+        user: 'apikey', // Questo deve essere 'apikey'
+        pass: process.env.SENDGRID_API_KEY
+      }
+    });
+    
+    await transporter.sendMail({
+      from: `S.O.S. Helmet <${process.env.FROM_EMAIL}>`,
+      to: user.email,
+      subject: 'Reset della tua password per S.O.S. Helmet',
+      html: `
+        <p>Ciao ${user.name},</p>
+        <p>Abbiamo ricevuto una richiesta di reset per la tua password. Clicca sul link qui sotto per procedere. Il link è valido per 1 ora.</p>
+        <a href="${resetUrl}">Reset Password</a>
+        <p>Se non hai richiesto tu il reset, ignora questa email.</p>
+      `
+    });
+
+    res.json({ success: true, data: { message: 'Email di reset inviata.' } });
+
+  } catch (error) {
+    console.error("Errore in forgot-password:", error);
+    res.status(500).json({ success: false, error: 'Errore interno del server' });
+  }
+});
+
+>>>>>>> 6bdc15b4bd4e9b4fd9af89e3caa2e4e7b77f8a94
 /* -------------------------------------------------------------------------- */
 /*                                    EXTRA                                   */
 /* -------------------------------------------------------------------------- */
