@@ -1,0 +1,102 @@
+@use 'styles/variables' as var;
+
+.content-wrapper {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.section-title {
+  text-align: center;
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 3rem;
+  color: var.$color1;
+}
+
+// Sezione 1: Storia
+.story-section {
+  padding: 4rem 0;
+  background-color: white;
+
+  .content-wrapper {
+    display: flex;
+    flex-direction: column; // Su mobile
+    align-items: center;
+    gap: 2rem;
+  }
+
+  .story-image {
+    flex-shrink: 0;
+    img {
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 5px solid var.$color4;
+    }
+  }
+
+  .story-text {
+    text-align: center;
+    h1 { font-size: 2.8rem; color: var.$color1; margin-top: 0; }
+    .subtitle { font-size: 1.3rem; color: #666; margin: -1rem 0 1.5rem 0; }
+    p { font-size: 1.1rem; line-height: 1.8; color: #333; }
+  }
+
+  @media (min-width: 768px) {
+    .content-wrapper { flex-direction: row; }
+    .story-text { text-align: left; }
+  }
+}
+
+// Sezione 2: Filosofia
+.philosophy-section {
+  padding: 4rem 0;
+  background-color: var.$color4;
+
+  .principles-grid {
+    display: grid;
+    grid-template-columns: 1fr; // Su mobile
+    gap: 2rem;
+  }
+
+  .principle-card {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 12px;
+    text-align: center;
+  }
+
+    .principle-icon { font-size: 2.5rem; color: var.$color2; margin-bottom: 1rem; }
+    h3 {
+      font-size: 1.5rem;
+      color: var.$color1; // Forza il colore a essere scuro
+      margin-bottom: 0.75rem;
+    }
+    p { color: #555; line-height: 1.6; }
+
+  @media (min-width: 768px) {
+    .principles-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+}
+
+// Sezione 3: Call to Action
+.cta-section {
+  padding: 5rem 1.5rem;
+  background-color: var.$color1;
+  color: var.$color4;
+  text-align: center;
+
+  h2 { font-size: 2.5rem; color: white; }
+  p { max-width: 600px; margin: 0 auto 2rem auto; font-size: 1.2rem; }
+}
+
+// Stile per il pulsante (da ricopiare per sicurezza)
+.btn-primary {
+  display: inline-flex; align-items: center; gap: 0.75rem;
+  background: var.$color3; color: white; padding: 1rem 2.5rem;
+  border-radius: 8px; text-decoration: none; font-size: 1.2rem;
+  font-weight: 600; transition: all 0.3s ease;
+  &:hover { background: var.$color2; transform: translateY(-3px); }
+}

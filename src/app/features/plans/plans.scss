@@ -1,0 +1,180 @@
+@use 'styles/variables' as var;
+@use 'styles/mixins';
+
+// Contenitore principale e header
+.plans-container {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 1rem;
+}
+
+.plans-header {
+  text-align: center;
+  margin-bottom: 3rem;
+  h1 { font-size: 2.8rem; color: var.$color1; }
+  p { font-size: 1.2rem; color: #666; }
+}
+
+// Griglia per le card dei piani
+.plans-grid {
+  display: grid;
+  grid-template-columns: 1fr; // Una colonna su mobile
+  gap: 2rem;
+  align-items: center; // Allinea le card se hanno altezze diverse
+
+  @media (min-width: 768px) {
+    grid-template-columns: 1fr 1fr; // Due colonne su desktop
+  }
+}
+
+// Stile della singola card
+.plan-card {
+  background: white;
+  border-radius: 16px;
+  border: 1px solid var.$color-border;
+  display: flex;
+  flex-direction: column;
+  height: 100%; // Fa in modo che le card abbiano la stessa altezza
+  
+  .plan-card-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid var.$color-border;
+    
+    h2 { margin: 0; font-size: 1.8rem; }
+    
+    .price {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var.$color1;
+      margin-top: 0.5rem;
+      span { font-size: 1rem; font-weight: 400; color: #666; }
+    }
+  }
+
+  .features-list {
+    list-style: none;
+    padding: 1.5rem;
+    margin: 0;
+    flex-grow: 1; // Fa espandere la lista per riempire lo spazio
+    
+    li {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 1rem;
+      color: #333;
+      &:not(:last-child) { margin-bottom: 1rem; }
+      
+      i {
+        width: 20px; // Spazio fisso per l'icona
+        &.fa-check { color: var.$color-success; }
+        &.fa-times { color: var.$color3; }
+      }
+    }
+  }
+  
+  .plan-card-footer {
+    padding: 1.5rem;
+    background: var.$color-bg;
+    text-align: center;
+    
+    p { margin: 0; font-weight: 600; }
+  }
+}
+
+// Stile speciale per la card Premium
+.plan-card.premium {
+  border: 2px solid var.$color2;
+  transform: scale(1.05); // La rende leggermente più grande
+  
+  .plan-card-header {
+    background: var.$color2;
+    color: white;
+    
+    .price, span { color: white; }
+  }
+}
+
+// Sezione Roadmap
+.roadmap-section {
+  text-align: center;
+  padding: 5rem 0 2rem 0;
+
+  .section-title { font-size: 2.2rem; }
+  .subtitle { font-size: 1.1rem; color: #666; max-width: 600px; margin: -2rem auto 3rem auto; }
+}
+
+// Copiamo lo stile della roadmap per coerenza
+.roadmap { /* ... */ }
+.roadmap-list {
+  list-style: none; padding: 0; margin: 0 auto;
+  max-width: 600px; position: relative; border-left: 3px solid var.$color3;
+}
+// in src/app/features/plans/plans.scss
+
+// ... (gli stili per .plans-container, .plan-card, etc. che ti ho dato prima) ...
+
+/* ======================================================
+   Stili per la Roadmap
+   ====================================================== */
+
+.roadmap {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 1rem 0;
+}
+
+.roadmap-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  position: relative;
+  // La linea verticale che collega i punti
+  border-left: 3px solid var.$color4;
+  padding-left: 2.5rem; // Spazio per i punti
+}
+
+.roadmap-step {
+  position: relative;
+  padding-bottom: 3rem; // Spazio tra un punto e l'altro
+
+  // Rimuove la linea dall'ultimo elemento
+  &:last-child {
+    padding-bottom: 0;
+    &::after {
+      display: none;
+    }
+  }
+}
+
+// Il "pallino" sulla linea del tempo
+.roadmap-bullet {
+  position: absolute;
+  left: -1.75rem; // Centra il pallino sulla linea
+  top: 0;
+  width: 24px;
+  height: 24px;
+  background: var.$color2; // Rosso scuro
+  border-radius: 50%;
+  border: 4px solid white;
+  box-shadow: 0 0 0 3px var.$color2;
+}
+
+// Il contenitore del testo
+.roadmap-content {
+  text-align: left;
+  
+  h3 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var.$color1;
+  }
+  
+  p {
+    margin: 0;
+    color: #555;
+    font-size: 1.1rem;
+    line-height: 1.8;
+  }
+}
