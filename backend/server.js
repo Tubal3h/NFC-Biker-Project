@@ -8,6 +8,8 @@ const bcrypt = require('bcryptjs');
 const User = require('./src/models/user.model.js');
 const Tag = require('./src/models/tag.model.js');
 
+
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -180,6 +182,38 @@ app.post('/api/claim', async (req, res) => {
     res.json({ success: true, data: { message: 'Tag associato con successo' } });
   } catch (error) {
     console.error("Errore durante il claim:", error);
+    res.status(500).json({ success: false, error: 'Errore interno del server' });
+  }
+});
+
+// Rinomina un tag/casco
+app.patch('/api/tags/:tagId/rename', async (req, res) => {
+  try {
+    const { tagId } = req.params;
+    const { alias } = req.body; // Prendiamo il nuovo nome dal corpo della richiesta
+
+    // 1. Validazione di base
+    if (!alias || typeof alias !== 'string' || alias.trim().length === 0) {
+      return res.status(400).json({ success: false, error: 'Il nome fornito non è valido.' });
+    }
+
+    // 2. Trova il tag tramite il suo _id e aggiornalo
+    // findByIdAndUpdate è un comando Mongoose super efficiente per questo
+    const updatedTag = await Tag.findByIdAndUpdate(
+      tagId,
+      { alias: alias.trim() }, // Dati da aggiornare (trim() pulisce gli spazi)
+      { new: true } // Opzione per restituire il documento aggiornato, non quello vecchio
+    );
+
+    if (!updatedTag) {
+      return res.status(404).json({ success: false, error: 'Tag non trovato.' });
+    }
+
+    // 3. Invia il tag aggiornato come conferma
+    res.json({ success: true, data: updatedTag });
+
+  } catch (error) {
+    console.error("Errore durante la rinomina del tag:", error);
     res.status(500).json({ success: false, error: 'Errore interno del server' });
   }
 });
@@ -397,6 +431,51 @@ app.post('/api/auth/reset-password/:token', async (req, res) => {
 
     res.json({ success: true, data: { message: 'Password resettata con successo.' } });
   } catch (error) { res.status(500).json({ success: false, error: 'Token non valido o scaduto.' }); }
+});
+
+/* -------------------------------------------------------------------------- */
+/*               Attiva l'abbonamento Premium tramite un codice               */
+/* -------------------------------------------------------------------------- */
+app.post('/api/user/:userId/upgrade-premium', async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { activationCode } = req.body;
+
+    // 1. Cerca il codice nel database
+    const code = await PremiumCode.findOne({ code: activationCode });
+
+    if (!code || code.isUsed) {
+      return res.status(400).json({ success: false, error: 'Codice non valido o già utilizzato.' });
+    }
+
+    // 2. Cerca l'utente
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ success: false, error: 'Utente non trovato.' });
+    }
+    
+    // 3. Attiva il premium per l'utente
+    user.premium = true;
+    const oneYearFromNow = new Date();
+    oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1);
+    user.premiumExpiresAt = oneYearFromNow;
+    
+    // 4. "Brucia" il codice per non farlo riutilizzare
+    code.isUsed = true;
+    code.usedBy = user._id;
+    code.usedAt = new Date();
+
+    // 5. Salva tutto nel database
+    await user.save();
+    await code.save();
+
+    const userToReturn = user.toObject();
+    delete userToReturn.password;
+    res.json({ success: true, data: userToReturn });
+
+  } catch (error) {
+    res.status(500).json({ success: false, error: 'Errore interno del server' });
+  }
 });
 
 

@@ -26,7 +26,8 @@ const userSchema = new Schema({
     password: { type: String, required: true, select: false },
     resetPasswordToken: { type: String, select: false },
     resetPasswordExpires: { type: Date, select: false },
-    premium: { type: Boolean, default: false },
+    premium: { type: Boolean, default: false }, // L'utente parte come non-premium
+    premiumExpiresAt: { type: Date, default: null }, // Data in cui scade l'abbonamento
     nfcTags: [{ type: Schema.Types.ObjectId, ref: 'Tag' }],
     medicalData: medicalDataSchema
 }, {

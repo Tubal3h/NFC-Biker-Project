@@ -9,6 +9,10 @@ const tagSchema = new Schema({
         required: true, 
         unique: true // La regola di unicità va qui!
     },
+    alias: {
+        type: String,
+        default: null // Sarà null finché l'utente non gli dà un nome
+    },
     userId: {
         type: Schema.Types.ObjectId,
         ref: 'User',
