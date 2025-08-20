@@ -7,7 +7,7 @@ const bcrypt = require('bcryptjs');
 // Importiamo i nostri nuovi modelli Mongoose
 const User = require('./src/models/user.model.js');
 const Tag = require('./src/models/tag.model.js');
-
+const PremiumCode = require('./src/models/premium-code.model.js');
 
 
 const app = express();
