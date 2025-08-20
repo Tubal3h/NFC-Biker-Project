@@ -334,6 +334,73 @@ app.delete('/api/tags/:nfcId/dissociate', async (req, res) => {
 });
 
 /* -------------------------------------------------------------------------- */
+/*                               Reset Password                               */
+/* -------------------------------------------------------------------------- */
+
+
+const jwt = require('jsonwebtoken');
+const nodemailer = require('nodemailer');
+
+app.post('/api/auth/forgot-password', async (req, res) => {
+  try {
+    const user = await User.findOne({ email: req.body.email.toLowerCase() });
+    if (!user) {
+      return res.json({ success: true, data: { message: 'Se l\'email è registrata, riceverai un link per il reset.' } });
+    }
+
+    const resetToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    user.resetPasswordToken = resetToken;
+    user.resetPasswordExpires = Date.now() + 3600000;
+    await user.save();
+
+    const resetUrl = `https://www.soshelmet.it/reset-password/${resetToken}`;
+    
+    const transporter = nodemailer.createTransport({
+      host: 'smtp.sendgrid.net', port: 587,
+      auth: { user: 'apikey', pass: process.env.SENDGRID_API_KEY }
+    });
+    
+    await transporter.sendMail({
+      from: `S.O.S. Helmet <${process.env.FROM_EMAIL}>`,
+      to: user.email,
+      subject: 'Reset della tua password per S.O.S. Helmet',
+      html: `<p>Clicca su questo link per resettare la tua password (valido per 1 ora): <a href="${resetUrl}">${resetUrl}</a></p>`
+    });
+
+    res.json({ success: true, data: { message: 'Email di reset inviata.' } });
+  } catch (error) { res.status(500).json({ success: false, error: 'Errore server' }); }
+});
+
+
+app.post('/api/auth/reset-password/:token', async (req, res) => {
+  try {
+    const { token } = req.params;
+    const { password } = req.body;
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    
+    const user = await User.findOne({ 
+      _id: decoded.id, 
+      resetPasswordToken: token,
+      resetPasswordExpires: { $gt: Date.now() } 
+    }).select('+password');
+
+    if (!user) {
+      return res.status(400).json({ success: false, error: 'Token non valido o scaduto.' });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(password, salt);
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
+    await user.save();
+
+    res.json({ success: true, data: { message: 'Password resettata con successo.' } });
+  } catch (error) { res.status(500).json({ success: false, error: 'Token non valido o scaduto.' }); }
+});
+
+
+/* -------------------------------------------------------------------------- */
 /*                                    EXTRA                                   */
 /* -------------------------------------------------------------------------- */
 

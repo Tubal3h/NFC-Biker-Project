@@ -83,6 +83,14 @@ export class ApiService {
 
   dissociateTag(nfcId: string): Observable<ApiResponse<void>> {
   return this.http.delete<ApiResponse<void>>(`${this.apiUrl}/tags/${nfcId}/dissociate`);
-}
+  }
+
+    forgotPassword(email: string): Observable<ApiResponse<any>> {
+    return this.http.post<ApiResponse<any>>(`${this.apiUrl}/auth/forgot-password`, { email });
+  }
+
+  resetPassword(token: string, password: string): Observable<ApiResponse<any>> {
+    return this.http.post<ApiResponse<any>>(`${this.apiUrl}/auth/reset-password/${token}`, { password });
+  }
 }
 

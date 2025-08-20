@@ -58,6 +58,9 @@
       <span *ngIf="!isLoggingIn">Accedi</span>
       <span *ngIf="isLoggingIn">Accesso in corso...</span>
     </button>
+    <div class="extra-links">
+      <a routerLink="/forgot-password">Hai dimenticato la password?</a>
+    </div>
     
     <!-- Messaggio di errore generale (es. per credenziali errate) -->
     <div *ngIf="errorMsg" class="error-general">

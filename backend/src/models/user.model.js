@@ -24,17 +24,11 @@ const userSchema = new Schema({
     surname: { type: String, default: '' },
     email: { type: String, required: true, unique: true, lowercase: true, trim: true },
     password: { type: String, required: true, select: false },
-    premium: { type: Boolean, default: false },
-    // MODIFICA: Questo ora è un array di ObjectId che fanno riferimento alla collezione 'Tag'
-    nfcTags: [{ type: Schema.Types.ObjectId, ref: 'Tag' }],
-<<<<<<< HEAD
-    medicalData: medicalDataSchema
-=======
-    medicalData: medicalDataSchema,
-    password: { type: String, required: true, select: false },
     resetPasswordToken: { type: String, select: false },
-    resetPasswordExpires: { type: Date, select: false }
->>>>>>> 6bdc15b4bd4e9b4fd9af89e3caa2e4e7b77f8a94
+    resetPasswordExpires: { type: Date, select: false },
+    premium: { type: Boolean, default: false },
+    nfcTags: [{ type: Schema.Types.ObjectId, ref: 'Tag' }],
+    medicalData: medicalDataSchema
 }, {
     timestamps: true,
     toJSON: { virtuals: true, transform: function(doc, ret) { delete ret._id; delete ret.__v; } },

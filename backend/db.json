@@ -1,56 +1,40 @@
 {
   "users": [
-    {
-      "id": "1754406376462",
-      "email": "test2@live.com",
-      "password": "Royalma2c",
-      "premium": false,
-      "nfcTags": [
-        "NFC-FA397D8EF2"
-      ],
-      "medicalData": {
-        "bloodType": "B+",
-        "allergies": "Allergia 1",
-        "conditions": "Patologie 1",
-        "notes": "Dati dal DB originale",
-        "emergencyContacts": [
-          {
-            "name": "Mak",
-            "relation": "Genitore",
-            "phone": "3213213214"
-          },
-          {
-            "name": "RRR",
-            "relation": "Figlio/a",
-            "phone": "3123213211"
-          }
-        ]
-      },
-      "name": "Mark",
-      "surname": "Rossini"
+  {
+    "_id": {
+      "$oid": "6894e971be4b7983c0d66cd8"
     },
-    {
-      "id": "1754516368028",
-      "email": "123@123.rt",
-      "password": "Royalma2c",
-      "premium": false,
-      "nfcTags": [
-        "NFC-81DF71DEB4"
-      ],
-      "medicalData": {
-        "bloodType": "A+",
-        "allergies": "",
-        "conditions": "",
-        "notes": "",
-        "emergencyContacts": [
-          {
-            "name": "adasd",
-            "relation": "Altro",
-            "phone": "3213213214"
-          }
-        ]
+    "name": "Macwell",
+    "surname": "Tubale",
+    "email": "2bal3h@gmail.com",
+    "password": "$2b$10$1EJf2XygIePnU8GELYxUfOwo8BMjI8XjhGTyF0zaN4CPXgIqGuB0q",
+    "premium": false,
+    "nfcTags": [
+      {
+        "$oid": "6894e94dfb683f0efa96e752"
       }
-    }
+    ],
+    "medicalData": {
+      "bloodType": "B+",
+      "allergies": "",
+      "conditions": "",
+      "notes": "",
+      "emergencyContacts": [
+        {
+          "name": "Celerina",
+          "relation": "Genitore",
+          "phone": "3385025453"
+        }
+      ]
+    },
+    "createdAt": {
+      "$date": "2025-08-07T17:59:13.737Z"
+    },
+    "updatedAt": {
+      "$date": "2025-08-07T18:01:26.632Z"
+    },
+    "__v": 1
+  }
   ],
   "tags": [
     {
