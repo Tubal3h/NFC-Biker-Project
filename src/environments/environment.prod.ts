@@ -1,9 +1,13 @@
 /* -------------------------------------------------------------------------- */
 /*                                SERVER ONLINE                               */
 /* -------------------------------------------------------------------------- */
+// export const environment = {
+//   production: true,
+//   apiUrl: 'https://api.soshelmet.it/api' // <-- METTI QUI IL TUO URL DI RENDER
+// };
 export const environment = {
   production: true,
-  apiUrl: 'https://api.soshelmet.it/api' // <-- METTI QUI IL TUO URL DI RENDER
+  apiUrl: 'https://sos-helmet-api.fly.dev/api' // <-- METTI QUI IL TUO URL DI RENDER
 };
 
 
