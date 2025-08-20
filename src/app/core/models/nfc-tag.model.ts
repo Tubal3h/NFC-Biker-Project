@@ -3,4 +3,5 @@ export interface NfcTag {
   nfcId: string;
   userId: string | null;
   createdAt: string;
+  alias: string | null;
 }

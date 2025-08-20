@@ -36,6 +36,7 @@
         <table>
           <thead>
             <tr>
+              <th>Nome Casco</th>
               <th>ID Dispositivo NFC</th>
               <th>Data di Associazione</th>
               <th>Azioni</th>
@@ -44,10 +45,11 @@
           <tbody>
             @for (tag of tags; track tag.id) {
               <tr>
+                <td class="alias">{{ tag.alias || '-' }}</td> 
                 <td class="nfc-id">{{ tag.nfcId }}</td>
                 <td>{{ tag.createdAt | date:'dd/MM/yyyy' }}</td>
                 <td class="actions">
-                  <button (click)="renameTag(tag)" class="btn-rename" title="Rinomina (Coming Soon)">
+                  <button (click)="openRenameModal(tag)" class="btn-rename" title="Rinomina (Coming Soon)">
                     <i class="fas fa-pencil-alt"></i>
                   </button>
                   <button (click)="dissociateTag(tag)" class="btn-dissociate" title="Dissocia Casco">
@@ -61,4 +63,30 @@
       </div>
     }
   }
+
+  @if (isRenameModalVisible) {
+    <div class="modal-backdrop">
+      <div class="modal-content">
+        <h3>Rinomina Dispositivo</h3>
+        <p>Scegli un nome facile da ricordare per il tuo casco (es. "Casco Estivo").</p>
+        
+        <div class="form-group">
+          <label for="newAlias">Nuovo Nome</label>
+          <input 
+            id="newAlias"
+            name="newAlias"
+            type="text"
+            [(ngModel)]="newAliasValue"
+            (keydown.enter)="submitRename()"
+          />
+        </div>
+
+        <div class="modal-actions">
+          <button class="btn-cancel" (click)="closeRenameModal()">Annulla</button>
+          <button class="btn-confirm" (click)="submitRename()">Salva</button>
+        </div>
+      </div>
+    </div>
+  }
+
 </div>

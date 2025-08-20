@@ -72,15 +72,46 @@
     </form>
 
     <!-- Card 3: Upgrade a Premium -->
-    <div *ngIf="auth.user?.premium === false">
-      <fieldset>
-        <legend><i class="fas fa-star"></i> Passa a Premium</legend>
-        <div class="premium-promo">
-          <p>Sblocca funzionalità avanzate! Con l'account Premium puoi associare un numero illimitato di caschi e dispositivi NFC.</p>
-          <button class="btn-premium" (click)="upgradeToPremium()">Diventa Premium Ora</button>
+    @if (auth.user$ | async; as user) {
+      @if (!user.premium) {
+        <form #premiumForm="ngForm" (ngSubmit)="upgradeToPremium()">
+          <fieldset>
+            <legend><i class="fas fa-star"></i> Passa a Premium</legend>
+
+            <div class="premium-promo">
+              <p>Hai un codice di attivazione? Inseriscilo qui per sbloccare le funzionalità Premium per un anno, come l'associazione di caschi illimitati.</p>
+              
+              <div class="form-group">
+                <label for="activationCode">Codice di Attivazione</label>
+                <input 
+                  id="activationCode"
+                  name="activationCode"
+                  type="text"
+                  placeholder="PREMIUM-XXXX-YYYY"
+                  [(ngModel)]="activationCode"
+                  required
+                />
+              </div>
+              
+              <div class="form-actions">
+                <button type="submit" class="btn-premium" [disabled]="premiumForm.invalid || isUpgrading">
+                  {{ isUpgrading ? 'Attivazione in corso...' : 'Attiva Premium' }}
+                </button>
+              </div>
+            </div>
+          </fieldset>
+        </form>
+      } @else {
+        <!-- Mostra un messaggio di conferma se l'utente È GIA' premium -->
+        <div class="premium-status">
+          <h3><i class="fas fa-check-circle"></i> Account Premium Attivo</h3>
+          <p>
+            Grazie per il tuo supporto! Il tuo abbonamento scadrà il: 
+            <strong>{{ user.premiumExpiresAt | date:'dd MMMM yyyy' }}</strong>
+          </p>
         </div>
-      </fieldset>
-    </div>
+      }
+    }
 
   </div>
 </div>

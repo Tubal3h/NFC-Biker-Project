@@ -8,6 +8,7 @@ export interface AuthUser {
   surname: string;
   email: string;
   premium: boolean;
+  premiumExpiresAt?: Date | string | null; // Data di scadenza dell'abbonamento Premium, opzionale
   nfcTags: string[];
   medicalData?: MedicalData; // I dati medici sono un oggetto annidato e opzionale
 }

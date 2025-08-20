@@ -18,3 +18,55 @@
     color: #888;
   }
 }
+
+// in src/app/features/account-settings/account-settings.scss
+
+// Stili per la sezione Premium
+.premium-promo {
+  text-align: center;
+
+  p {
+    font-size: 1.1rem;
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+  }
+
+  .form-group {
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: left;
+  }
+}
+
+.btn-premium {
+  @extend .btn-save; // Eredita lo stile del pulsante di salvataggio
+  background: #f0ad4e; // Un colore dorato per il premium
+  &:hover:not(:disabled) {
+    background: darken(#f0ad4e, 10%);
+  }
+}
+
+.premium-status {
+  text-align: center;
+  padding: 2rem;
+  background-color: lighten(#f0ad4e, 40%);
+  border: 1px solid lighten(#f0ad4e, 30%);
+  border-radius: 12px;
+
+  h3 {
+    color: darken(#f0ad4e, 20%);
+    margin-top: 0;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+  }
+
+  p {
+    font-size: 1.1rem;
+    color: #666;
+  }
+}

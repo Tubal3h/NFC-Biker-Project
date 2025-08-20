@@ -76,21 +76,26 @@ export class ApiService {
   getUser(userId: string): Observable<ApiResponse<AuthUser>> {
     return this.http.get<ApiResponse<AuthUser>>(`${this.apiUrl}/user/${userId}`);
   }
-  // in api.service.ts
-  upgradeToPremium(userId: string): Observable<ApiResponse<AuthUser>> {
-    return this.http.post<ApiResponse<AuthUser>>(`${this.apiUrl}/upgrade`, { userId });
+  
+  upgradeToPremium(userId: string, activationCode: string): Observable<ApiResponse<AuthUser>> {
+    return this.http.post<ApiResponse<AuthUser>>(`${this.apiUrl}/user/${userId}/upgrade-premium`, { activationCode });
   }
 
   dissociateTag(nfcId: string): Observable<ApiResponse<void>> {
-  return this.http.delete<ApiResponse<void>>(`${this.apiUrl}/tags/${nfcId}/dissociate`);
+    return this.http.delete<ApiResponse<void>>(`${this.apiUrl}/tags/${nfcId}/dissociate`);
   }
 
-    forgotPassword(email: string): Observable<ApiResponse<any>> {
+  forgotPassword(email: string): Observable<ApiResponse<any>> {
     return this.http.post<ApiResponse<any>>(`${this.apiUrl}/auth/forgot-password`, { email });
   }
 
   resetPassword(token: string, password: string): Observable<ApiResponse<any>> {
     return this.http.post<ApiResponse<any>>(`${this.apiUrl}/auth/reset-password/${token}`, { password });
+  }
+
+  // nome casco
+  renameTag(tagId: string, alias: string): Observable<ApiResponse<NfcTag>> {
+    return this.http.patch<ApiResponse<NfcTag>>(`${this.apiUrl}/tags/${tagId}/rename`, { alias });
   }
 }
 

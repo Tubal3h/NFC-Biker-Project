@@ -7,13 +7,13 @@ import { RouterModule } from '@angular/router';
 import { ApiService } from '@app/core/services/api';
 import { AuthService } from '@app/core/services/auth';
 import { NotificationService } from '@app/core/services/notification';
-import { AuthUser } from '@app/core/models';
+import { DatePipe } from '@angular/common'; // Importa DatePipe
 import { take } from 'rxjs';
 
 @Component({
   selector: 'app-account-settings',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule , DatePipe],
   templateUrl: './account-settings.html',
   styleUrl: './account-settings.scss'
 })
@@ -25,6 +25,8 @@ export class AccountSettings implements OnInit {
   isLoading = true;
   isSavingProfile = false;
   isSavingPassword = false;
+  activationCode = '';
+  isUpgrading = false;
 
   // Modello per i dati anagrafici
   profileModel: { name: string; surname: string; email: string } = {
@@ -138,22 +140,31 @@ export class AccountSettings implements OnInit {
     });
   } 
 
+    /**
+   * Tenta di attivare il premium usando il codice fornito.
+   */
   upgradeToPremium(): void {
-    const userId = this.auth.user?.id;
-    if (!userId) return;
+    const currentUser = this.auth.user;
+    if (!currentUser || !this.activationCode) return;
 
-    // Mostriamo un avviso di conferma prima di procedere
-    if (confirm("Sei sicuro di voler passare a Premium? (Azione non reversibile)")) {
-      this.api.upgradeToPremium(userId).subscribe({ // <-- Dobbiamo creare questa funzione in ApiService
-        next: (response) => {
-          if (response.success && response.data) {
-            // Aggiorniamo lo stato dell'utente per riflettere lo stato premium
-            this.auth.login(response.data);
-            alert("Congratulazioni! Il tuo account è ora Premium.");
-          }
-        },
-        error: () => alert("Si è verificato un errore durante l'upgrade.")
-      });
-    }
+    this.isUpgrading = true;
+
+    this.api.upgradeToPremium(currentUser.id, this.activationCode).subscribe({
+      next: (response) => {
+        if (response.success && response.data) {
+          // Aggiorniamo lo stato dell'utente con i nuovi dati premium
+          this.auth.login(response.data);
+          this.notification.showSuccess('Congratulazioni, il tuo account è ora Premium!');
+        } else {
+          this.notification.showError(response.error || 'Si è verificato un errore.');
+        }
+        this.isUpgrading = false;
+      },
+      error: (err) => {
+        this.notification.showError(err.error?.error || 'Codice non valido o errore di rete.');
+        this.isUpgrading = false;
+      }
+    });
   }
+  
 }
