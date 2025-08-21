@@ -10,7 +10,7 @@
   <!-- Links per Desktop (visibili solo su schermi grandi) -->
   <div class="navbar-links-desktop">
     <a routerLink="/homepage" routerLinkActive="active">Homepage</a>
-    <a routerLink="/chi-siamo" routerLinkActive="active">Chi Siamo</a>
+    <a routerLink="/about" routerLinkActive="active">Chi Siamo</a>
     <a routerLink="/guide" routerLinkActive="active">Guida</a>
     <a routerLink="/piani" routerLinkActive="active">Piani</a>
   </div>
@@ -40,7 +40,7 @@
 <!-- L'elemento esiste sempre, ma è nascosto/visibile tramite CSS -->
 <div class="mobile-menu" [class.is-open]="isMenuOpen">
   <a routerLink="/homepage" (click)="closeMenu()">Homepage</a>
-  <a routerLink="/chi-siamo" (click)="closeMenu()">Chi Siamo</a>
+  <a routerLink="/about" (click)="closeMenu()">Chi Siamo</a>
   <a routerLink="/guide" (click)="closeMenu()">Guida</a>
   <a routerLink="/piani" (click)="closeMenu()">Piani</a>
   
