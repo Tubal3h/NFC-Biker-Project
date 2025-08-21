@@ -1,7 +1,43 @@
-<footer class="footer p-4">
-  <span>Powered by <strong>Tubal3h</strong></span>
-  <a href="https://instagram.com/tubal3h" target="_blank" rel="noopener" class="ms-2 text-light">
-    <i class="bi bi-instagram"></i>
-  </a>
-  <!-- Puoi aggiungere altri social qui -->
+<footer class="site-footer">
+  <div class="footer-content">
+
+    <!-- Colonna 1: Logo e Missione -->
+    <div class="footer-column about">
+      <h3>S.O.S. Helmet</h3>
+      <p>Un progetto indipendente creato da un motociclista per la sicurezza della nostra community. La tecnologia al servizio di chi viaggia su due ruote.</p>
+    </div>
+
+    <!-- Colonna 2: Link di Navigazione -->
+    <div class="footer-column links">
+      <h4>Navigazione</h4>
+      <ul>
+        <li><a routerLink="/homepage">Homepage</a></li>
+        <li><a routerLink="/chi-siamo">Chi Siamo</a></li>
+        <li><a routerLink="/guide">Guida</a></li>
+        <li><a routerLink="/piani">Piani</a></li>
+      </ul>
+    </div>
+
+    <!-- Colonna 3: Contatti e Social -->
+    <div class="footer-column social">
+      <h4>Seguici</h4>
+      <div class="social-links">
+        <a href="https://t.me/SOSHELMET" target="_blank" rel="noopener" title="Telegram">
+          <i class="fab fa-telegram-plane"></i>
+        </a>
+        <a href="https://instagram.com/tubal3h" target="_blank" rel="noopener" title="Instagram">
+          <i class="fab fa-instagram"></i>
+        </a>
+        <!-- Potresti aggiungere un link a GitHub se vuoi mostrare il lato "open" del progetto -->
+      </div>
+      <!-- Potresti aggiungere qui un link "Contattaci" che apre una mail -->
+    </div>
+
+  </div>
+
+  <!-- Barra inferiore con Copyright -->
+  <div class="footer-bottom">
+    <p>© {{ currentYear }} S.O.S. Helmet. Un progetto ideato e sviluppato da Tubal3h.</p>
+    <!-- Qui potremmo aggiungere i link a Privacy Policy e Termini di Servizio in futuro -->
+  </div>
 </footer>

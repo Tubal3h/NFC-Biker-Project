@@ -1,18 +1,19 @@
-// Sostituisci il contenuto di navbar.component.ts con questo
+// in src/app/shared/components/navbar/navbar.ts
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
-import { AuthService } from '../../../core/services/auth';
+import { Router, RouterModule } from '@angular/router';
+import { AuthService } from '@app/core/services/auth';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
   imports: [CommonModule, RouterModule],
   templateUrl: './navbar.html',
-  styleUrls: ['./navbar.scss']
+  styleUrl: './navbar.scss'
 })
 export class Navbar {
   auth = inject(AuthService);
+  private router = inject(Router);
   user$ = this.auth.user$;
   
   // Stato per il menu mobile
@@ -32,5 +33,12 @@ export class Navbar {
   logoutAndCloseMenu() {
     this.auth.logout();
     this.closeMenu();
+    this.router.navigate(['/homepage']);
+  }
+  
+  // Funzione di logout separata per il pulsante desktop
+  logout() {
+    this.auth.logout();
+    this.router.navigate(['/homepage']);
   }
 }

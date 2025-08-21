@@ -1,37 +1,43 @@
-/* ================================================================
-   SCSS DEFINITIVO PER LA NAVBAR
-   - Estetica Originale
-   - Responsive (Mobile-First)
-   - Correzione allineamento testo inclusa
-   ================================================================ */
+// in src/app/shared/components/navbar/navbar.scss
 
-// 1. VARIABILI E IMPOSTAZIONI DI BASE
-// ----------------------------------------------------------------
-$color1: #1D1616;
-$color2: #8E1616;
-$color3: #D84040;
-$color4: #EEEEEE;
-$breakpoint-desktop: 768px;
+@use 'styles/variables' as var;
 
-// 2. STILI PER IL MOBILE (DEFAULT)
-// ----------------------------------------------------------------
+// ======================================================
+// Stili di Base e Mobile-First
+// ======================================================
+
+:host {
+  display: block; // Assicura che la navbar occupi il suo spazio
+  position: relative;
+  z-index: 1000; // Mette la navbar sopra il resto
+}
+
 .navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  flex-wrap: wrap;
-  background-color: $color1;
   padding: 1rem 1.5rem;
-  min-height: 80px;
-  position: relative;
-  z-index: 1000;
+  background: var.$color1;
 }
 
 .navbar-logo a {
   text-decoration: none;
-  h1 { color: $color3; font-size: 2rem; margin: 0; line-height: 1.1; }
+  h1 {
+    color: var.$color3;
+    font-size: 2rem;
+    font-weight: 800;
+    line-height: 1;
+    margin: 0;
+  }
 }
 
+// Su mobile, i link e la sezione utente del desktop sono nascosti
+.navbar-links-desktop,
+.navbar-user-desktop {
+  display: none;
+}
+
+// L'icona "Hamburger" è visibile solo su mobile (sotto i 768px)
 .navbar-toggler {
   display: flex;
   flex-direction: column;
@@ -42,91 +48,137 @@ $breakpoint-desktop: 768px;
   border: none;
   cursor: pointer;
   padding: 0;
-  .toggler-icon { width: 100%; height: 3px; background-color: $color4; border-radius: 2px; }
+
+  .toggler-icon {
+    width: 100%;
+    height: 3px;
+    background-color: var.$color4;
+    border-radius: 2px;
+  }
 }
 
-.navbar-menu {
+// Menu a schermo intero per mobile
+// in navbar.scss
+
+.mobile-menu {
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 100%;
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.35s ease-in-out;
-  background-color: $color3;
-  border-radius: 15px;
-  margin-top: 1rem;
-  &.is-open { max-height: 400px; padding: 1rem 0; }
-}
+  height: 100vh;
+  background: var.$color1;
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  
+  // Stato di default (nascosto)
+  opacity: 0;
+  transform: translateY(-20px);
+  pointer-events: none;
+  transition: opacity 0.4s ease, transform 0.4s ease;
 
-ul.nav-links {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  li {
-    padding: 0.8rem 0;
-    text-align: center;
-    a { color: $color4; font-size: 1.2rem; font-weight: 700; text-decoration: none; }
+  a {
+    color: var.$color4;
+    text-decoration: none;
+    font-size: 2rem;
+    font-weight: 700;
+    padding: 0.5rem;
+    cursor: pointer;
+    transition: color 0.2s;
+    &:hover { color: var.$color3; }
+  }
+  
+  hr {
+    width: 80%;
+    border: none;
+    height: 5px;
+    // border-top: 1px solid var.$color3;
+    background-color: var.$color3;
+  }
+
+  // --- CORREZIONE ---
+  // Ora questo blocco è un figlio diretto di .mobile-menu
+  &.is-open {
+    opacity: 1;
+    transform: scale(1) translateY(0); // L'elemento torna alla sua scala e posizione normale
+    pointer-events: auto;
   }
 }
 
-.user-section {
-  margin-top: 1rem;
-  padding-top: 1rem;
-  border-top: 1px solid lighten($color2, 20%);
-  text-align: center;
-  a, button { color: $color4; font-weight: 700; text-decoration: none; font-size: 1.2rem; }
-  .user-info { display: flex; flex-direction: column; align-items: center; gap: 1rem; button { background: $color2; border: none; border-radius: 8px; padding: 0.5rem 1rem; cursor: pointer; } }
-  .btn-login { background-color: $color2; padding: 0.6rem 2rem; border-radius: 8px; }
-}
-
-// 3. STILI PER IL DESKTOP (oltre i 768px)
-// ----------------------------------------------------------------
-@media (min-width: $breakpoint-desktop) {
+// ======================================================
+// Stili per Desktop (oltre i 768px)
+// ======================================================
+@media (min-width: 768px) {
   .navbar {
-    min-height: 160px;
-    padding: 1rem 3rem;
-    flex-wrap: nowrap;
+    padding: 1.5rem 2.5rem;
   }
   
-  .navbar-logo a, .navbar-logo a:hover, .navbar-logo a:visited, .navbar-logo a.active-link {
-    text-decoration: none !important;
-    color: $color3;
-  }
-
   .navbar-logo a h1 {
-    font-size: 3.5rem;
-    transition: transform 0.2s ease-in-out;
-    &:hover { transform: scale(1.03); }
+    font-size: 2.5rem;
   }
 
-  .navbar-toggler { display: none; }
+  // Nascondiamo l'hamburger su desktop
+  .navbar-toggler {
+    display: none;
+  }
 
-  .navbar-menu {
-    width: auto;
-    max-height: none;
-    overflow: visible;
-    margin-top: 0;
-    padding: 1.2rem 2rem; // Aumentato leggermente il padding per dare più aria
+  // Mostriamo le sezioni desktop
+  .navbar-links-desktop,
+  .navbar-user-desktop {
     display: flex;
-    align-items: center; // Mantiene tutto centrato verticalmente
-    gap: 2.5rem; // Aumentato lo spazio tra i gruppi di link e la sezione utente
+    align-items: center;
+    gap: 1.5rem;
   }
   
-  ul.nav-links {
-    display: flex;
-    align-items: center; // Centra verticalmente gli elementi della lista
-    gap: 2rem;
-    li { 
-      padding: 0;
-      a { 
-        transition: color 0.2s; 
-        white-space: nowrap; // <-- LA CORREZIONE DEFINITIVA
-        &:hover { color: white; } 
-      }
+  .navbar-links-desktop a {
+    color: var.$color4;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1.1rem;
+    padding: 0.5rem;
+    transition: color 0.2s;
+    border-bottom: 2px solid transparent;
+
+    &:hover,
+    &.active {
+      color: white;
+      border-bottom-color: var.$color3;
     }
   }
 
-  .user-section {
-    margin: 0; padding: 0; border: none;
-    .user-info { flex-direction: row; align-items: center; gap: 1.5rem; button { transition: background-color 0.2s; &:hover { background-color: darken($color2, 10%); } } }
-    .btn-login { transition: background-color 0.2s; &:hover { background-color: darken($color2, 10%); } }
+  .navbar-user-desktop {
+    gap: 1rem;
+    a { text-decoration: none; }
+    
+    .user-link {
+      color: white;
+      font-style: italic;
+      &:hover { color: var.$color4; }
+    }
+
+    .btn-login, .btn-logout {
+      border: none;
+      border-radius: 8px;
+      padding: 0.7rem 1.5rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-login {
+      background-color: var.$color3;
+      color: white;
+      &:hover { background-color: var.$color2; }
+    }
+    
+    .btn-logout {
+      background: transparent;
+      border: 2px solid var.$color3;
+      color: var.$color3;
+      &:hover { background: var.$color3; color: white; }
+    }
   }
 }
