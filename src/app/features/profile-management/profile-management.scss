@@ -375,3 +375,50 @@
     }
   }
 }
+
+// Stile per il badge del profilo principale
+.main-profile-badge {
+  background-color: var.$color2;
+  color: white;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+// Stile per la card principale (per farle risaltare)
+.profile-card.is-main-profile {
+  border-color: var.$color2;
+  // Sposta il badge quando ci sono i pulsanti di azione su desktop
+  @media (min-width: 768px) {
+    .main-profile-badge {
+      // Posizioniamolo sopra le azioni
+      right: calc(1.5rem + 80px + 1rem); // spazio dx + larghezza bottone + gap
+    }
+  }
+}
+
+// Stile per il nuovo pulsante "Imposta come Principale"
+.btn-set-main {
+  width: 100%;
+  padding: 0.75rem;
+  margin-top: 1rem;
+  border: 1px solid var.$color-border;
+  background: transparent;
+  color: var.$color1;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    background-color: var.$color-bg;
+    border-color: var.$color2;
+    color: var.$color2;
+  }
+}

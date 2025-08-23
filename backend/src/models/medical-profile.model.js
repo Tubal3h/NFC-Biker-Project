@@ -9,6 +9,11 @@ const medicalProfileSchema = new Schema({
         ref: 'User',
         required: true
     },
+    // --- CAMPO AGGIUNTO ---
+    // Indica se il profilo è attivo. Verrà impostato su 'false' per i profili
+    // secondari quando un account Premium torna a essere Gratuito.
+    isActive: { type: Boolean, default: true },
+
     // Un nome per riconoscere il profilo (es. "Mio Profilo", "Profilo di Sara")
     profileName: {
         type: String,

@@ -42,55 +42,91 @@ app.post('/api/register', async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
+    // 1. Crea l'utente in memoria (Mongoose gli assegna un _id temporaneo)
     const newUser = new User({ email, password: hashedPassword });
-    const savedUser = await newUser.save();
-
-    // --- ECCO LA CORREZIONE ---
-    // Quando creiamo il profilo di default, gli diamo esplicitamente un nome.
-    const newProfile = new MedicalProfile({
-      ownerId: savedUser._id,
+    
+    // 2. Crea il suo Profilo Principale, usando l'_id temporaneo dell'utente
+    const mainProfile = new MedicalProfile({
+      ownerId: newUser._id,
       profileName: 'Profilo Principale'
     });
-    await newProfile.save();
+    // Salva il profilo nel database
+    await mainProfile.save();
+
+    // 3. Ora che il profilo è salvato e ha un suo _id, lo colleghiamo all'utente
+    newUser.mainProfileId = mainProfile._id;
     
+    // 4. Solo adesso salviamo l'utente, che ora è completo di tutte le informazioni
+    const savedUser = await newUser.save();
+
+    // Prepariamo l'oggetto da restituire al frontend
     const userToReturn = savedUser.toObject();
+    delete userToReturn.password;
+    
     res.status(201).json({ success: true, data: userToReturn });
   } catch (error) {
-    console.error("Errore durante la registrazione:", error); // Aggiungiamo un log per il debug
+    console.error("Errore durante la registrazione:", error);
     res.status(500).json({ success: false, error: 'Errore interno del server' });
   }
 });
 
 
 // Login
+// in server.js
+
 app.post('/api/login', async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // 1. Trova l'utente nel database
+    // 1. Trova l'utente e la sua password
     const user = await User.findOne({ email: email.toLowerCase() }).select('+password');
     if (!user) {
       return res.status(401).json({ success: false, error: 'Credenziali non valide' });
     }
 
-    // 2. Verifica la corrispondenza della password
+    // 2. Verifica la password
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(401).json({ success: false, error: 'Credenziali non valide' });
     }
 
-    // 3. Recupera il profilo medico associato per arricchire la risposta
-    const profile = await MedicalProfile.findOne({ ownerId: user._id });
+    // --- NUOVA LOGICA DI CONTROLLO SCADENZA PREMIUM ---
+    // 3. Controlliamo se l'utente era premium e se il suo abbonamento è scaduto
+    if (user.premium && user.premiumExpiresAt && new Date() > user.premiumExpiresAt) {
+      console.log(`L'abbonamento premium per ${user.email} è scaduto. Avvio procedura di downgrade.`);
 
-    // 4. Prepara l'oggetto utente da inviare, rimuovendo la password
+      // A. Imposta lo stato premium a false
+      user.premium = false;
+      user.premiumExpiresAt = null;
+
+      // B. Disattiva tutti i profili tranne quello principale
+      await MedicalProfile.updateMany(
+        { ownerId: user._id, _id: { $ne: user.mainProfileId } }, // Trova tutti i profili che NON sono quello principale
+        { $set: { isActive: false } }
+      );
+
+      // C. Riassocia tutti i tag dell'utente al profilo principale
+      await Tag.updateMany(
+        { userId: user._id },
+        { $set: { profileId: user.mainProfileId } }
+      );
+      
+      // D. Salva le modifiche sull'utente
+      await user.save();
+      console.log(`Downgrade per ${user.email} completato.`);
+    }
+    // --- FINE LOGICA DI CONTROLLO ---
+
+    // 4. Recupera il profilo medico principale (che ora è l'unico attivo se l'utente è stato declassato)
+    const profile = await MedicalProfile.findOne({ ownerId: user._id, _id: user.mainProfileId });
+
+    // 5. Prepara l'oggetto finale da inviare al frontend
     const userObject = user.toObject();
     delete userObject.password;
 
-    // 5. Combina i dati dell'utente con quelli del suo profilo
     if (profile) {
       userObject.name = profile.name;
       userObject.surname = profile.surname;
-      // Ricostruisci l'oggetto medicalData per la compatibilità con il frontend
       userObject.medicalData = {
         bloodType: profile.bloodType,
         allergies: profile.allergies,
@@ -99,18 +135,15 @@ app.post('/api/login', async (req, res) => {
         emergencyContacts: profile.emergencyContacts
       };
     } else {
-      // Fallback nel caso in cui un utente non abbia un profilo medico
       userObject.name = '';
       userObject.surname = '';
       userObject.medicalData = {};
     }
-
-    // 6. Invia la risposta finale al frontend
+    
     res.json({ success: true, data: userObject });
 
   } catch (error) {
-    // Gestisce eventuali errori imprevisti
-    console.error("Errore durante il login:", error);
+    console.error("Errore critico durante il login:", error);
     res.status(500).json({ success: false, error: 'Errore interno del server' });
   }
 });
@@ -355,6 +388,63 @@ app.put('/api/profiles/:profileId', async (req, res) => {
   } catch (error) { res.status(500).json({ success: false, error: 'Errore server' }); }
 });
 
+// in server.js
+
+/* -------------------------------------------------------------------------- */
+/* IMPOSTA UN NUOVO PROFILO PRINCIPALE (SOLO PREMIUM)             */
+/* -------------------------------------------------------------------------- */
+app.patch('/api/user/:userId/set-main-profile', async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { newProfileId } = req.body;
+
+    // 1. Controlli di base
+    if (!newProfileId) {
+      return res.status(400).json({ success: false, error: 'ID del nuovo profilo non fornito.' });
+    }
+
+    // 2. Trova l'utente
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ success: false, error: 'Utente non trovato.' });
+    }
+
+    // 3. CONTROLLO DI SICUREZZA: Solo gli utenti Premium possono usare questa funzione
+    if (!user.premium) {
+      return res.status(403).json({ 
+        success: false, 
+        error: 'Questa funzionalità è riservata agli utenti Premium.' 
+      });
+    }
+
+    // 4. Trova il profilo che si vuole impostare come principale
+    const newMainProfile = await MedicalProfile.findById(newProfileId);
+
+    // 5. CONTROLLO DI SICUREZZA:
+    //    - Il profilo esiste?
+    //    - Il profilo appartiene effettivamente a questo utente?
+    if (!newMainProfile || newMainProfile.ownerId.toString() !== user._id.toString()) {
+      return res.status(403).json({ 
+        success: false, 
+        error: 'Non hai il permesso di impostare questo profilo come principale.' 
+      });
+    }
+
+    // 6. Se tutti i controlli sono superati, aggiorna l'utente
+    user.mainProfileId = newMainProfile._id;
+    await user.save();
+
+    res.json({ 
+      success: true, 
+      data: { message: 'Profilo principale aggiornato con successo.' } 
+    });
+
+  } catch (error) {
+    console.error("Errore durante l'impostazione del profilo principale:", error);
+    res.status(500).json({ success: false, error: 'Errore interno del server.' });
+  }
+});
+
 /* -------------------------------------------------------------------------- */
 /*                             CAMBIO NOME/COGNOME                            */
 /* -------------------------------------------------------------------------- */
@@ -427,25 +517,41 @@ app.post('/api/user/:userId/profiles', async (req, res) => {
 
 
 // 3. ELIMINA un profilo medico specifico
+// in server.js
+
+// ELIMINA un profilo medico specifico (Logica Aggiornata)
 app.delete('/api/profiles/:profileId', async (req, res) => {
   try {
     const { profileId } = req.params;
     
+    // 1. Trova il profilo che si vuole eliminare
     const profileToDelete = await MedicalProfile.findById(profileId);
     if (!profileToDelete) {
       return res.status(404).json({ success: false, error: 'Profilo non trovato.' });
     }
 
-    // Aggiungi un controllo di sicurezza: solo il proprietario può eliminare il suo profilo
-    // (Questa logica andrebbe migliorata con un middleware di autenticazione in futuro)
+    // --- NUOVO CONTROLLO DI SICUREZZA ---
+    // 2. Trova l'utente proprietario del profilo
+    const owner = await User.findById(profileToDelete.ownerId);
 
-    // Logica aggiuntiva: prima di eliminare il profilo, dobbiamo "liberare" i tag ad esso associati.
+    // 3. Controlla se il profilo da eliminare è il profilo principale
+    if (owner && owner.mainProfileId.toString() === profileToDelete._id.toString()) {
+      return res.status(403).json({ 
+        success: false, 
+        error: 'Non puoi eliminare il tuo profilo principale.' 
+      });
+    }
+    // --- FINE CONTROLLO ---
+
+    // 4. Se non è il profilo principale, procedi con l'eliminazione
     await Tag.updateMany({ profileId: profileId }, { $set: { profileId: null } });
-
     await MedicalProfile.findByIdAndDelete(profileId);
 
     res.json({ success: true, data: { message: 'Profilo eliminato con successo.' } });
-  } catch (error) { res.status(500).json({ success: false, error: 'Errore server' }); }
+  } catch (error) { 
+    console.error("Errore durante l'eliminazione del profilo:", error);
+    res.status(500).json({ success: false, error: 'Errore server' }); 
+  }
 });
 
 

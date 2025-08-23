@@ -13,6 +13,7 @@ const userSchema = new Schema({
     resetPasswordExpires: { type: Date, select: false },
     premium: { type: Boolean, default: false },
     premiumExpiresAt: { type: Date, default: null },
+    mainProfileId: { type: Schema.Types.ObjectId, ref: 'MedicalProfile', default: null },
     nfcTags: [{ type: Schema.Types.ObjectId, ref: 'Tag' }]
 }, {
     timestamps: true,

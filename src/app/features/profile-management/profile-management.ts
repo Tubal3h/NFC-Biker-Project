@@ -6,7 +6,7 @@ import { Router, RouterModule } from '@angular/router';
 import { ApiService } from '@app/core/services/api';
 import { AuthService } from '@app/core/services/auth';
 import { NotificationService } from '@app/core/services/notification';
-import { MedicalProfile, NfcTag } from '@app/core/models';
+import { MedicalProfile, NfcTag, AuthUser } from '@app/core/models';
 import { FormsModule } from '@angular/forms';
 import { forkJoin } from 'rxjs';
 
@@ -100,7 +100,7 @@ export class ProfileManagement implements OnInit {
     });
   }
 
-    openCreateModal(): void {
+  openCreateModal(): void {
     this.newProfileNameValue = '';
     this.isCreateModalVisible = true;
   }
@@ -177,7 +177,7 @@ export class ProfileManagement implements OnInit {
     });
   }
 
-    openTagSyncModal(profile: MedicalProfile): void {
+  openTagSyncModal(profile: MedicalProfile): void {
     this.profileToManage = profile;
     // Pre-popola il Set con i tag già associati a questo profilo
     const associatedTags = this.allUserTags.filter(t => t.profileId === profile.id);
@@ -215,6 +215,26 @@ export class ProfileManagement implements OnInit {
       this.notification.showSuccess('Associazioni salvate!');
       this.closeTagSyncModal();
       this.loadInitialData(); // Ricarica tutto
+    });
+  }
+
+    // --- NUOVA FUNZIONE PER CAMBIARE IL PROFILO PRINCIPALE ---
+  setAsMainProfile(profileId: string): void {
+    const userId = this.auth.user?.id;
+    if (!userId || !profileId) return;
+
+    this.api.setMainProfile(userId, profileId).subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.notification.showSuccess('Profilo principale aggiornato!');
+          // Aggiorniamo l'utente locale nell'AuthService per riflettere il cambiamento
+          const updatedUser = { ...this.auth.user!, mainProfileId: profileId };
+          this.auth.login(updatedUser as AuthUser); // Usiamo il metodo login per aggiornare lo stato
+        } else {
+          this.notification.showError(res.error || "Impossibile aggiornare il profilo.");
+        }
+      },
+      error: (err) => this.notification.showError(err.error?.error || "Errore di rete.")
     });
   }
 }

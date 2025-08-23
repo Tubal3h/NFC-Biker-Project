@@ -155,7 +155,10 @@ syncTagsForProfile(profileId: string, tagIds: string[], ownerId: string): Observ
   return this.http.post<ApiResponse<void>>(`${this.apiUrl}/profiles/${profileId}/sync-tags`, { tagIds, ownerId });
 }
 
-
+// in api.service.ts
+setMainProfile(userId: string, newProfileId: string): Observable<any> {
+  return this.http.patch(`${this.apiUrl}/user/${userId}/set-main-profile`, { newProfileId });
+}
 
 
 
