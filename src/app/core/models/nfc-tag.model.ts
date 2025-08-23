@@ -4,4 +4,5 @@ export interface NfcTag {
   userId: string | null;
   createdAt: string;
   alias: string | null;
+  profileId: string | null; // Questo è il nuovo riferimento al profilo medico
 }

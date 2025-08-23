@@ -1,137 +1,167 @@
-<!-- ====================================================== -->
-<!-- 1. POPUP DI PRIVACY (Bloccante) -->
-<!-- ====================================================== -->
-<div *ngIf="showPrivacyPopup" class="privacy-popup-backdrop">
-  <div class="privacy-popup">
-    <h3><i class="fas fa-exclamation-triangle"></i> Accesso Riservato</h3>
-    <p>
-      Stai per visualizzare dati sanitari sensibili. L'accesso è consentito 
-      <b>esclusivamente in caso di emergenza sanitaria</b>.
-      Ogni accesso viene registrato.
-    </p>
-    <div class="info-box">
-      <b>IP rilevato:</b> {{ visitorIp || 'Rilevamento...' }}<br>
-      <b>Posizione:</b> {{ visitorLocation || 'Rilevamento...' }}
-    </div>
-    <div class="popup-actions">
-      <button (click)="acceptPrivacy()" class="btn-access">Accetto e Accedi</button>
-      <button (click)="cancelAndGoBack()" class="btn-cancel">Annulla</button>
+@if (showPrivacyPopup) {
+  <div class="privacy-popup-backdrop">
+    <div class="privacy-popup">
+      <h3><i class="fas fa-exclamation-triangle"></i> Accesso Riservato</h3>
+      <p>
+        Stai per visualizzare dati sanitari sensibili. L'accesso è consentito 
+        <b>esclusivamente in caso di emergenza sanitaria</b>.
+        Ogni accesso viene registrato.
+      </p>
+      <div class="info-box">
+        <b>IP rilevato:</b> {{ visitorIp || 'Rilevamento...' }}<br>
+        <b>Posizione:</b> {{ visitorLocation || 'Rilevamento...' }}
+      </div>
+      <div class="popup-actions">
+        <button (click)="acceptPrivacy()" class="btn-access">Accetto e Accedi</button>
+        <button (click)="cancelAndGoBack()" class="btn-cancel">Annulla</button>
+      </div>
     </div>
   </div>
-</div>
-
+}
 
 <!-- ====================================================== -->
 <!-- 2. CONTENUTO DELLA PAGINA -->
-<!-- Appare solo se il popup NON è attivo -->
 <!-- ====================================================== -->
-<div *ngIf="!showPrivacyPopup" class="scheda-container">
+@if (!showPrivacyPopup) {
+  <div class="scheda-container">
 
-  <!-- STATO DI CARICAMENTO -->
-  <div *ngIf="isLoading" class="scheda-state">
-    <div class="spinner"></div>
-    Caricamento in corso...
-  </div>
+    <!-- STATO DI CARICAMENTO -->
+    @if (isLoading) {
+      <div class="scheda-state">
+        <div class="spinner"></div>
+        Caricamento in corso...
+      </div>
+    }
 
-  <!-- STATO DI ERRORE VERO E PROPRIO -->
-  <div *ngIf="!isLoading && errorMsg && !isCardEmpty" class="scheda-state">
-    <div class="icon-error">!</div>
-    <div class="alert">{{ errorMsg }}</div>
-  </div>
+    <!-- STATO DI ERRORE VERO E PROPRIO -->
+    @if (!isLoading && errorMsg && !isCardEmpty) {
+      <div class="scheda-state">
+        <div class="icon-error">!</div>
+        <div class="alert">{{ errorMsg }}</div>
+      </div>
+    }
 
-  <!-- STATO "SCHEDA VUOTA" -->
-  <div *ngIf="!isLoading && isCardEmpty" class="scheda-state">
-    <div class="icon-error">!</div>
-    <div class="alert">Scheda medica non compilata.</div>
-    
-    <!-- Pulsanti intelligenti, mostrati solo in questo stato -->
-    <div>
-      <button *ngIf="isLoggedIn && isOwner" class="btn-action" (click)="goToDashboard()">
-        Vai alla Dashboard per Compilare
+    <!-- STATO "SCHEDA VUOTA" -->
+    @if (!isLoading && isCardEmpty) {
+      <div class="scheda-state">
+        <div class="icon-error">!</div>
+        <div class="alert">Scheda medica non compilata.</div>
+        <div>
+          <!-- Usiamo auth.isLogged per il controllo diretto nel template -->
+          @if (auth.isLogged && isOwner) {
+            <button class="btn-action" (click)="goToDashboard()">
+              Vai alla Dashboard per Compilare
+            </button>
+          } @else if (!auth.isLogged) {
+            <button class="btn-action" (click)="goToLogin()">
+              Fai il Login per Compilare
+            </button>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- SCHEDA MEDICA COMPILATA E VISIBILE -->
+    @if (!isLoading && !errorMsg && !isCardEmpty && medicalData && user) {
+      <div class="scheda-wrapper">
+        
+        <!-- Banner di Avviso Fisso -->
+        <div class="warning-banner">
+          <div class="warning-icon"><i class="fas fa-exclamation-triangle"></i></div>
+          <div class="warning-text">
+            <b>Accesso Riservato:</b> Stai visualizzando dati sanitari sensibili. L'utilizzo è consentito solo in caso di reale emergenza.
+          </div>
+        </div>
+
+        <div class="scheda-header">
+          <i class="icon-header fas fa-id-card"></i>
+          <h2>Scheda Sanitaria</h2>
+        </div>
+
+        <!-- Nome e Cognome -->
+        <div class="info-item">
+          <div class="icon"><i class="fas fa-user"></i></div>
+          <div class="text">
+            <div class="label">Nome e Cognome</div>
+            <div class="value">{{ medicalData.name }} {{ medicalData.surname }}</div>
+          </div>
+        </div>
+        
+        <!-- Gruppo Sanguigno -->
+        <div class="info-item info-item--critical">
+          <div class="icon"><i class="fas fa-tint"></i></div>
+          <div class="text">
+            <div class="label">Gruppo Sanguigno</div>
+            <div class="value">{{ medicalData.bloodType || 'Non specificato' }}</div>
+          </div>
+        </div>
+        
+        <!-- Allergie -->
+        <div class="info-item info-item--critical">
+          <div class="icon"><i class="fas fa-allergies"></i></div>
+          <div class="text">
+            <div class="label">Allergie</div>
+            <div class="value">{{ medicalData.allergies || 'Nessuna' }}</div>
+          </div>
+        </div>
+        
+        <!-- Patologie -->
+        <div class="info-item">
+          <div class="icon"><i class="fas fa-notes-medical"></i></div>
+          <div class="text">
+            <div class="label">Patologie Rilevanti</div>
+            <div class="value">{{ medicalData.conditions || 'Nessuna' }}</div>
+          </div>
+        </div>
+        
+        <!-- Note Aggiuntive -->
+        <div class="info-item">
+          <div class="icon"><i class="fas fa-sticky-note"></i></div>
+          <div class="text">
+            <div class="label">Note Aggiuntive</div>
+            <div class="value">{{ medicalData.notes || 'Nessuna' }}</div>
+          </div>
+        </div>
+        
+        <!-- Contatti d'Emergenza -->
+        @if (medicalData.emergencyContacts && medicalData.emergencyContacts.length > 0) {
+          <div class="info-item">
+            <div class="icon"><i class="fas fa-address-book"></i></div>
+            <div class="text">
+              <div class="label">Contatti d'Emergenza</div>
+              <ul class="contacts-list">
+                @for (c of medicalData.emergencyContacts; track c.phone) {
+                  <li>
+                    <b>{{ c.name }}</b> ({{ c.relation }})<br>
+                    <a class="phone-link" [href]="'tel:' + c.phone">
+                      <i class="fas fa-phone-alt"></i>
+                      {{ c.phone }}
+                    </a>
+                  </li>
+                }
+              </ul>
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+    @if (isOwner && auth.user?.premium && availableProfiles.length > 1) {
+  <div class="profile-switcher">
+    <h4><i class="fas fa-sync-alt"></i> Cambia Profilo Associato</h4>
+    <p>Questo casco sta mostrando il profilo medico di <strong>{{ medicalData?.profileName }}</strong>. Puoi cambiarlo con un altro dei tuoi profili.</p>
+    <div class="switcher-form">
+      <select [(ngModel)]="selectedProfileId">
+        @for (profile of availableProfiles; track profile.id) {
+          <option [value]="profile.id">{{ profile.profileName }}</option>
+        }
+      </select>
+      <button (click)="onProfileSwitch()" [disabled]="isSwitching">
+        {{ isSwitching ? 'Salvo...' : 'Salva' }}
       </button>
-      <button *ngIf="!isLoggedIn" class="btn-action" (click)="goToLogin()">
-        Fai il Login per Compilare
-      </button>
     </div>
   </div>
-
-  <!-- SCHEDA MEDICA COMPILATA E VISIBILE -->
-  <div *ngIf="!isLoading && !errorMsg && !isCardEmpty && medicalData && user" class="scheda-wrapper">
-    
-    <!-- Banner di Avviso Fisso -->
-    <div class="warning-banner">
-      <div class="warning-icon"><i class="fas fa-exclamation-triangle"></i></div>
-      <div class="warning-text">
-        <b>Accesso Riservato:</b> Stai visualizzando dati sanitari sensibili. L'utilizzo è consentito solo in caso di reale emergenza.
-      </div>
-    </div>
-
-    <div class="scheda-header">
-      <i class="icon-header fas fa-id-card"></i>
-      <h2>Scheda Sanitaria</h2>
-    </div>
-
-    <!-- Nome e Cognome -->
-    <div class="info-item">
-      <div class="icon"><i class="fas fa-user"></i></div>
-      <div class="text">
-        <div class="label">Nome e Cognome</div>
-        <div class="value">{{ user.name }} {{ user.surname }}</div>
-      </div>
-    </div>
-    
-    <!-- Gruppo Sanguigno -->
-    <div class="info-item info-item--critical">
-      <div class="icon"><i class="fas fa-tint"></i></div>
-      <div class="text">
-        <div class="label">Gruppo Sanguigno</div>
-        <div class="value">{{ medicalData.bloodType || 'Non specificato' }}</div>
-      </div>
-    </div>
-    
-    <!-- Allergie -->
-    <div class="info-item info-item--critical">
-      <div class="icon"><i class="fas fa-allergies"></i></div>
-      <div class="text">
-        <div class="label">Allergie</div>
-        <div class="value">{{ medicalData.allergies || 'Nessuna' }}</div>
-      </div>
-    </div>
-    
-    <!-- Patologie -->
-    <div class="info-item">
-      <div class="icon"><i class="fas fa-notes-medical"></i></div>
-      <div class="text">
-        <div class="label">Patologie Rilevanti</div>
-        <div class="value">{{ medicalData.conditions || 'Nessuna' }}</div>
-      </div>
-    </div>
-    
-    <!-- Note -->
-    <div class="info-item">
-      <div class="icon"><i class="fas fa-sticky-note"></i></div>
-      <div class="text">
-        <div class="label">Note Aggiuntive</div>
-        <div class="value">{{ medicalData.notes || 'Nessuna' }}</div>
-      </div>
-    </div>
-    
-    <!-- Contatti d'Emergenza -->
-    <div class="info-item" *ngIf="medicalData.emergencyContacts?.length">
-      <div class="icon"><i class="fas fa-address-book"></i></div>
-      <div class="text">
-        <div class="label">Contatti d'Emergenza</div>
-        <ul class="contacts-list">
-          <li *ngFor="let c of medicalData.emergencyContacts">
-            <b>{{ c.name }}</b> ({{ c.relation }})<br>
-            <a class="phone-link" [href]="'tel:' + c.phone">
-              <i class="fas fa-phone-alt"></i>
-              {{ c.phone }}
-            </a>
-          </li>
-        </ul>
-      </div>
-    </div>
+}
 
   </div>
-</div>
+}

@@ -1,45 +1,60 @@
-// Variabili
-$form-bg: #ffffff;
-$form-border: #dcdfe6;
-$label-color: #606266;
-$input-focus-border: #D84040;
-$btn-save-bg: #8E1616;
-$btn-add-bg: #337ab7;
-$btn-remove-bg: #dc3545;
+// in src/app/features/medical-form/medical-form.scss
+
+@use 'styles/variables' as var;
+@use 'styles/mixins';
+
+/* ======================================================
+   Stili Generali del Form
+   ====================================================== */
 
 .form-container {
   max-width: 800px;
   margin: 2rem auto;
-  padding: 2rem;
-  background: $form-bg;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  padding: 1rem;
+
+  @media (min-width: 768px) {
+    padding: 2rem;
+  }
 }
 
 .form-header {
   text-align: center;
   margin-bottom: 2.5rem;
+  
   .back-link {
     display: inline-block;
-    color: $label-color;
+    color: rgba(var.$color4, 0.8);
     text-decoration: none;
     margin-bottom: 1rem;
-    &:hover { color: $input-focus-border; }
+    transition: color 0.2s;
+    &:hover { color: white; }
   }
-  h1 { font-size: 2.2rem; color: #1D1616; margin-bottom: 0.5rem; }
-  p { font-size: 1.1rem; color: #888; }
+  
+  h1 { 
+    font-size: 2.2rem;
+    color: white; // Colore per tema scuro
+    margin-bottom: 0.5rem;
+  }
+  
+  p { 
+    font-size: 1.1rem;
+    color: rgba(var.$color4, 0.7); // Colore per tema scuro
+  }
 }
 
 fieldset {
-  border: 1px solid $form-border;
+  border: 1px solid var.$color-border;
+  background: white;
+  color: var.$color1;
   border-radius: 8px;
   padding: 1.5rem;
   margin-bottom: 2rem;
+  
   legend {
     padding: 0 0.5rem;
     font-size: 1.3rem;
     font-weight: 600;
-    color: $input-focus-border;
+    color: var.$color2;
   }
 }
 
@@ -53,79 +68,252 @@ fieldset {
 
 .form-group {
   margin-bottom: 1.2rem;
+  
   label {
     display: block;
     margin-bottom: 0.5rem;
     font-weight: 600;
-    color: $label-color;
+    color: #606266;
   }
+
   input, textarea, select {
     width: 100%;
     padding: 0.8rem 1rem;
-    border: 1px solid $form-border;
+    border: 1px solid var.$color-border;
     border-radius: 6px;
     font-size: 1rem;
     transition: border-color 0.2s, box-shadow 0.2s;
+    
     &:focus {
       outline: none;
-      border-color: $input-focus-border;
-      box-shadow: 0 0 0 2px lighten($input-focus-border, 30%);
+      border-color: var.$color2;
+      box-shadow: 0 0 0 3px rgba(var.$color2, 0.15);
     }
   }
 }
 
-.photo-placeholders {
+/* ======================================================
+   Stili per la Lista Contatti d'Emergenza
+   ====================================================== */
+
+.contacts-header {
   display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  
+  h4 { margin: 0; font-size: 1.2rem; color: var.$color1; }
+  p { margin: 0; color: #888; }
+}
+
+.contacts-list {
+  display: flex;
+  flex-direction: column;
   gap: 1rem;
-  .placeholder-box {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 120px;
-    border: 2px dashed $form-border;
-    border-radius: 8px;
-    color: #aaa;
-    i { font-size: 2rem; margin-bottom: 0.5rem; }
+  margin-bottom: 1.5rem;
+}
+
+.contact-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap; // Va a capo su schermi piccoli
+  gap: 1rem;
+  padding: 1rem;
+  background: var.$color-bg;
+  border: 1px solid var.$color-border;
+  border-radius: 8px;
+}
+
+.contact-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  
+  .contact-name { font-weight: 600; font-size: 1.1rem; color: var.$color1; }
+  .contact-phone { color: #555; display: flex; align-items: center; gap: 0.5rem; }
+}
+
+.contact-actions {
+  display: flex;
+  gap: 0.75rem;
+  
+  button {
+    border: none;
+    background: transparent;
+    font-weight: 600;
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    
+    &.btn-edit { color: #337ab7; &:hover { background-color: lighten(#337ab7, 40%); } }
+    &.btn-remove { color: var.$color3; &:hover { background-color: lighten(var.$color3, 35%); } }
   }
 }
 
-.contact-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr auto;
-  gap: 1rem;
+.no-contacts-message {
+  text-align: center;
+  padding: 2rem;
+  color: #888;
+  font-style: italic;
+  background-color: var.$color-bg;
+  border-radius: 8px;
+}
+
+.btn-add-contact {
+  width: 100%;
+  display: flex;
+  justify-content: center;
   align-items: center;
-  margin-bottom: 1rem;
-}
-
-.btn-add-contact, .btn-remove-contact, .btn-save {
-  border: none;
-  padding: 0.8rem 1.2rem;
-  border-radius: 6px;
-  color: white;
+  gap: 0.75rem;
+  padding: 1rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border: 2px dashed var.$color-border;
+  background: transparent;
+  color: #555;
   cursor: pointer;
-  transition: opacity 0.2s;
-  &:hover { opacity: 0.85; }
+  border-radius: 8px;
+  transition: all 0.2s;
+  
+  &:hover:not(:disabled) {
+    border-color: var.$color2;
+    background: rgba(var.$color2, 0.05);
+    color: var.$color2;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    border-style: solid;
+  }
 }
 
-.btn-add-contact { background-color: $btn-add-bg; }
-.btn-remove-contact { background-color: $btn-remove-bg; padding: 0.8rem; }
+/* ======================================================
+   Stili Generali Azioni e Stati
+   ====================================================== */
+
+.form-actions { 
+  margin-top: 2rem; 
+}
+
 .btn-save {
   display: block;
   width: 100%;
   font-size: 1.2rem;
   font-weight: 600;
-  background-color: $btn-save-bg;
-  &:disabled { background-color: lighten($btn-save-bg, 20%); cursor: not-allowed; }
+  padding: 1rem;
+  border-radius: 8px;
+  background-color: var.$color2;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  
+  &:hover:not(:disabled) { background-color: var.$color3; }
+  &:disabled { background-color: lighten(var.$color2, 20%); cursor: not-allowed; }
 }
-
-.form-actions { margin-top: 2rem; }
 
 .loading-indicator {
   text-align: center;
   padding: 4rem;
   font-size: 1.2rem;
-  color: #888;
+  color: var.$color4; // Colore per tema scuro
   font-weight: 600;
+}
+
+/* ======================================================
+   Stili per i Popup Modali (Conferma e Contatti)
+   ====================================================== */
+
+.modal-backdrop {
+  position: fixed; z-index: 1050; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(var.$color1, 0.6); backdrop-filter: blur(5px);
+  display: flex; align-items: center; justify-content: center; padding: 1rem;
+}
+
+.modal-content {
+  background: white; padding: 2rem 2.5rem; border-radius: 16px;
+  max-width: 500px; width: 100%; box-shadow: 0 10px 50px rgba(0,0,0,0.2);
+  
+  h3 {
+    text-align: center; margin-top: 0; font-size: 1.8rem;
+    font-weight: 700; color: var.$color1;
+  }
+  
+  p {
+    text-align: center; color: #6c757d;
+    margin-bottom: 2rem; font-size: 1.1rem;
+  }
+}
+
+.modal-actions {
+  display: flex; justify-content: flex-end; gap: 1rem; margin-top: 2rem;
+  
+  button {
+    border: none; padding: 0.8rem 1.8rem; font-size: 1rem;
+    font-weight: 600; border-radius: 8px; cursor: pointer; transition: all 0.2s;
+  }
+
+  .btn-cancel {
+    background: var.$color4; color: var.$color1;
+    &:hover { background: darken(var.$color4, 10%); }
+  }
+
+  .btn-confirm {
+    background: var.$color2; color: white;
+    &:hover:not(:disabled) { background: var.$color3; }
+    &:disabled {
+      background-color: lighten(var.$color2, 20%);
+      cursor: not-allowed;
+    }
+  }
+}
+
+.confirm-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: var.$color-bg;
+  border: 1px solid var.$color-border;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  color: var.$color1;
+
+  input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+    border: 2px solid darken(var.$color4, 20%);
+    border-radius: 4px;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s;
+
+    &:focus {
+      outline: none;
+      border-color: var.$color3;
+    }
+    
+    &:checked {
+      background-color: var.$color-success;
+      border-color: var.$color-success;
+      
+      &::after {
+        content: '✔';
+        position: absolute;
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        top: 50%; left: 50%;
+        transform: translate(-50%, -50%);
+      }
+    }
+  }
 }

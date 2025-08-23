@@ -322,3 +322,73 @@ $color-accent-light: lighten(var.$color3, 35%);
   color: var.$color1;
   &:hover { background: darken(var.$color4, 10%); }
 }
+
+/* ======================================================
+   Stili per la Sezione "Switch Profilo"
+   ====================================================== */
+   
+.profile-switcher {
+  background-color: var.$color4;
+  padding: 1.5rem;
+  margin: 1rem;
+  border-radius: 12px;
+  border: 1px solid var.$color-border;
+  text-align: center;
+
+  h4 {
+    margin-top: 0;
+    margin-bottom: 0.75rem;
+    font-size: 1.3rem;
+    color: var.$color1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+  }
+
+  p {
+    color: #555;
+    margin-bottom: 1.5rem;
+  }
+}
+
+.switcher-form {
+  display: flex;
+  flex-direction: column; // Su mobile
+  gap: 1rem;
+  max-width: 400px;
+  margin: 0 auto;
+
+  @media (min-width: 768px) {
+    flex-direction: row; // Affiancati su desktop
+  }
+
+  select {
+    flex-grow: 1;
+    padding: 0.8rem 1rem;
+    border: 1px solid var.$color-border;
+    border-radius: 8px;
+    font-size: 1rem;
+    background-color: white;
+    cursor: pointer;
+  }
+
+  button {
+    background: var.$color2;
+    color: white;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+
+    &:hover:not(:disabled) {
+      background-color: var.$color3;
+    }
+    &:disabled {
+      background-color: lighten(var.$color2, 20%);
+      cursor: not-allowed;
+    }
+  }
+}

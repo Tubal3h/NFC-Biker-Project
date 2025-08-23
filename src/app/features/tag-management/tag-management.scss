@@ -1,103 +1,189 @@
 // in src/app/features/tag-management/tag-management.scss
 
-// 1. Importiamo i nostri strumenti condivisi
 @use 'styles/variables' as var;
 @use 'styles/mixins';
 
-// 3. Applichiamo gli stili
+/* ======================================================
+   Stili Contenitore Principale
+   ====================================================== */
 .management-container {
   max-width: 900px;
-  margin: 2rem auto;
+  margin: 1rem auto;
   padding: 1rem;
-
-  // ====================================================
-  // --- ECCO LA CORREZIONE ---
-  // Applichiamo i mixin direttamente alle classi usate nell'HTML
-  // ====================================================
-  .page-header {
-    @include mixins.page-header;
-  }
-  .state-container {
-    @include mixins.page-state-container;
-  }
 }
 
-// Stile specifico per la tabella
+.page-header {
+  @include mixins.page-header;
+  // USA VARIABILE: Testo secondario con opacità per un grigio tematico
+  a { color: rgba(var.$color4, 0.7); }
+  h1 { color: rgba(var.$color3, 0.7); }
+  p { color: rgba(var.$color4, 0.7); }
+}
+.state-container {
+  @include mixins.page-state-container;
+}
+
+/* ======================================================
+   Stile Card Responsive (Mobile First)
+   ====================================================== */
+
 .table-container {
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-  overflow-x: auto;
   margin-top: 2rem;
+  width: 100%;
 }
 
 table {
   width: 100%;
   border-collapse: collapse;
-  th, td {
-    padding: 1rem 1.25rem;
-    text-align: left;
-    border-bottom: 1px solid var.$color-border;
+  color: var.$color1;
+}
+
+thead {
+  display: none;
+}
+
+tr {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  margin-bottom: 1.5rem;
+  background: white;
+  border-radius: 16px;
+  // USA VARIABILE: Ombra e bordo usano i colori di sistema
+  box-shadow: 0 4px 25px rgba(var.$color1, 0.07);
+  border: 1px solid var.$color-border;
+  padding: 1.5rem;
+  position: relative;
+}
+
+td {
+  display: block;
+  border: none;
+  padding: 0;
+  text-align: left;
+  &::before { display: none; }
+}
+
+// --- Sezione Header della Card ---
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.card-title {
+  .alias {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var.$color1; // Usa nero profondo
+    display: block;
   }
-  thead {
-    background-color: var.$color-bg;
-    th {
-      font-size: 0.9rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      color: #6c757d;
-    }
-  }
-  tbody {
-    tr:last-child {
-      td { border-bottom: none; }
-    }
-    .nfc-id {
-      font-family: monospace;
-      font-weight: 600;
-      color: var.$color1;
-    }
+  .nfc-id {
+    font-family: monospace;
+    font-size: 0.9rem;
+    color: rgba(var.$color1, 0.6); // Usa nero profondo con opacità
   }
 }
 
-// Stile per i pulsanti di azione
 .actions {
   display: flex;
-  gap: 0.75rem;
+  gap: 0.5rem;
   
   button {
-    border: none;
+    border: 1px solid var.$color-border;
     background: transparent;
     cursor: pointer;
-    font-size: 1.1rem;
-    padding: 0.5rem;
-    border-radius: 6px;
-    transition: background-color 0.2s, color 0.2s;
+    font-size: 1rem;
+    padding: 0;
+    border-radius: 8px;
+    width: 40px;
+    height: 40px;
+    display: grid;
+    place-items: center;
+    transition: all 0.2s ease;
 
     &.btn-rename {
-      color: #337ab7;
-      &:hover { background-color: lighten(#337ab7, 40%); }
+      color: var.$color1;
+      &:hover {
+        background-color: var.$color4; // Usa grigio chiaro
+        border-color: var.$color4;
+      }
     }
     &.btn-dissociate {
-      color: var.$color3;
-      &:hover { background-color: lighten(var.$color3, 35%); }
+      color: var.$color3; // Usa rosso vibrante
+      border-color: transparent;
+      &:hover {
+        background-color: rgba(var.$color3, 0.1); // Usa rosso con opacità
+      }
     }
   }
 }
 
-.alias {
-  font-weight: bold;
-  color: #1D1616;
+// --- Sezione Dettagli della Card ---
+.card-details {
+  td[data-label="Data di Associazione"] {
+    font-size: 1rem;
+    color: var.$color1; // Usa nero profondo
+    
+    &::before {
+      content: 'Associato il';
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: rgba(var.$color1, 0.6); // Usa nero con opacità per l'etichetta
+      margin-bottom: 0.25rem;
+    }
+  }
+}
+
+/* =================================================================
+   Breakpoint per Tablet e Desktop (> 768px)
+   ================================================================= */
+@media (min-width: 768px) {
+  thead { display: table-header-group; }
+  tr {
+    display: table-row;
+    flex-direction: row;
+    gap: 0;
+    box-shadow: none;
+    border: none;
+    padding: 0;
+    border-bottom: 1px solid var.$color-border;
+  }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background-color: var.$color-bg; } // Usa sfondo neutro
+
+  td {
+    display: table-cell;
+    padding: 1.25rem;
+    vertical-align: middle;
+    &::before { display: none; }
+  }
+
+  .card-header, .card-details, .card-title { display: contents; }
+  .actions { justify-content: flex-start; }
+
+  .table-container {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 25px rgba(var.$color1, 0.07);
+    border: 1px solid var.$color-border;
+    overflow: hidden;
+  }
 }
 
 /* ======================================================
-   Stili per il Popup Modale di Rinomina (FINALE)
+   Stili per i Popup Modali
    ====================================================== */
 
 .modal-backdrop {
   position: fixed;
   z-index: 1050;
-  top: 0; left: 0; right: 0; bottom: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background: rgba(var.$color1, 0.6);
   backdrop-filter: blur(5px);
   display: flex;
@@ -113,7 +199,7 @@ table {
   max-width: 500px;
   width: 100%;
   box-shadow: 0 10px 50px rgba(0, 0, 0, 0.2);
-  
+
   h3 {
     text-align: center;
     margin-top: 0;
@@ -121,7 +207,6 @@ table {
     font-weight: 700;
     color: var.$color1;
   }
-  
   p {
     text-align: center;
     color: #6c757d;
@@ -129,19 +214,14 @@ table {
     font-size: 1.1rem;
   }
 
-  // --- ECCO LA CORREZIONE FONDAMENTALE ---
-  // Applichiamo esattamente lo stesso stile dei form di login/register
   .form-group {
-    margin-bottom: 1.5rem;
-    text-align: left; // Allinea a sinistra
-
+    text-align: left;
     label {
       display: block;
       font-weight: 600;
-      margin-bottom: 0.5rem; // Stacca la label dall'input
-      color: var.$color1; // Rende la label scura e leggibile
+      margin-bottom: 0.5rem;
+      color: var.$color1;
     }
-
     input {
       width: 100%;
       padding: 0.8rem 1rem;
@@ -149,8 +229,6 @@ table {
       border-radius: 8px;
       font-size: 1rem;
       background-color: lighten(var.$color4, 2%);
-      transition: border-color 0.2s, box-shadow 0.2s;
-
       &:focus {
         outline: none;
         border-color: var.$color3;
@@ -164,7 +242,6 @@ table {
   justify-content: flex-end;
   gap: 1rem;
   margin-top: 2rem;
-
   button {
     border: none;
     padding: 0.8rem 1.8rem;
@@ -174,16 +251,34 @@ table {
     cursor: pointer;
     transition: all 0.2s;
   }
-
   .btn-cancel {
     background: var.$color4;
     color: var.$color1;
-    &:hover { background: darken(var.$color4, 10%); }
+    &:hover {
+      background: darken(var.$color4, 10%);
+    }
   }
-
   .btn-confirm {
     background: var.$color2;
     color: white;
-    &:hover { background: var.$color3; }
+    &:hover {
+      background: var.$color3;
+    }
+  }
+}
+
+// Stile specifico per il popup di pericolo (cancellazione)
+.modal-content.modal-danger {
+  border-top: 5px solid var.$color2;
+  h3 {
+    color: var.$color2;
+  }
+}
+
+.btn-confirm-delete {
+  background-color: var.$color2;
+  color: white;
+  &:hover {
+    background-color: darken(var.$color2, 10%);
   }
 }

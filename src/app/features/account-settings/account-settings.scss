@@ -1,48 +1,108 @@
-// Usiamo @import per ereditare tutti gli stili del form medico,
-// garantendo un'estetica coerente in tutta l'area riservata.
-@import '../medical-form/medical-form.scss';
+// in src/app/features/account-settings/account-settings.scss
 
-// Aggiungiamo solo le piccole regole specifiche per questa pagina.
+// 1. Tutti gli @use devono essere in cima al file, senza eccezioni.
+@use 'styles/variables' as var;
+@use 'styles/mixins';
+
+// ======================================================
+// --- Stili Principali della Pagina ---
+// ======================================================
+
 .settings-container {
-  // Rinominiamo il contenitore principale per coerenza con l'HTML
-  @extend .form-container; 
+  // Usiamo il mixin per lo stile del contenitore (card bianca, etc.)
+  @include mixins.form-container;
   
   .settings-header {
-    @extend .form-header;
-  }
-  
-  // Stile per l'input dell'email disabilitato
-  input:disabled {
-    background-color: #f4f5f7; // Un grigio leggero
-    cursor: not-allowed;
-    color: #888;
+    // Usiamo il mixin per lo stile dell'header (titolo, sottotitolo)
+    @include mixins.page-header; 
   }
 }
 
-// in src/app/features/account-settings/account-settings.scss
+// Stile generico per i form all'interno della pagina
+form {
+  fieldset {
+    border: 1px solid var.$color-border;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    
+    legend {
+      padding: 0 0.5rem;
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: var.$color2;
+    }
+  }
 
-// Stili per la sezione Premium
+  .form-grid {
+    display: grid;
+    gap: 1.5rem;
+    @media (min-width: 768px) {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  
+  .form-group {
+    margin-bottom: 1.5rem;
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: var.$color1;
+    }
+    input {
+      width: 100%;
+      padding: 0.8rem 1rem;
+      border: 1px solid darken(var.$color4, 15%);
+      border-radius: 8px;
+      font-size: 1rem;
+      background-color: lighten(var.$color4, 2%);
+      transition: border-color 0.2s;
+      &:focus {
+        outline: none;
+        border-color: var.$color3;
+      }
+    }
+  }
+
+  .form-actions {
+    margin-top: 1rem;
+  }
+
+  .btn-save {
+    @include mixins.btn-save;
+  }
+}
+
+// Stile specifico per l'input disabilitato
+input:disabled {
+  background-color: var.$color4;
+  cursor: not-allowed;
+  color: #888;
+}
+
+// ======================================================
+// --- Stili per la Sezione Premium ---
+// ======================================================
+
 .premium-promo {
   text-align: center;
-
   p {
     font-size: 1.1rem;
     color: #666;
     line-height: 1.6;
     margin-bottom: 2rem;
   }
-
   .form-group {
     max-width: 400px;
-    margin-left: auto;
-    margin-right: auto;
+    margin: 0 auto 1.5rem auto;
     text-align: left;
   }
 }
 
 .btn-premium {
-  @extend .btn-save; // Eredita lo stile del pulsante di salvataggio
-  background: #f0ad4e; // Un colore dorato per il premium
+  @include mixins.btn-save;
+  background: #f0ad4e; // Colore dorato
   &:hover:not(:disabled) {
     background: darken(#f0ad4e, 10%);
   }
@@ -54,7 +114,6 @@
   background-color: lighten(#f0ad4e, 40%);
   border: 1px solid lighten(#f0ad4e, 30%);
   border-radius: 12px;
-
   h3 {
     color: darken(#f0ad4e, 20%);
     margin-top: 0;
@@ -64,7 +123,6 @@
     justify-content: center;
     gap: 0.75rem;
   }
-
   p {
     font-size: 1.1rem;
     color: #666;

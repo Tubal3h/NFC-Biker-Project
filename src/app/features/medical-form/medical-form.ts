@@ -3,114 +3,174 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import { ApiService } from '@app/core/services/api';
+import { NotificationService } from '@app/core/services/notification';
+import { MedicalProfile, EmergencyContact } from '@app/core/models';
 import { AuthService } from '@app/core/services/auth';
-import { MedicalData, AuthUser } from '@app/core/models';
-import { filter, switchMap, take } from 'rxjs'; // <-- Importa gli operatori RxJS
 
 @Component({
   selector: 'app-medical-form',
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './medical-form.html',
-  styleUrl: './medical-form.scss'
+  styleUrls: ['./medical-form.scss']
 })
 export class MedicalForm implements OnInit {
   private api = inject(ApiService);
-  private auth = inject(AuthService);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
+  private notification = inject(NotificationService);
+  auth = inject(AuthService); // Inietta AuthService e rendilo pubblico
 
+  private profileId: string | null = null;
   isLoading = true;
   isSaving = false;
+  
+  // Proprietà per il popup di conferma salvataggio
+  isConfirmationModalVisible = false;
+  isDataConfirmed = false;
+  
+  // Proprietà per il popup dei contatti
+  isContactModalVisible = false;
+  contactModel: EmergencyContact = { name: '', relation: '', phone: '' };
+  isEditMode = false;
+  editingContactIndex: number | null = null;
   
   readonly relationTypes: string[] = [
     'Genitore', 'Coniuge', 'Figlio/a', 'Parente', 'Amico/a', 'Collega', 'Altro'
   ];
 
-  model: MedicalData = {
-    bloodType: null,
-    allergies: '',
-    conditions: '',
-    notes: '',
-    emergencyContacts: []
+  model: MedicalProfile = {
+    profileName: '', name: '', surname: '', birthDate: null,
+    birthPlace: '', residence: '', bloodType: null, allergies: '',
+    conditions: '', notes: '', emergencyContacts: []
   };
 
   ngOnInit(): void {
+    this.profileId = this.route.snapshot.paramMap.get('profileId');
     this.loadData();
   }
 
-  /**
-   * Carica i dati in modo reattivo, aspettando che l'utente sia disponibile.
-   */
+  // Calcola il limite massimo di contatti in base al piano dell'utente
+  get maxContacts(): number {
+    return this.auth.user?.premium ? 10 : 3;
+  }
+
   loadData(): void {
+    if (!this.profileId) {
+      this.notification.showError("ID del profilo non specificato.");
+      this.router.navigate(['/profile-management']);
+      return;
+    }
     this.isLoading = true;
-    
-    this.auth.user$.pipe(
-      // Aspetta finché l'utente non è più null
-      filter((user): user is AuthUser => user !== null),
-      // Prendi solo il primo utente valido per evitare chiamate multiple
-      take(1),
-      // Passa alla chiamata API usando l'ID dell'utente che abbiamo ricevuto
-      switchMap(currentUser => this.api.getMedicalData(currentUser.id))
-    ).subscribe({
-      next: (response) => {
-        if (response.success && response.data) {
-          this.model = response.data;
+    this.api.getMedicalProfileById(this.profileId).subscribe({
+      next: (res) => {
+        if (res.success && res.data) {
+          this.model = res.data;
+          // Assicura che emergencyContacts sia sempre un array
+          if (!this.model.emergencyContacts) {
+            this.model.emergencyContacts = [];
+          }
+        } else {
+          this.notification.showError(res.error || "Impossibile caricare il profilo.");
+          this.router.navigate(['/profile-management']);
         }
         this.isLoading = false;
       },
-      error: (err) => {
-        console.error("Errore definitivo durante il caricamento dei dati:", err);
+      error: () => {
+        this.notification.showError("Errore di rete nel caricamento del profilo.");
         this.isLoading = false;
       }
     });
   }
 
-  /**
-   * Salva i dati in modo reattivo, assicurandosi di avere l'utente prima di salvare.
-   */
-  saveMedicalData(): void {
-    this.isSaving = true;
+  // --- GESTIONE POPUP CONFERMA SALVATAGGIO ---
+  openConfirmationModal(): void {
+    this.isConfirmationModalVisible = true;
+  }
 
-    // Usiamo lo stesso pattern reattivo per la massima sicurezza
-    this.auth.user$.pipe(take(1)).subscribe(currentUser => {
-      if (!currentUser) {
-        console.error("Impossibile salvare: utente non loggato.");
-        this.isSaving = false;
-        return;
-      }
-
-      // Filtra i contatti vuoti prima di salvare
-      this.model.emergencyContacts = this.model.emergencyContacts.filter(
-        contact => contact.name && contact.phone
-      );
-
-      this.api.updateMedicalData(currentUser.id, this.model).subscribe({
-        next: (response) => {
-          if (response.success) {
-            this.router.navigate(['/dashboard']);
-          } else {
-            console.error('Salvataggio fallito (API):', response.error);
-          }
-          this.isSaving = false;
-        },
-        error: (err) => {
-          console.error('Errore di rete durante il salvataggio:', err);
-          this.isSaving = false;
-        }
-      });
-    });
+  closeConfirmationModal(): void {
+    this.isConfirmationModalVisible = false;
+    this.isDataConfirmed = false; // Resetta la checkbox
   }
   
-  addContact(): void {
-    const lastContact = this.model.emergencyContacts[this.model.emergencyContacts.length - 1];
-    if (!lastContact || (lastContact.name && lastContact.phone)) {
-      this.model.emergencyContacts.push({ name: '', relation: '', phone: '' });
+  submitSave(): void {
+    if (!this.profileId) {
+      this.notification.showError("Impossibile salvare: ID del profilo mancante.");
+      return;
     }
+    
+    this.isSaving = true;
+    this.model.emergencyContacts = this.model.emergencyContacts.filter(c => c.name && c.phone);
+
+    this.api.updateMedicalProfile(this.profileId, this.model).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.notification.showSuccess('Profilo aggiornato con successo!');
+          this.closeConfirmationModal();
+          this.router.navigate(['/profile-management']);
+        } else {
+          this.notification.showError(response.error || 'Salvataggio fallito.');
+        }
+        this.isSaving = false;
+      },
+      error: (err) => {
+        this.notification.showError(err.error?.error || 'Errore di rete.');
+        this.isSaving = false;
+      }
+    });
+  }
+
+  // --- GESTIONE POPUP CONTATTI D'EMERGENZA ---
+
+  openContactModal(contact?: EmergencyContact, index?: number): void {
+    if (contact && index !== undefined) {
+      // Modalità Modifica
+      this.isEditMode = true;
+      this.editingContactIndex = index;
+      this.contactModel = { ...contact }; // Crea una copia per l'editing
+    } else {
+      // Modalità Aggiungi: controlla il limite prima di aprire
+      if (this.model.emergencyContacts.length >= this.maxContacts) {
+        this.notification.showWarning(`Hai raggiunto il limite di ${this.maxContacts} contatti per il tuo piano.`);
+        return; // Non apre il popup
+      }
+      this.isEditMode = false;
+      this.editingContactIndex = null;
+      this.contactModel = { name: '', relation: '', phone: '' }; // Resetta il modello
+    }
+    this.isContactModalVisible = true;
+  }
+
+  closeContactModal(): void {
+    this.isContactModalVisible = false;
+  }
+
+  saveContact(): void {
+    // Validazione dei campi
+    if (!this.contactModel.name.trim() || !this.contactModel.relation || !this.contactModel.phone.trim()) {
+      this.notification.showError("Per favore, compila tutti i campi del contatto.");
+      return;
+    }
+
+    if (this.isEditMode && this.editingContactIndex !== null) {
+      // Aggiorna il contatto esistente nell'array
+      this.model.emergencyContacts[this.editingContactIndex] = this.contactModel;
+    } else {
+      // Aggiunge un nuovo contatto all'array
+      this.model.emergencyContacts.push(this.contactModel);
+    }
+    
+    this.notification.showSuccess(this.isEditMode ? 'Contatto aggiornato.' : 'Contatto aggiunto.');
+    this.closeContactModal();
   }
 
   removeContact(index: number): void {
-    this.model.emergencyContacts.splice(index, 1);
+    const contactName = this.model.emergencyContacts[index]?.name || 'questo contatto';
+    if (confirm(`Sei sicuro di voler eliminare ${contactName}?`)) {
+      this.model.emergencyContacts.splice(index, 1);
+      this.notification.showSuccess("Contatto rimosso.");
+    }
   }
 }

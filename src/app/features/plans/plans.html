@@ -1,81 +1,123 @@
 <div class="plans-container">
-  <div class="plans-header">
-    <h1>Piani e Funzionalità</h1>
-    <p>Scegli il piano che fa per te e scopri cosa abbiamo in serbo per il futuro.</p>
+  <div class="page-header">
+    <h1>Il Piano Perfetto per Te</h1>
+    <p>Inizia gratuitamente e passa a Premium quando vuoi per sbloccare tutte le funzionalità.</p>
   </div>
 
-  <!-- Sezione Confronto Piani -->
+  <div class="billing-toggle">
+    <span>Mensile</span>
+    <label class="switch">
+      <input type="checkbox" [(ngModel)]="isYearly">
+      <span class="slider"></span>
+    </label>
+    <span>Annuale <span class="savings-badge">Risparmia 16%</span></span>
+  </div>
+
   <div class="plans-grid">
     
-    <!-- Card Piano Gratuito -->
     <div class="plan-card">
       <div class="plan-card-header">
         <h2>Gratuito</h2>
         <p class="price">€0<span>/sempre</span></p>
+        <p class="description">Le funzioni essenziali per iniziare a proteggerti subito.</p>
       </div>
       <ul class="features-list">
+        <li><i class="fas fa-check"></i> 1 Profilo Medico</li>
         <li><i class="fas fa-check"></i> 1 Casco / Tag NFC</li>
-        <li><i class="fas fa-check"></i> Scheda Medica Completa</li>
-        <li><i class="fas fa-check"></i> Contatti d'Emergenza Illimitati</li>
-        <li><i class="fas fa-times"></i> Supporto Multi-dispositivo</li>
-        <li><i class="fas fa-times"></i> Funzionalità Avanzate</li>
+        <li><i class="fas fa-check"></i> Fino a 3 Contatti (per profilo)</li>
+        <li class="disabled"><i class="fas fa-times"></i> Associazione Multi-Profilo</li>
+        <li class="disabled"><i class="fas fa-times"></i> Notifiche SMS e Email</li>
       </ul>
       <div class="plan-card-footer">
-        <p>Il tuo piano attuale</p>
+        
+        @if (auth.isLogged) {
+          @if (auth.user?.premium) {
+            @if (auth.user?.premiumExpiresAt) {
+              <div class="plan-status">
+                <span>Il Tuo Piano Scade il:</span>
+                <strong>{{ auth.user?.premiumExpiresAt | date:'dd/MM/yyyy' }}</strong>
+              </div>
+            } @else {
+              <div class="plan-status lifetime">
+                <i class="fas fa-crown"></i> A VITA
+              </div>
+            }
+          } @else {
+            <span class="btn-current">Il Tuo Piano Attuale</span>
+          }
+        } @else {
+          <a routerLink="/buy-kit" class="btn-primary">Acquista il Kit S.O.S. Helmet</a>
+        }
+
       </div>
     </div>
 
-    <!-- Card Piano Premium -->
     <div class="plan-card premium">
+      <div class="badge">Più Scelto</div>
       <div class="plan-card-header">
         <h2>Premium</h2>
-        <p class="price">Supporto Unico</p>
+
+        @if (isYearly) {
+          <p class="price">€19.99<span>/anno</span></p>
+        } @else {
+          <p class="price">€1.99<span>/mese</span></p>
+        }
+        
+        <p class="description">Massima sicurezza e flessibilità per te e i tuoi cari.</p>
       </div>
       <ul class="features-list">
-        <li><i class="fas fa-check"></i> <strong>Tutto dal piano Gratuito</strong></li>
-        <li><i class="fas fa-check"></i> Caschi / Tag NFC Illimitati</li>
-        <li><i class="fas fa-check"></i> Gestione Avanzata Dispositivi</li>
-        <li><i class="fas fa-check"></i> Accesso Anticipato alle Nuove Funzioni</li>
-        <li><i class="fas fa-check"></i> Supporto Diretto via Telegram</li>
+        <li><i class="fas fa-star"></i> <strong>Tutto dal piano Gratuito, e in più:</strong></li>
+        <li><i class="fas fa-check"></i> Fino a 10 Profili Medici</li>
+        <li><i class="fas fa-check"></i> Fino a 10 Caschi / Tag NFC</li>
+        <li><i class="fas fa-check"></i> Fino a 10 Contatti (per profilo)</li>
+        <li><i class="fas fa-check"></i> Associazione Multi-Profilo (Switch)</li>
+        <li><i class="fas fa-check"></i> Accesso a tutte le funzioni della Roadmap</li>
       </ul>
       <div class="plan-card-footer">
-        <a routerLink="/account-settings" class="btn-primary">Attiva con un Codice</a>
+        
+        @if (auth.user?.premium && !auth.user?.premiumExpiresAt) {
+          <div class="plan-status lifetime">
+            PER UN AMICO<i class="fas fa-crown"></i>
+          </div>
+        } @else {
+          <a routerLink="/account-settings" class="btn-primary">Attiva o Rinnova Premium</a>
+        }
+
       </div>
     </div>
-
   </div>
 
-  <!-- Sezione Roadmap -->
   <div class="roadmap-section">
-    <!-- Dentro la sezione .roadmap-section del tuo plans.html -->
-    <div class="roadmap">
-    <ul class="roadmap-list">
+    <div class="page-header">
+        <h1>Roadmap del Progetto 🚀</h1>
+        <p>Siamo costantemente al lavoro per migliorare S.O.S. Helmet. Ecco cosa bolle in pentola.</p>
+    </div>
 
-        <li class="roadmap-step">
-        <div class="roadmap-bullet"></div>
-        <div class="roadmap-content">
-            <h3>Upload Foto (In Sviluppo)</h3>
-            <p>Aggiungi la tua foto e quella della tua moto alla scheda medica per un'identificazione immediata e inequivocabile da parte dei soccorritori.</p>
+    <div class="roadmap-list">
+        <div class="roadmap-step">
+            <div class="roadmap-icon"><i class="fas fa-camera-retro"></i></div>
+            <div class="roadmap-content">
+                <div class="status-badge development">In Sviluppo</div>
+                <h3>Foto Veicolo e Casco</h3>
+                <p>Carica una foto della tua moto e del tuo casco per un'identificazione inequivocabile da parte dei soccorritori.</p>
+            </div>
         </div>
-        </li>
-
-        <li class="roadmap-step">
-        <div class="roadmap-bullet"></div>
-        <div class="roadmap-content">
-            <h3>Notifiche di Emergenza (Prossimamente)</h3>
-            <p>Una funzione Premium che, in caso di scansione del tag, invierà automaticamente un SMS di notifica ai tuoi contatti d'emergenza con la tua posizione.</p>
+        <div class="roadmap-step">
+            <div class="roadmap-icon"><i class="fas fa-comment-medical"></i></div>
+            <div class="roadmap-content">
+                <div class="status-badge planned">Pianificato</div>
+                <h3>Pulsante Allerta Soccorritore</h3>
+                <p>Un pulsante sulla scheda medica per inviare un SMS di notifica immediato ai contatti d'emergenza.</p>
+            </div>
         </div>
-        </li>
-        
-        <li class="roadmap-step">
-        <div class="roadmap-bullet"></div>
-        <div class="roadmap-content">
-            <h3>Statistiche e Cronologia (In Progettazione)</h3>
-            <p>Una sezione dedicata per gli utenti Premium dove visualizzare la cronologia delle scansioni e altre statistiche utili per la tua sicurezza.</p>
+        <div class="roadmap-step">
+            <div class="roadmap-icon"><i class="fas fa-sms"></i></div>
+            <div class="roadmap-content">
+                <div class="status-badge planned">Pianificato</div>
+                <h3>Notifica Scansione via SMS</h3>
+                <p>Ricevi un SMS ogni volta che un tuo casco viene scansionato, con un link alla posizione approssimativa.</p>
+            </div>
         </div>
-        </li>
-
-    </ul>
     </div>
   </div>
 

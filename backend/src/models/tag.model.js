@@ -13,6 +13,13 @@ const tagSchema = new Schema({
         type: String,
         default: null // Sarà null finché l'utente non gli dà un nome
     },
+    profileId: {
+        type: Schema.Types.ObjectId,
+        ref: 'MedicalProfile',
+        default: null
+    },
+    
+    // A quale utente (proprietario) appartiene?
     userId: {
         type: Schema.Types.ObjectId,
         ref: 'User',
@@ -30,5 +37,4 @@ const tagSchema = new Schema({
     }
 });
 
-const Tag = mongoose.model('Tag', tagSchema);
-module.exports = Tag;
+module.exports = mongoose.models.Tag || mongoose.model('Tag', tagSchema);

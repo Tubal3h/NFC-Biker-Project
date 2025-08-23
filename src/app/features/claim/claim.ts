@@ -54,7 +54,7 @@ export class Claim implements OnInit {
     this.api.getTag(nfcId).subscribe({
       next: (response) => {
         if (response.success && response.data) {
-          if (response.data.userId) {
+          if (response.data.profileId || response.data.userId) {
             // Se il tag è già associato, reindirizza direttamente alla scheda.
             // L'avviso di privacy verrà gestito da 'SchedaComponent'.
             this.router.navigate(['/scheda', nfcId], { state: { showPrivacyWarning: true } });
@@ -79,20 +79,31 @@ export class Claim implements OnInit {
     const currentUserId = this.authService.user?.id;
     if (!this.nfcId || !currentUserId) {
       console.error("Impossibile associare: ID del tag o dell'utente mancante.");
-      // Se l'utente non è loggato, per sicurezza lo mandiamo al login.
       this.router.navigate(['/login'], { queryParams: { nfcId: this.nfcId } });
       return;
     }
 
-    this.api.claimNfc(this.nfcId!, currentUserId).subscribe({
-      next: () => {
-        this.router.navigate(['/medical-form']);
+    // Chiamiamo l'ApiService, che ora si aspetta di ricevere un profileId nella risposta
+    this.api.claimNfc(this.nfcId, currentUserId).subscribe({
+      next: (response) => {
+        // --- QUESTA È LA NUOVA LOGICA ---
+        if (response.success && response.data?.profileId) {
+          // Se l'API ha successo e ci restituisce l'ID del profilo,
+          // reindirizziamo l'utente all'URL di modifica corretto.
+          console.log(`Tag associato, reindirizzamento al profilo: ${response.data.profileId}`);
+          this.router.navigate(['/medical-form', response.data.profileId]);
+          
+        } else {
+          // Se la risposta non contiene l'ID (caso anomalo), mostriamo un errore
+          // e mandiamo l'utente alla pagina di gestione come fallback.
+          this.claimResult = 'Associazione riuscita, ma si è verificato un errore nel reindirizzamento.';
+          this.router.navigate(['/profile-management']);
+        }
       },
       error: (err) => {
-        // Intercettiamo l'errore specifico dal backend
+        // La tua gestione degli errori rimane identica
         if (err.error?.error?.includes('Limite massimo raggiunto')) {
           this.claimResult = 'Hai raggiunto il limite di 1 casco per l\'account gratuito.';
-          // Qui potremmo aggiungere un pulsante che porta alla pagina di upgrade
         } else {
           this.claimResult = err.error?.error || 'Errore durante l’associazione.';
         }

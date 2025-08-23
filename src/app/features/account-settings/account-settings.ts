@@ -7,35 +7,25 @@ import { RouterModule } from '@angular/router';
 import { ApiService } from '@app/core/services/api';
 import { AuthService } from '@app/core/services/auth';
 import { NotificationService } from '@app/core/services/notification';
-import { DatePipe } from '@angular/common'; // Importa DatePipe
-import { take } from 'rxjs';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-account-settings',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule , DatePipe],
+  imports: [CommonModule, FormsModule, RouterModule, DatePipe],
   templateUrl: './account-settings.html',
   styleUrl: './account-settings.scss'
 })
 export class AccountSettings implements OnInit {
-  private notification = inject(NotificationService)
+  private notification = inject(NotificationService);
   private api = inject(ApiService);
   auth = inject(AuthService);
 
-  isLoading = true;
-  isSavingProfile = false;
+  isLoading = true; // <-- Decommentato
   isSavingPassword = false;
   activationCode = '';
   isUpgrading = false;
 
-  // Modello per i dati anagrafici
-  profileModel: { name: string; surname: string; email: string } = {
-    name: '',
-    surname: '',
-    email: ''
-  };
-
-  // Modello separato per il cambio password
   passwordModel = {
     currentPassword: '',
     newPassword: '',
@@ -43,63 +33,9 @@ export class AccountSettings implements OnInit {
   };
 
   ngOnInit(): void {
-    this.loadUserProfile();
+     this.isLoading = false;
   }
 
-  /**
-   * Carica i dati dell'utente loggato dall'AuthService per popolare il form.
-   */
-  loadUserProfile(): void {
-    const currentUser = this.auth.user;
-    if (currentUser) {
-      this.profileModel = {
-        name: currentUser.name || '',
-        surname: currentUser.surname || '',
-        email: currentUser.email
-      };
-      this.isLoading = false;
-    } else {
-      // Caso improbabile (protetto da AuthGuard), ma sicuro da gestire
-      this.isLoading = false;
-      console.error("Impossibile caricare il profilo: utente non trovato.");
-    }
-  }
-
-  /**
-   * Salva le modifiche ai dati anagrafici (nome e cognome) tramite API.
-   */
-  saveProfileDetails(): void {
-    this.isSavingProfile = true;
-
-    this.auth.user$.pipe(take(1)).subscribe(currentUser => {
-      if (!currentUser) {
-        console.error("Impossibile salvare: utente non loggato.");
-        this.isSavingProfile = false;
-        return;
-      }
-      
-      const dataToSave = {
-        name: this.profileModel.name,
-        surname: this.profileModel.surname
-      };
-
-      this.api.updateUserProfile(currentUser.id, dataToSave).subscribe({
-        next: (response) => {
-          if (response.success && response.data) {
-            this.auth.login(response.data);
-            console.log('Dati anagrafici salvati!');
-          } else {
-            console.error('Salvataggio fallito:', response.error);
-          }
-          this.isSavingProfile = false;
-        },
-        error: (err) => {
-          console.error('Errore di rete durante il salvataggio:', err);
-          this.isSavingProfile = false;
-        }
-      });
-    });
-  }
 
   changePassword(passwordForm: NgForm): void {
     if (this.passwordModel.newPassword !== this.passwordModel.confirmPassword) {

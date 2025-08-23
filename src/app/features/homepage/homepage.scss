@@ -56,16 +56,107 @@
   p { color: #555; line-height: 1.6; }
 }
 
-// Sezione 3: Acquisto
+/* ======================================================
+   SEZIONE 3: ACQUISTO (Stile Offerta di Lancio)
+   ====================================================== */
 .purchase-section {
-  background-color: var.$color4;
+  background-color: white;
   padding: 5rem 1.5rem;
-  text-align: center;
 
   .purchase-content {
-    max-width: 700px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    max-width: 900px;
     margin: 0 auto;
-    p { font-size: 1.2rem; margin-bottom: 2rem; color: #333; }
+    align-items: center;
+  }
+
+  .purchase-image {
+    text-align: center;
+    i {
+      font-size: 10rem;
+      color: var.$color2;
+    }
+  }
+
+  .purchase-details {
+    text-align: center;
+    .section-title { color: var.$color1; }
+  }
+
+  .promo-tag {
+    display: inline-block;
+    background-color: var.$color3;
+    color: white;
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    letter-spacing: 1px;
+  }
+  
+  .kit-contents {
+    list-style: none;
+    padding: 0;
+    margin: 2rem 0;
+    text-align: left;
+    display: inline-block; // Per centrare il blocco
+    li {
+      font-size: 1.1rem;
+      color: #333;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      i {
+        color: var.$color-success;
+      }
+    }
+  }
+
+  .price-box {
+    margin-bottom: 0.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1.5rem;
+
+    .original-price {
+      font-size: 1.8rem;
+      font-weight: 500;
+      color: #999;
+      text-decoration: line-through;
+    }
+    .discounted-price {
+      font-size: 3.5rem;
+      font-weight: 700;
+      color: var.$color1;
+    }
+  }
+
+  .urgency-note {
+    font-weight: 600;
+    color: var.$color2;
+    margin-bottom: 2.5rem;
+  }
+
+  // Stili per schermi più grandi
+  @media (min-width: 768px) {
+    .purchase-content {
+      grid-template-columns: 1fr 1.5fr;
+      gap: 4rem;
+    }
+    .purchase-details {
+      text-align: left;
+    }
+    .kit-contents {
+      display: block; // Ripristina allineamento a sx
+    }
+    .price-box {
+      justify-content: flex-start;
+    }
   }
 }
 

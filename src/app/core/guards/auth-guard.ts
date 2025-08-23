@@ -1,14 +1,22 @@
-// core/guards/auth.guard.ts
+// in src/app/core/guards/auth.guard.ts
+
 import { inject } from '@angular/core';
-import { CanActivateFn, Router } from '@angular/router';
+import { Router, CanActivateFn } from '@angular/router';
+import { AuthService } from '../services/auth';
+import { map, filter, switchMap } from 'rxjs/operators';
 
 export const authGuard: CanActivateFn = () => {
+  const authService = inject(AuthService);
   const router = inject(Router);
-  const isLogged = !!localStorage.getItem('user'); // esempio: login check
-  if (!isLogged) {
-    router.navigate(['/claim']); // o /login
-    return false;
-  }
-  return true;
+
+  return authService.isInitialized$.pipe(
+    filter(isInitialized => isInitialized), // Aspetta che il servizio sia inizializzato
+    switchMap(() => authService.user$), // Poi prendi l'utente
+    map(user => {
+      if (user) {
+        return true;
+      }
+      return router.createUrlTree(['/login']);
+    })
+  );
 };
-(authGuard as any).standalone = true; // Opzionale, per compatibilità Angular 16+

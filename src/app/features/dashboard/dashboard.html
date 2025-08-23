@@ -6,7 +6,7 @@
     <div class="account-status-badge" [class.is-premium]="user.premium">
       {{ user.premium ? 'Account Premium' : 'Account Gratuito' }}
     </div>
-    <h1>Ciao, {{ user.name || user.email }}!</h1>
+    <h1>Ciao, {{ user.email }}!</h1>
     <p>Benvenuto nella tua area riservata. Da qui puoi gestire il tuo profilo e i tuoi dispositivi.</p>
   </div>
 
@@ -14,7 +14,7 @@
   <div class="dashboard-grid">
 
     <!-- Card 1: Modifica Scheda Medica -->
-    <a [routerLink]="['/medical-form']" class="dashboard-card">
+    <a [routerLink]="['/profile-management']" class="dashboard-card">
       <div class="card-icon">
         <i class="fas fa-heartbeat"></i>
       </div>

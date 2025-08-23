@@ -1,45 +1,43 @@
 // in src/app/core/services/auth.service.ts
 
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 import { AuthUser } from '@app/core/models';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private _user$ = new BehaviorSubject<AuthUser | null>(this.loadUser());
+  private _user$ = new BehaviorSubject<AuthUser | null>(null);
   readonly user$: Observable<AuthUser | null> = this._user$.asObservable();
+  
+  private _isInitialized$ = new BehaviorSubject<boolean>(false);
+  readonly isInitialized$: Observable<boolean> = this._isInitialized$.asObservable();
+
+  constructor() {
+    this.loadUserFromStorage();
+  }
 
   get user(): AuthUser | null { return this._user$.value; }
   get isLogged(): boolean { return !!this.user; }
 
-  private loadUser(): AuthUser | null {
+  private loadUserFromStorage(): void {
     const userStr = localStorage.getItem('user');
-    if (!userStr) return null;
-    
-    try {
-      const user = JSON.parse(userStr);
-      // Controlla se l'ID è nel formato _id e lo converte
-      if (user._id && !user.id) {
-        user.id = user._id;
-        delete user._id;
+    if (userStr) {
+      try {
+        const user = JSON.parse(userStr);
+        this._user$.next(user as AuthUser);
+      } catch (e) {
+        localStorage.removeItem('user');
       }
-      return user as AuthUser;
-    } catch (e) {
-      return null;
     }
+    this._isInitialized$.next(true); // Segnala che l'inizializzazione è completa
   }
 
-  login(user: any) { // Accetta 'any' per essere più flessibile
-    // Controlla se l'ID è nel formato _id e lo converte
-    if (user._id && !user.id) {
-      user.id = user._id;
-      delete user._id;
-    }
+  login(user: AuthUser): void {
     localStorage.setItem('user', JSON.stringify(user));
-    this._user$.next(user as AuthUser);
+    this._user$.next(user);
   }
 
-  logout() {
+  logout(): void {
     localStorage.removeItem('user');
     this._user$.next(null);
   }

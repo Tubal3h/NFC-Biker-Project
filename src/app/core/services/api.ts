@@ -4,7 +4,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { Observable } from 'rxjs';
-import { AuthUser, NfcTag, MedicalData, ApiResponse } from '@app/core/models';
+import { AuthUser, NfcTag, MedicalData, ApiResponse, MedicalProfile } from '@app/core/models';
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
@@ -31,10 +31,13 @@ export class ApiService {
     return this.http.post<ApiResponse<void>>(`${this.apiUrl}/user/${userId}/change-password`, passwordData);
   }
 
-  // --- Funzioni per i Tag NFC ---
-  claimNfc(nfcId: string, userId: string): Observable<ApiResponse<void>> {
-    return this.http.post<ApiResponse<void>>(`${this.apiUrl}/claim`, { nfcId, userId });
-  }
+ /* -------------------------------------------------------------------------- */
+ /*                         Funzioni per i Tag NFC ---                         */
+ /* -------------------------------------------------------------------------- */
+
+claimNfc(nfcId: string, userId: string): Observable<ApiResponse<{ message: string; profileId: string }>> {
+  return this.http.post<ApiResponse<{ message: string; profileId: string }>>(`${this.apiUrl}/claim`, { nfcId, userId });
+}
   
   getTag(nfcId: string): Observable<ApiResponse<NfcTag>> {
     return this.http.get<ApiResponse<NfcTag>>(`${this.apiUrl}/tag/${nfcId}`);
@@ -47,8 +50,10 @@ export class ApiService {
     return this.http.get<ApiResponse<NfcTag[]>>(`${this.apiUrl}/user/${userId}/tags`);
   }
 
-  // --- Funzioni per i Dati Medici (ORA ALLINEATE AL TUO server.js) ---
-
+  /* -------------------------------------------------------------------------- */
+  /*       Funzioni per i Dati Medici (ORA ALLINEATE AL TUO server.js) ---      */
+  /* -------------------------------------------------------------------------- */
+  
   /**
    * Recupera i dati sanitari di un utente.
    * Chiama l'endpoint GET /api/user/:userId/medical che hai creato.
@@ -97,5 +102,71 @@ export class ApiService {
   renameTag(tagId: string, alias: string): Observable<ApiResponse<NfcTag>> {
     return this.http.patch<ApiResponse<NfcTag>>(`${this.apiUrl}/tags/${tagId}/rename`, { alias });
   }
+
+
+  // in src/app/core/services/api.service.ts
+getMedicalProfileById(profileId: string): Observable<ApiResponse<MedicalProfile>> {
+  return this.http.get<ApiResponse<MedicalProfile>>(`${this.apiUrl}/profiles/${profileId}`);
+}
+
+
+  // --- Funzioni per la Gestione dei Profili Medici ---
+
+/**
+ * Recupera la lista di tutti i profili medici di un utente.
+ */
+getUserProfiles(userId: string): Observable<ApiResponse<MedicalProfile[]>> {
+  return this.http.get<ApiResponse<MedicalProfile[]>>(`${this.apiUrl}/user/${userId}/profiles`);
+}
+
+/**
+ * Crea un nuovo profilo medico per un utente.
+ */
+createProfile(userId: string, profileName: string): Observable<ApiResponse<MedicalProfile>> {
+  return this.http.post<ApiResponse<MedicalProfile>>(`${this.apiUrl}/user/${userId}/profiles`, { profileName });
+}
+
+/**
+ * Elimina un profilo medico specifico.
+ */
+deleteProfile(profileId: string): Observable<ApiResponse<void>> {
+  return this.http.delete<ApiResponse<void>>(`${this.apiUrl}/profiles/${profileId}`);
+}
+
+updateMedicalProfile(profileId: string, data: MedicalProfile): Observable<ApiResponse<void>> {
+  return this.http.put<ApiResponse<void>>(`${this.apiUrl}/profiles/${profileId}`, data);
+}
+
+switchTagProfile(nfcId: string, newProfileId: string): Observable<ApiResponse<NfcTag>> {
+  return this.http.patch<ApiResponse<NfcTag>>(`${this.apiUrl}/tags/${nfcId}/switch-profile`, { newProfileId });
+}
+
+
+getUnassignedTags(userId: string): Observable<ApiResponse<NfcTag[]>> {
+  return this.http.get<ApiResponse<NfcTag[]>>(`${this.apiUrl}/user/${userId}/unassigned-tags`);
+}
+
+assignTagToProfile(tagId: string, profileId: string): Observable<ApiResponse<NfcTag>> {
+  return this.http.patch<ApiResponse<NfcTag>>(`${this.apiUrl}/tags/${tagId}/assign-profile`, { profileId });
+}
+
+
+syncTagsForProfile(profileId: string, tagIds: string[], ownerId: string): Observable<ApiResponse<void>> {
+  return this.http.post<ApiResponse<void>>(`${this.apiUrl}/profiles/${profileId}/sync-tags`, { tagIds, ownerId });
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
 

@@ -5,7 +5,6 @@
     <p>Visualizza e gestisci tutti i tuoi dispositivi NFC associati al tuo account.</p>
   </div>
 
-  <!-- STATO DI CARICAMENTO -->
   @if (isLoading) {
     <div class="state-container">
       <div class="spinner"></div>
@@ -13,7 +12,6 @@
     </div>
   }
 
-  <!-- STATO DI ERRORE -->
   @if (!isLoading && errorMsg) {
     <div class="state-container">
       <div class="icon-error">!</div>
@@ -21,17 +19,14 @@
     </div>
   }
 
-  <!-- STATO PRINCIPALE (CARICAMENTO COMPLETATO) -->
   @if (!isLoading && !errorMsg) {
     
-    <!-- SOTTO-STATO: NESSUN TAG TROVATO -->
     @if (tags.length === 0) {
       <div class="state-container empty-state">
         <h3>Nessun Casco Associato</h3>
         <p>Non hai ancora collegato nessun dispositivo NFC al tuo account. <br> Per iniziare, scansiona un nuovo adesivo S.O.S. Helmet.</p>
       </div>
     } @else {
-      <!-- SOTTO-STATO: LISTA DEI TAG -->
       <div class="table-container">
         <table>
           <thead>
@@ -45,14 +40,14 @@
           <tbody>
             @for (tag of tags; track tag.id) {
               <tr>
-                <td class="alias">{{ tag.alias || '-' }}</td> 
-                <td class="nfc-id">{{ tag.nfcId }}</td>
-                <td>{{ tag.createdAt | date:'dd/MM/yyyy' }}</td>
-                <td class="actions">
-                  <button (click)="openRenameModal(tag)" class="btn-rename" title="Rinomina (Coming Soon)">
+                <td class="alias" data-label="Nome Casco">{{ tag.alias || '-' }}</td> 
+                <td class="nfc-id" data-label="ID Dispositivo NFC">{{ tag.nfcId }}</td>
+                <td data-label="Data di Associazione">{{ tag.createdAt | date:'dd/MM/yyyy' }}</td>
+                <td class="actions" data-label="Azioni">
+                  <button (click)="openRenameModal(tag)" class="btn-rename" title="Rinomina">
                     <i class="fas fa-pencil-alt"></i>
                   </button>
-                  <button (click)="dissociateTag(tag)" class="btn-dissociate" title="Dissocia Casco">
+                  <button (click)="openDeleteModal(tag)" class="btn-dissociate" title="Dissocia Casco">
                     <i class="fas fa-trash"></i>
                   </button>
                 </td>
@@ -84,6 +79,23 @@
         <div class="modal-actions">
           <button class="btn-cancel" (click)="closeRenameModal()">Annulla</button>
           <button class="btn-confirm" (click)="submitRename()">Salva</button>
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (isDeleteModalVisible) {
+    <div class="modal-backdrop">
+      <div class="modal-content modal-danger">
+        <h3>Conferma Dissociazione</h3>
+        <p>
+          Sei sicuro di voler dissociare il casco 
+          <strong>"{{ tagToDelete?.alias || tagToDelete?.nfcId }}"</strong>? 
+          <br>Potrai riassociarlo in futuro scansionandolo di nuovo.
+        </p>
+        <div class="modal-actions">
+          <button class="btn-cancel" (click)="closeDeleteModal()">Annulla</button>
+          <button class="btn-confirm-delete" (click)="submitDelete()">Sì, Dissocia</button>
         </div>
       </div>
     </div>

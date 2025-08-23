@@ -1,5 +1,5 @@
 import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZoneChangeDetection } from '@angular/core';
-import { provideRouter } from '@angular/router';
+import { provideRouter , withComponentInputBinding } from '@angular/router';
 import { provideHttpClient, withFetch } from '@angular/common/http';
 
 import { provideToastr } from 'ngx-toastr';
@@ -9,9 +9,9 @@ import { routes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
   providers: [
+    provideRouter(routes, withComponentInputBinding()),
     provideBrowserGlobalErrorListeners(),
     provideZoneChangeDetection({ eventCoalescing: true }),
-    provideRouter(routes),
     provideHttpClient(withFetch()),
     
     provideAnimations(), // richiesto per le animazioni di ngx-toastr

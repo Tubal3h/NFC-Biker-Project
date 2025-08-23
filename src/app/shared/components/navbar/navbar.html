@@ -12,13 +12,13 @@
     <a routerLink="/homepage" routerLinkActive="active">Homepage</a>
     <a routerLink="/about" routerLinkActive="active">Chi Siamo</a>
     <a routerLink="/guide" routerLinkActive="active">Guida</a>
-    <a routerLink="/piani" routerLinkActive="active">Piani</a>
+    <a routerLink="/plans" routerLinkActive="active">Piani</a>
   </div>
 
   <!-- Sezione Utente per Desktop (visibile solo su schermi grandi) -->
   <div class="navbar-user-desktop">
     @if (user$ | async; as user) {
-      <a [routerLink]="['/dashboard']" class="user-link" routerLinkActive="active">{{ user.name || user.email }}</a>
+      <a [routerLink]="['/dashboard']" class="user-link" routerLinkActive="active">Area Riservata</a>
       <button class="btn-logout" (click)="logout()">Logout</button>
     } @else {
       <a routerLink="/login" class="btn-login">Log In</a>
@@ -42,7 +42,7 @@
   <a routerLink="/homepage" (click)="closeMenu()">Homepage</a>
   <a routerLink="/about" (click)="closeMenu()">Chi Siamo</a>
   <a routerLink="/guide" (click)="closeMenu()">Guida</a>
-  <a routerLink="/piani" (click)="closeMenu()">Piani</a>
+  <a routerLink="/plans" (click)="closeMenu()">Piani</a>
   
   <hr>
   

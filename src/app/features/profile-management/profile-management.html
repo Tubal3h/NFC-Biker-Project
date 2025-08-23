@@ -1,0 +1,131 @@
+<div class="management-container">
+  <div class="page-header">
+    <a routerLink="/dashboard" class="back-link"><i class="fas fa-arrow-left"></i> Torna alla Dashboard</a>
+    <h1>Gestione Profili Medici</h1>
+    <p>Da qui puoi gestire i profili medici associati al tuo account.</p>
+  </div>
+
+  @if (isLoading) {
+    <div class="state-container"><p>Caricamento profili...</p></div>
+  } @else {
+    <div class="profiles-list">
+      @for (profile of profiles; track profile.id) {
+        <div class="profile-card">
+          <div class="profile-icon">
+            <i class="fas fa-id-badge"></i>
+          </div>
+          <div class="profile-info">
+            <h3>{{ profile.profileName }}</h3>
+            <p>Gruppo Sanguigno: {{ profile.bloodType || 'Non specificato' }}</p>
+          </div>
+          <div class="profile-actions">
+            <!-- Il link "Modifica" ora passa l'ID del profilo -->
+            <a [routerLink]="['/medical-form', profile.id]" class="btn-edit">Modifica</a>
+            <button class="btn-delete" (click)="openDeleteModal(profile)">Elimina</button>
+          </div>
+          <div class="associated-tags">
+            <h4>Caschi Associati a Questo Profilo:</h4>
+            @if (getTagsForProfile(profile.id!).length > 0) {
+              <ul>
+                @for (tag of getTagsForProfile(profile.id!); track tag.id) {
+                  <li>{{ tag.alias || tag.nfcId }}</li>
+                }
+              </ul>
+            } @else {
+              <p>Nessun casco associato.</p>
+            }
+            
+            <button class="btn-manage-tags" (click)="openTagSyncModal(profile)">Gestisci Caschi</button>
+          </div>
+        </div>
+      }
+    </div>
+    <div class="new-profile-action">
+      @if (auth.user?.premium) {
+        <button class="btn-primary" (click)="openCreateModal()">
+          <i class="fas fa-plus"></i> Crea Nuovo Profilo Medico
+        </button>
+      } @else {
+        <p class="premium-upsell">
+          Vuoi creare profili per i tuoi familiari o amici? 
+          <!-- MODIFICA QUI: Aggiungi routerLink -->
+          <a routerLink="/account-settings">Passa a Premium</a> per associare più profili.
+        </p>
+      }
+    </div>
+  }
+
+  <!-- in profile-management.html, in fondo al file -->
+
+  @if (isCreateModalVisible) {
+    <div class="modal-backdrop">
+      <div class="modal-content">
+        <h3>Crea Nuovo Profilo Medico</h3>
+        <p>Dai un nome a questo profilo per riconoscerlo facilmente (es. "Profilo Figlio", "Profilo Vacanze").</p>
+        
+        <div class="form-group">
+          <label for="newProfileName">Nome del Profilo</label>
+          <input 
+            id="newProfileName"
+            name="newProfileName"
+            type="text"
+            [(ngModel)]="newProfileNameValue"
+            (keydown.enter)="submitNewProfile()"
+          />
+        </div>
+
+        <div class="modal-actions">
+          <button class="btn-cancel" (click)="closeCreateModal()">Annulla</button>
+          <button class="btn-confirm" (click)="submitNewProfile()">Crea Profilo</button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Popup Modale per la Conferma di Cancellazione -->
+  @if (isDeleteModalVisible) {
+    <div class="modal-backdrop">
+      <div class="modal-content modal-danger">
+        <h3>Conferma Eliminazione</h3>
+        <p>
+          Sei sicuro di voler eliminare il profilo 
+          <strong>"{{ profileToDelete?.profileName }}"</strong>? 
+          <br>L'operazione non può essere annullata.
+        </p>
+        <div class="modal-actions">
+          <button class="btn-cancel" (click)="closeDeleteModal()">Annulla</button>
+          <button class="btn-confirm-delete" (click)="submitDelete()">Sì, Elimina</button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- NUOVO POPUP MODALE PER LA SINCRONIZZAZIONE -->
+@if (isTagSyncModalVisible) {
+  <div class="modal-backdrop">
+    <div class="modal-content">
+      <h3>Associa Caschi a "{{ profileToManage?.profileName }}"</h3>
+      <p>Seleziona i dispositivi da collegare a questo profilo (max 10).</p>
+      
+      <div class="tag-selection-list">
+        @for (tag of allUserTags; track tag.id) {
+          <label class="tag-checkbox">
+            <input 
+              type="checkbox" 
+              [checked]="isTagSelectedForCurrentProfile(tag)"
+              (change)="onTagSelectionChange(tag.id!, $event)"
+            />
+            {{ tag.alias || tag.nfcId }}
+          </label>
+        }
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-cancel" (click)="closeTagSyncModal()">Annulla</button>
+        <button class="btn-confirm" (click)="submitTagSync()">Salva Associazioni</button>
+      </div>
+    </div>
+  </div>
+}
+</div>
+

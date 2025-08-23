@@ -2,97 +2,58 @@
   <div class="settings-header">
     <a routerLink="/dashboard" class="back-link"><i class="fas fa-arrow-left"></i> Torna alla Dashboard</a>
     <h1>Impostazioni Account</h1>
-    <p>Da qui puoi modificare i tuoi dati personali e le credenziali di accesso.</p>
+    <p>Gestisci la sicurezza del tuo account e il tuo piano di abbonamento.</p>
   </div>
 
-  <!-- Mostra un indicatore di caricamento se necessario -->
-  <div *ngIf="isLoading" class="loading-indicator">Caricamento...</div>
+  <!-- STATO DI CARICAMENTO -->
+  @if (isLoading) {
+    <div class="loading-indicator">Caricamento...</div>
+  }
 
-  <!-- Mostra l'interfaccia solo quando il caricamento è completato -->
-  <div *ngIf="!isLoading">
-
-    <!-- Card 1: Dati Anagrafici -->
-    <form #profileForm="ngForm" (ngSubmit)="saveProfileDetails()">
+  <!-- CONTENUTO PRINCIPALE -->
+  @if (!isLoading) {
+    
+    <!-- Card per il Cambio Password -->
+    <form #passwordForm="ngForm" (ngSubmit)="changePassword(passwordForm)">
       <fieldset>
-        <legend><i class="fas fa-user-edit"></i> Dati Anagrafici</legend>
+        <legend><i class="fas fa-key"></i> Sicurezza</legend>
 
+        <div class="form-group">
+          <label for="currentPassword">Password Attuale</label>
+          <input id="currentPassword" name="currentPassword" type="password" [(ngModel)]="passwordModel.currentPassword" required>
+        </div>
+        
         <div class="form-grid">
           <div class="form-group">
-            <label for="name">Nome</label>
-            <input id="name" name="name" type="text" [(ngModel)]="profileModel.name" required>
+            <label for="newPassword">Nuova Password</label>
+            <input id="newPassword" name="newPassword" type="password" [(ngModel)]="passwordModel.newPassword" required minlength="6">
           </div>
           <div class="form-group">
-            <label for="surname">Cognome</label>
-            <input id="surname" name="surname" type="text" [(ngModel)]="profileModel.surname" required>
+            <label for="confirmPassword">Conferma Nuova Password</label>
+            <input id="confirmPassword" name="confirmPassword" type="password" [(ngModel)]="passwordModel.confirmPassword" required>
           </div>
         </div>
         
-        <div class="form-group">
-          <label for="email">Indirizzo Email (non modificabile)</label>
-          <input id="email" name="email" type="email" [value]="profileModel.email" disabled>
-        </div>
-
         <div class="form-actions">
-          <button type="submit" class="btn-save" [disabled]="profileForm.invalid || isSavingProfile">
-            <span *ngIf="!isSavingProfile">Salva Dati Anagrafici</span>
-            <span *ngIf="isSavingProfile">Salvataggio...</span>
+          <button type="submit" class="btn-save" [disabled]="passwordForm.invalid || isSavingPassword || (passwordModel.newPassword !== passwordModel.confirmPassword)">
+            {{ isSavingPassword ? 'Aggiornamento...' : 'Cambia Password' }}
           </button>
         </div>
       </fieldset>
     </form>
 
-    <!-- Card 2: Cambio Password -->
-    <form #passwordForm="ngForm" (ngSubmit)="changePassword(passwordForm)">
-    <fieldset>
-        <legend><i class="fas fa-key"></i> Sicurezza</legend>
-
-        <div class="form-group">
-        <label for="currentPassword">Password Attuale</label>
-        <input id="currentPassword" name="currentPassword" type="password" [(ngModel)]="passwordModel.currentPassword" required>
-        </div>
-        
-        <div class="form-grid">
-        <div class="form-group">
-            <label for="newPassword">Nuova Password</label>
-            <input id="newPassword" name="newPassword" type="password" [(ngModel)]="passwordModel.newPassword" required minlength="6">
-        </div>
-        <div class="form-group">
-            <label for="confirmPassword">Conferma Nuova Password</label>
-            <input id="confirmPassword" name="confirmPassword" type="password" [(ngModel)]="passwordModel.confirmPassword" required>
-        </div>
-        </div>
-        
-        <div class="form-actions">
-        <button type="submit" class="btn-save" [disabled]="passwordForm.invalid || isSavingPassword || (passwordModel.newPassword !== passwordModel.confirmPassword)">
-            <span *ngIf="!isSavingPassword">Cambia Password</span>
-            <span *ngIf="isSavingPassword">Aggiornamento...</span>
-        </button>
-        </div>
-    </fieldset>
-    </form>
-
-    <!-- Card 3: Upgrade a Premium -->
+    <!-- Card per l'Upgrade a Premium -->
     @if (auth.user$ | async; as user) {
       @if (!user.premium) {
         <form #premiumForm="ngForm" (ngSubmit)="upgradeToPremium()">
           <fieldset>
             <legend><i class="fas fa-star"></i> Passa a Premium</legend>
-
             <div class="premium-promo">
-              <p>Hai un codice di attivazione? Inseriscilo qui per sbloccare le funzionalità Premium per un anno, come l'associazione di caschi illimitati.</p>
-              
+              <p>Hai un codice di attivazione? Inseriscilo qui per sbloccare le funzionalità Premium per un anno.</p>
               <div class="form-group">
                 <label for="activationCode">Codice di Attivazione</label>
-                <input 
-                  id="activationCode"
-                  name="activationCode"
-                  type="text"
-                  placeholder="PREMIUM-XXXX-YYYY"
-                  [(ngModel)]="activationCode"
-                  required
-                />
+                <input id="activationCode" name="activationCode" type="text" placeholder="PREMIUM-XXXX-YYYY" [(ngModel)]="activationCode" required />
               </div>
-              
               <div class="form-actions">
                 <button type="submit" class="btn-premium" [disabled]="premiumForm.invalid || isUpgrading">
                   {{ isUpgrading ? 'Attivazione in corso...' : 'Attiva Premium' }}
@@ -102,7 +63,7 @@
           </fieldset>
         </form>
       } @else {
-        <!-- Mostra un messaggio di conferma se l'utente È GIA' premium -->
+        <!-- Messaggio di conferma per utenti già premium -->
         <div class="premium-status">
           <h3><i class="fas fa-check-circle"></i> Account Premium Attivo</h3>
           <p>
@@ -112,6 +73,5 @@
         </div>
       }
     }
-
-  </div>
+  }
 </div>

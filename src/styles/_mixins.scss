@@ -1,21 +1,23 @@
 // in src/styles/_mixins.scss
 
-// Questo è un "pacchetto" di stili per i nostri stati di pagina.
-// Possiamo includerlo in qualsiasi componente.
+// Importiamo le variabili per poterle usare nei mixin
+@use 'variables' as var;
+
+// --- Pacchetto di Stili per gli Stati di Pagina (Caricamento/Errore) ---
 @mixin page-state-container {
   max-width: 500px;
   margin: 4rem auto;
   padding: 2.5rem;
   background: white;
   border-radius: 16px;
-  box-shadow: 0 8px 30px rgba(#1D1616, 0.1);
+  box-shadow: 0 8px 30px rgba(var.$color1, 0.1);
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 1rem;
 
   .icon-error {
-    background: #D84040;
+    background: var.$color3;
     color: white;
     width: 60px;
     height: 60px;
@@ -28,13 +30,14 @@
   }
 
   .alert {
-    color: #1D1616;
+    color: var.$color1;
     font-weight: 600;
     font-size: 1.25rem;
     line-height: 1.6;
   }
 }
 
+// --- Pacchetto di Stili per gli Header delle Pagine ---
 @mixin page-header {
   text-align: center;
   margin-bottom: 2.5rem;
@@ -44,17 +47,52 @@
     color: #606266;
     text-decoration: none;
     margin-bottom: 1rem;
-    &:hover { color: #D84040; }
+    &:hover { color: var.$color3; }
   }
   
   h1 {
     font-size: 2.2rem;
-    color: #1D1616;
+    color: var.$color1;
     margin-bottom: 0.5rem;
   }
   
   p {
     font-size: 1.1rem;
     color: #888;
+  }
+}
+
+
+// ======================================================
+// --- NUOVI MIXIN AGGIUNTI (CHE RISOLVONO L'ERRORE) ---
+// ======================================================
+
+// --- Pacchetto di Stili per i Contenitori dei Form ---
+@mixin form-container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+// --- Pacchetto di Stili per i Pulsanti di Salvataggio ---
+@mixin btn-save {
+  display: block;
+  width: 100%;
+  padding: 1rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: white;
+  background-color: var.$color2;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  
+  &:disabled {
+    background-color: lighten(var.$color2, 20%);
+    cursor: not-allowed;
   }
 }
