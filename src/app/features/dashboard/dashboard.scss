@@ -3,6 +3,7 @@ $card-bg: #ffffff;
 $card-shadow: rgba(0, 0, 0, 0.08);
 $icon-bg: #f4f5f7;
 $coming-soon-bg: #6c757d;
+@use 'styles/variables' as var;
 
 // Contenitore principale
 .dashboard-container {
@@ -18,11 +19,11 @@ $coming-soon-bg: #6c757d;
   h1 {
     font-size: 2.5rem;
     font-weight: 700;
-    color: #1D1616;
+    color: var.$color2;
   }
   p {
     font-size: 1.2rem;
-    color: #555;
+    color: var(--color-text-secondary);
   }
 }
 

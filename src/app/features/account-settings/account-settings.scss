@@ -15,6 +15,7 @@
   .settings-header {
     // Usiamo il mixin per lo stile dell'header (titolo, sottotitolo)
     @include mixins.page-header; 
+    p { color: var.$color1; }
   }
 }
 

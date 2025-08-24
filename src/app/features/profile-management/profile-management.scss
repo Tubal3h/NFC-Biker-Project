@@ -15,7 +15,7 @@
 .page-header {
   @include mixins.page-header;
   // FIX: Aumentato contrasto del sottotitolo nell'header per leggibilità
-  p { color: #555; }
+  // p { color: #555; }
 }
 .state-container { @include mixins.page-state-container; }
 
