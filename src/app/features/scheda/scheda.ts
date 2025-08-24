@@ -126,9 +126,14 @@ export class Scheda implements OnInit {
     });
   }
   
-  private isMedicalDataEmpty(data: MedicalProfile): boolean {
-    return !data.bloodType && !data.allergies?.trim() && !data.conditions?.trim() && !data.notes?.trim() && (!data.emergencyContacts || data.emergencyContacts.length === 0);
-  }
+private isMedicalDataEmpty(data: MedicalProfile): boolean {
+  // Aggiungiamo i nuovi campi al controllo
+  const isPersonalInfoEmpty = !data.name?.trim() && !data.surname?.trim() && !data.birthDate && !data.birthPlace?.trim() && !data.residence?.trim();
+  const isMedicalInfoEmpty = !data.bloodType && !data.allergies?.trim() && !data.conditions?.trim() && !data.notes?.trim();
+  const areContactsEmpty = !data.emergencyContacts || data.emergencyContacts.length === 0;
+
+  return isPersonalInfoEmpty && isMedicalInfoEmpty && areContactsEmpty;
+}
   
   // ... (tutte le altre funzioni: goToClaim, goToDashboard, goToLogin, acceptPrivacy, etc.) ...
   
