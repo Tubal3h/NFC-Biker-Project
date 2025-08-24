@@ -1,27 +1,14 @@
-// ======================================================
-// STILI DEFINITIVI PER LA SCHEDA MEDICA
-// ======================================================
-
-// 1. VARIABILI E IMPOSTAZIONI DI BASE
-// ------------------------------------------------------
+// in src/app/features/scheda/scheda.scss
 
 @use 'styles/variables' as var;
-@use 'styles/mixins';
 
-// var.$color1: #1D1616;
-// var.$color2: #8E1616;
-// var.$color3: #D84040;
-// var.$color4: #EEEEEE;
-// var.$color-bg: #f9f9f9;
-// var.$color-border: #e0e0e0;
-$color-accent-light: lighten(var.$color3, 35%);
-
-// Contenitore esterno (utile per lo sfondo della pagina)
+/* ======================================================
+   Contenitore e Wrapper Principale
+   ====================================================== */
 .scheda-container {
-  padding: 1rem; // Un po' di spazio su schermi piccoli
+  padding: 1rem;
 }
 
-// Wrapper principale della card
 .scheda-wrapper {
   max-width: 450px;
   margin: 2rem auto;
@@ -29,49 +16,30 @@ $color-accent-light: lighten(var.$color3, 35%);
   border-radius: 16px;
   box-shadow: 0 8px 30px rgba(var.$color1, 0.1);
   overflow: hidden;
+  color: var.$color1; // Colore di base per il testo nella card
 }
 
-// in src/app/features/scheda/scheda.scss
+/* ======================================================
+   Componenti Interni della Scheda
+   ====================================================== */
 
-// ... metti questo dopo il blocco .scheda-wrapper ...
-
-// Stile per il banner di avviso fisso
+// Banner di Avviso in cima
 .warning-banner {
   display: flex;
   align-items: center;
   gap: 1rem;
-  
-  // Usiamo i tuoi colori per un look coerente
-  background-color: lighten(var.$color3, 38%); // Un rosso molto chiaro, quasi rosa
-  color: darken(var.$color2, 10%); // Testo rosso scuro per un buon contrasto
-  
-  border: 1px solid lighten(var.$color3, 20%);
-  border-left: 5px solid var.$color3; // Bordo sinistro più marcato
-  
+  background-color: lighten(var.$color3, 38%);
+  color: darken(var.$color2, 10%);
+  border-left: 5px solid var.$color3;
   padding: 1rem;
-  border-radius: 8px;
-  // Lo posizioniamo dentro la card, prima dell'header
   margin: 1rem 1rem 0 1rem;
+  border-radius: 8px;
 
-  .warning-icon {
-    font-size: 1.8rem;
-    color: var.$color3; // Icona rossa
-  }
-
-  .warning-text {
-    font-size: 0.95rem;
-    line-height: 1.4;
-    text-align: left; // Assicura che il testo sia allineato a sinistra
-    
-    b {
-      color: var.$color2; // Titolo in grassetto ancora più scuro
-    }
-  }
+  .warning-icon { font-size: 1.8rem; color: var.$color3; }
+  .warning-text { font-size: 0.95rem; line-height: 1.4; text-align: left; }
 }
 
-// ... il resto del tuo codice (.scheda-header, .info-item, etc.) ...
-
-// Header colorato
+// Header della Scheda
 .scheda-header {
   background: linear-gradient(135deg, var.$color2, var.$color3);
   color: white;
@@ -84,23 +52,20 @@ $color-accent-light: lighten(var.$color3, 35%);
   h2 { margin: 0; font-size: 1.5rem; font-weight: 600; }
 }
 
-// Contenuto interno della card
-.scheda-content {
-  padding: 1rem;
-}
-
-// Stile per ogni blocco di informazione
+// Blocchi di Informazione (con animazione)
 .info-item {
   display: flex;
   align-items: flex-start;
-  padding: 1rem 0.5rem;
-  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+  gap: 1.5rem;
   border-bottom: 1px solid var.$color-border;
+  animation: fadeIn 0.5s ease-out forwards; // Aggiunta animazione
+
   &:last-child { border-bottom: none; }
 
   .icon {
     flex-shrink: 0;
-    background-color: lighten(var.$color2, 50%);
+    background-color: var.$color4;
     color: var.$color2;
     width: 45px;
     height: 45px;
@@ -111,37 +76,41 @@ $color-accent-light: lighten(var.$color3, 35%);
   }
 
   .text {
-    flex-grow: 1;
     .label {
       font-weight: 600;
-      font-size: 0.9rem;
-      color: darken(var.$color1, 10%);
+      font-size: 0.85rem;
+      color: #888;
       margin-bottom: 0.25rem;
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
     .value {
       font-size: 1.1rem;
-      color: #333;
+      color: var.$color1;
       white-space: pre-wrap;
     }
   }
 
-  // Stile per info critiche (gruppo sanguigno, allergie)
   &.info-item--critical {
     .icon {
-      background-color: $color-accent-light;
+      background-color: lighten(var.$color3, 35%);
       color: var.$color3;
     }
     .value {
-      font-weight: bold;
+      font-weight: 700;
       color: var.$color2;
       font-size: 1.2rem;
     }
   }
 }
 
-// Stile per la lista dei contatti
+// Animazione di entrata per i blocchi
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+// Lista contatti d'emergenza
 .contacts-list {
   list-style: none;
   padding: 0;
@@ -171,20 +140,85 @@ $color-accent-light: lighten(var.$color3, 35%);
   }
 }
 
-// 2. STATI DI CARICAMENTO ED ERRORE
-// ------------------------------------------------------
-// 2. STATI DI CARICAMENTO ED ERRORE (MIGLIORATI)
-// ------------------------------------------------------
+/* ======================================================
+   Sezione "Switch Profilo"
+   ====================================================== */
+.profile-switcher {
+  background-color: var.$color4;
+  padding: 1.5rem;
+  margin: 1rem;
+  border-radius: 12px;
+  border: 1px solid var.$color-border;
+  text-align: center;
+
+  h4 {
+    margin-top: 0;
+    margin-bottom: 0.75rem;
+    font-size: 1.3rem;
+    color: var.$color1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+  }
+
+  p {
+    color: #555;
+    margin-bottom: 1.5rem;
+  }
+}
+
+.switcher-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 400px;
+  margin: 0 auto;
+
+  @media (min-width: 768px) {
+    flex-direction: row;
+  }
+
+  select {
+    flex-grow: 1;
+    padding: 0.8rem 1rem;
+    border: 1px solid var.$color-border;
+    border-radius: 8px;
+    font-size: 1rem;
+    background-color: white;
+    cursor: pointer;
+  }
+
+  button {
+    background: var.$color2;
+    color: white;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+
+    &:hover:not(:disabled) {
+      background-color: var.$color3;
+    }
+    &:disabled {
+      background-color: lighten(var.$color2, 20%);
+      cursor: not-allowed;
+    }
+  }
+}
+
+/* ======================================================
+   Stati di Caricamento / Errore / Scheda Vuota
+   ====================================================== */
 .scheda-state {
-  // Lo stilizziamo come una card per coerenza
   max-width: 500px;
   margin: 4rem auto;
   padding: 2.5rem;
   background: white;
   border-radius: 16px;
   box-shadow: 0 8px 30px rgba(var.$color1, 0.1);
-  
-  // Usiamo flexbox per centrare e spaziare bene i contenuti
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -211,7 +245,6 @@ $color-accent-light: lighten(var.$color3, 35%);
   }
 }
 
-// Pulsante d'azione per gli errori (MIGLIORATO)
 .btn-action {
   background: var.$color2;
   color: white;
@@ -230,7 +263,6 @@ $color-accent-light: lighten(var.$color3, 35%);
   }
 }
 
-// Spinner animato per il caricamento
 .spinner {
   width: 40px;
   height: 40px;
@@ -244,8 +276,9 @@ $color-accent-light: lighten(var.$color3, 35%);
   to { transform: rotate(360deg); }
 }
 
-// 3. STILI PER IL POPUP DELLA PRIVACY (AGGIUNTI)
-// ------------------------------------------------------
+/* ======================================================
+   Stili Popup Privacy
+   ====================================================== */
 .privacy-popup-backdrop {
   position: fixed;
   z-index: 1050;
@@ -265,7 +298,7 @@ $color-accent-light: lighten(var.$color3, 35%);
   max-width: 500px;
   box-shadow: 0 10px 50px rgba(0, 0, 0, 0.2);
   text-align: center;
-  color: #333;
+  color: var.$color1;
   line-height: 1.6;
 
   h3 {
@@ -321,74 +354,4 @@ $color-accent-light: lighten(var.$color3, 35%);
   background: var.$color4;
   color: var.$color1;
   &:hover { background: darken(var.$color4, 10%); }
-}
-
-/* ======================================================
-   Stili per la Sezione "Switch Profilo"
-   ====================================================== */
-   
-.profile-switcher {
-  background-color: var.$color4;
-  padding: 1.5rem;
-  margin: 1rem;
-  border-radius: 12px;
-  border: 1px solid var.$color-border;
-  text-align: center;
-
-  h4 {
-    margin-top: 0;
-    margin-bottom: 0.75rem;
-    font-size: 1.3rem;
-    color: var.$color1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.75rem;
-  }
-
-  p {
-    color: #555;
-    margin-bottom: 1.5rem;
-  }
-}
-
-.switcher-form {
-  display: flex;
-  flex-direction: column; // Su mobile
-  gap: 1rem;
-  max-width: 400px;
-  margin: 0 auto;
-
-  @media (min-width: 768px) {
-    flex-direction: row; // Affiancati su desktop
-  }
-
-  select {
-    flex-grow: 1;
-    padding: 0.8rem 1rem;
-    border: 1px solid var.$color-border;
-    border-radius: 8px;
-    font-size: 1rem;
-    background-color: white;
-    cursor: pointer;
-  }
-
-  button {
-    background: var.$color2;
-    color: white;
-    border: none;
-    padding: 0.8rem 1.5rem;
-    font-weight: 600;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background-color 0.2s;
-
-    &:hover:not(:disabled) {
-      background-color: var.$color3;
-    }
-    &:disabled {
-      background-color: lighten(var.$color2, 20%);
-      cursor: not-allowed;
-    }
-  }
 }

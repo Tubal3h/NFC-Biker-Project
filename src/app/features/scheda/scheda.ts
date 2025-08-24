@@ -41,7 +41,7 @@ export class Scheda implements OnInit {
   selectedProfileId: string | null = null;
 
   // Logica per il Popup
-  showPrivacyPopup = false;
+  showPrivacyPopup = true;
   visitorIp: string | null = null;
   visitorLocation: string | null = null;
   private nfcId: string | null = null;
@@ -155,33 +155,26 @@ export class Scheda implements OnInit {
   }
 
 // in scheda.ts
+
   private loadVisitorInfo(): void {
-    // Carica l'IP (questo funziona ancora)
+    // Carica l'IP (invariato)
     fetch('https://api.ipify.org/?format=json')
       .then(r => r.json())
       .then(data => this.visitorIp = data.ip)
       .catch(() => this.visitorIp = 'Non rilevato');
 
-    // Carica la geolocalizzazione
+    // Carica la geolocalizzazione (ORA FUNZIONANTE)
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         pos => {
-          // PER ORA, mostriamo solo le coordinate per evitare l'errore CORS
-          this.visitorLocation = `Lat: ${pos.coords.latitude.toFixed(2)}, Lon: ${pos.coords.longitude.toFixed(2)}`;
-
-          // --- LA CHIAMATA PROBLEMATICA (TEMPORANEAMENTE COMMENTATA) ---
-          /*
-          fetch(`https://nominatim.openstreetmap.org/reverse?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&format=json`)
-            .then(res => res.json())
-            .then(data => {
-              if (data && data.address) {
-                this.visitorLocation = data.address.city || data.address.town || data.address.county || 'Posizione rilevata';
-              } else {
-                this.visitorLocation = 'Posizione rilevata';
-              }
-            })
-            .catch(() => this.visitorLocation = 'Impossibile determinare la città');
-          */
+          // Chiama il nostro backend invece di OpenStreetMap direttamente
+          this.api.getLocationInfo(pos.coords.latitude, pos.coords.longitude).subscribe(res => {
+            if (res.success && res.data) {
+              this.visitorLocation = res.data.location;
+            } else {
+              this.visitorLocation = `Lat: ${pos.coords.latitude.toFixed(2)}, Lon: ${pos.coords.longitude.toFixed(2)}`;
+            }
+          });
         },
         () => { this.visitorLocation = 'Posizione non autorizzata'; }
       );

@@ -162,6 +162,9 @@ setMainProfile(userId: string, newProfileId: string): Observable<any> {
 
 
 
+getLocationInfo(lat: number, lon: number): Observable<ApiResponse<{ location: string }>> {
+  return this.http.get<ApiResponse<{ location: string }>>(`${this.apiUrl}/location-info?lat=${lat}&lon=${lon}`);
+}
 
 
 

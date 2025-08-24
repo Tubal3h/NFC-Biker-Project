@@ -199,60 +199,59 @@ app.get('/api/tag/:nfcId', async (req, res) => {
 
 // in server.js
 
+/* -------------------------------------------------------------------------- */
+/* Associa un Casco/NFC a un Utente                                           */
+/* -------------------------------------------------------------------------- */
 app.post('/api/claim', async (req, res) => {
   try {
     const { nfcId, userId } = req.body;
-    
+
+    // 1. Trova l'utente e assicurati che abbia un profilo principale
     const user = await User.findById(userId);
+    if (!user || !user.mainProfileId) {
+      return res.status(404).json({ success: false, error: 'Utente o profilo principale non trovato.' });
+    }
+    
+    // 2. Trova il tag
     const tag = await Tag.findOne({ nfcId: nfcId });
-
-    if (!user || !tag) {
-      return res.status(404).json({ success: false, error: 'Utente o Tag non trovato' });
+    if (!tag) {
+      return res.status(404).json({ success: false, error: 'Dispositivo NFC non trovato o non valido.' });
     }
-    if (tag.profileId || tag.userId) {
-      return res.status(400).json({ success: false, error: 'Tag già associato' });
-    }
-
-    // --- ECCO LA LOGICA DEI LIMITI AGGIORNATA ---
     
-    // 1. Controlla il limite per gli utenti Gratuiti
+    // 3. Controlla se il tag è già associato a qualcuno
+    if (tag.userId) {
+      return res.status(400).json({ success: false, error: 'Questo dispositivo è già associato a un account.' });
+    }
+    
+    // 4. Controlla i limiti del piano dell'utente
     if (!user.premium && user.nfcTags.length >= 1) {
-      return res.status(403).json({ 
-        success: false, 
-        error: 'Limite di 1 casco raggiunto per il piano Gratuito. Passa a Premium per aggiungerne altri.' 
-      });
+      return res.status(403).json({ success: false, error: 'Hai raggiunto il limite di 1 casco per il piano Gratuito.' });
     }
-
-    // 2. NUOVO CONTROLLO: Controlla il limite per gli utenti Premium
     if (user.premium && user.nfcTags.length >= 10) {
-      return res.status(403).json({ 
-        success: false, 
-        error: 'Limite di 10 caschi raggiunto per il piano Premium.' 
-      });
+      return res.status(403).json({ success: false, error: 'Hai raggiunto il limite di 10 caschi per il piano Premium.' });
     }
 
-    // Se i controlli passano, procedi con l'associazione
-    const userProfile = await MedicalProfile.findOne({ ownerId: user._id });
-    if (!userProfile) {
-      return res.status(404).json({ success: false, error: 'Profilo medico non trovato.' });
-    }
-    
-    tag.profileId = userProfile._id;
+    // --- ECCO LA LOGICA FONDAMENTALE ---
+    // 5. Associa il tag sia all'utente SIA al suo profilo principale
     tag.userId = user._id;
+    tag.profileId = user.mainProfileId; // <-- Assegnazione automatica
+    
+    // 6. Aggiungi il tag alla lista dell'utente
     user.nfcTags.push(tag._id);
     
+    // 7. Salva entrambe le modifiche
     await tag.save();
     await user.save();
     
     res.json({ 
       success: true, 
       data: { 
-        message: 'Tag associato con successo',
-        profileId: userProfile._id 
+        message: 'Casco associato con successo al tuo profilo principale!',
+        profileId: user.mainProfileId 
       } 
     });
   } catch (error) { 
-    console.error("Errore durante il claim:", error);
+    console.error("Errore durante il claim del tag:", error);
     res.status(500).json({ success: false, error: 'Errore interno del server' }); 
   }
 });
@@ -815,32 +814,75 @@ app.patch('/api/tags/:tagId/assign-profile', async (req, res) => {
 
 // in backend/server.js
 
+// in server.js
+
 // Sincronizza i tag associati a un profilo medico
 app.post('/api/profiles/:profileId/sync-tags', async (req, res) => {
   try {
     const { profileId } = req.params;
-    const { tagIds, ownerId } = req.body; // Riceviamo la lista degli ID dei tag selezionati
+    const { tagIds, ownerId } = req.body; // L'ownerId è l'ID dell'utente
 
-    // Logica di sicurezza: assicurarsi che l'utente sia premium se ha più di 10 tag totali
-    // ... (da implementare)
+    // 1. Trova l'utente e assicurati che abbia un profilo principale
+    const user = await User.findById(ownerId);
+    if (!user || !user.mainProfileId) {
+      return res.status(404).json({ success: false, error: 'Utente o profilo principale non trovato.' });
+    }
 
-    // 1. "Libera" tutti i tag che erano precedentemente associati a questo profilo
-    await Tag.updateMany({ profileId: profileId }, { $set: { profileId: null } });
+    // 2. GESTIONE DEI TAG RIMOSSI DAL PROFILO ATTUALE
+    // Trova tutti i tag che erano su questo profilo ma NON sono nella nuova lista...
+    await Tag.updateMany(
+      { userId: user._id, profileId: profileId, _id: { $nin: tagIds } },
+      // ...e invece di lasciarli "orfani", riassegnali al profilo principale.
+      { $set: { profileId: user.mainProfileId } }
+    );
+    
+    // 3. GESTIONE DEI TAG AGGIUNTI AL PROFILO ATTUALE
+    // Assegna la nuova lista di tag a questo profilo.
+    await Tag.updateMany(
+      { userId: user._id, _id: { $in: tagIds } }, 
+      { $set: { profileId: profileId } }
+    );
 
-    // 2. Associa la nuova lista di tag al profilo
-    await Tag.updateMany({ _id: { $in: tagIds } }, { $set: { profileId: profileId } });
-
-    res.json({ success: true, data: { message: 'Associazioni aggiornate.' } });
+    res.json({ success: true, data: { message: 'Associazioni aggiornate con successo.' } });
   } catch (error) {
-    res.status(500).json({ success: false, error: 'Errore server' });
+    console.error("Errore durante la sincronizzazione dei tag:", error);
+    res.status(500).json({ success: false, error: 'Errore interno del server' });
   }
 });
-
 
 
 /* -------------------------------------------------------------------------- */
 /*                                    EXTRA                                   */
 /* -------------------------------------------------------------------------- */
+
+// in server.js, aggiungi questa nuova rotta
+
+app.get('/api/location-info', async (req, res) => {
+  try {
+    const { lat, lon } = req.query;
+    if (!lat || !lon) {
+      return res.status(400).json({ success: false, error: 'Latitudine e longitudine necessarie.' });
+    }
+
+    // Il tuo server fa la chiamata a Nominatim (le chiamate server-to-server non hanno problemi di CORS)
+    const response = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`, {
+      headers: { 'User-Agent': 'SOS-Helmet-App/1.0' } // Nominatim richiede un User-Agent
+    });
+    
+    const data = await response.json();
+    
+    // Estrai la città o il paese
+    let locationName = 'Posizione rilevata';
+    if (data && data.address) {
+      locationName = data.address.city || data.address.town || data.address.county || data.address.country;
+    }
+
+    res.json({ success: true, data: { location: locationName } });
+
+  } catch (error) {
+    res.status(500).json({ success: false, error: 'Impossibile recuperare le informazioni sulla posizione.' });
+  }
+});
 
 app.listen(PORT, () => {
   console.log(`S.O.S. Helmet backend attivo su http://localhost:${PORT}`);

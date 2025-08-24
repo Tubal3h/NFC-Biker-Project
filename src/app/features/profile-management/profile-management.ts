@@ -207,9 +207,25 @@ export class ProfileManagement implements OnInit {
     }
   }
 
+
   submitTagSync(): void {
-    if (!this.profileToManage) return;
-    
+    if (!this.profileToManage || !this.auth.user) return;
+
+    // --- NUOVO CONTROLLO DI SICUREZZA PER L'ESPERIENZA UTENTE ---
+    const isMainProfile = this.profileToManage.id === this.auth.user.mainProfileId;
+    const isTryingToEmptyList = this.selectedTagIds.size === 0;
+    const currentTagsOnProfile = this.getTagsForProfile(this.profileToManage.id!);
+
+    // Blocca l'azione se si sta cercando di svuotare il profilo principale
+    // e ci sono effettivamente dei caschi da rimuovere.
+    if (isMainProfile && isTryingToEmptyList && currentTagsOnProfile.length > 0) {
+      this.notification.showError(
+        "Non puoi lasciare il profilo principale senza caschi. Per rimuoverli da qui, associali prima a un altro profilo."
+      );
+      return; // Interrompe la funzione prima di chiamare il backend
+    }
+    // --- FINE DEL CONTROLLO ---
+
     const tagIdsArray = Array.from(this.selectedTagIds);
     this.api.syncTagsForProfile(this.profileToManage.id!, tagIdsArray, this.auth.user!.id).subscribe(() => {
       this.notification.showSuccess('Associazioni salvate!');
@@ -218,7 +234,6 @@ export class ProfileManagement implements OnInit {
     });
   }
 
-    // --- NUOVA FUNZIONE PER CAMBIARE IL PROFILO PRINCIPALE ---
   setAsMainProfile(profileId: string): void {
     const userId = this.auth.user?.id;
     if (!userId || !profileId) return;
