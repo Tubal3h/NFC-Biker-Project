@@ -24,6 +24,7 @@ const medicalProfileSchema = new Schema({
     conditions: { type: String, default: '' },
     notes: { type: String, default: '' },
     emergencyContacts: [emergencyContactSchema]
+    
 }, {
     timestamps: true,
     toJSON: {

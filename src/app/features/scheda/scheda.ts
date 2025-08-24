@@ -56,6 +56,7 @@ export class Scheda implements OnInit {
       return;
     }
     this.loadAllData(this.nfcId);
+    this.loadVisitorInfo();
   }
 
   // --- FUNZIONE DI CARICAMENTO COMPLETAMENTE Riscritto ---

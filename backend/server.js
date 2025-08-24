@@ -104,7 +104,7 @@ app.post('/api/login', async (req, res) => {
       await user.save();
     }
     const payload = { id: user._id, email: user.email, premium: user.premium };
-    const expiresIn = rememberMe ? '30d' : '30m';
+    const expiresIn = rememberMe ? '30d' : '1d';
     const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn });
     const profile = await MedicalProfile.findById(user.mainProfileId);
     const userObject = user.toObject();
@@ -464,9 +464,34 @@ app.post('/api/user/:userId/profiles', authMiddleware, async (req, res) => {
  */
 app.get('/api/user/:userId/profiles', authMiddleware, async (req, res) => {
   try {
-    const profiles = await MedicalProfile.find({ ownerId: req.params.userId });
-    res.json({ success: true, data: profiles });
+    const { userId } = req.params;
+
+    const user = await User.findById(userId);
+    if (!user) {
+        return res.status(404).json({ success: false, error: 'Utente non trovato.' });
+    }
+    const profilesFromDB = await MedicalProfile.find({ ownerId: userId });
+
+    const profilesWithStatus = profilesFromDB.map(profile => {
+      // SOLUZIONE: Aggiungiamo l'opzione per includere i campi virtuali come 'id'
+      const profileObject = profile.toObject({ virtuals: true }); 
+
+      let isActive = false;
+      if (user.premium) {
+        isActive = true;
+      } else {
+        // Questa riga ora è sicura grazie al controllo precedente e alla soluzione di adesso
+        isActive = user.mainProfileId && (profileObject.id.toString() === user.mainProfileId.toString());
+      }
+      
+      profileObject.isActive = isActive;
+      return profileObject;
+    });
+
+    res.json({ success: true, data: profilesWithStatus });
+
   } catch (error) { 
+    console.error("Errore nel recuperare i profili utente:", error);
     res.status(500).json({ success: false, error: 'Errore server' }); 
   }
 });

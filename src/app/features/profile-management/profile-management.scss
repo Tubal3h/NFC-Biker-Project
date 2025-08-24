@@ -422,3 +422,65 @@
     color: var.$color2;
   }
 }
+
+// Applica uno stile "spento" alla card
+.profile-card.is-inactive {
+  position: relative; // Necessario per posizionare l'overlay
+  // Rende il contenuto meno visibile
+  .card-header, .associated-tags {
+    filter: grayscale(80%);
+    opacity: 0.6;
+  }
+}
+
+// L'overlay che appare sopra la card inattiva
+.inactive-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(white, 0.8);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 1rem;
+  border-radius: 12px; // Stesso raggio della card
+}
+
+.inactive-content {
+  color: var.$color1;
+  
+  i {
+    font-size: 2rem;
+    color: var.$color2;
+  }
+
+  span {
+    display: block;
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin: 0.5rem 0;
+  }
+
+  p {
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+    color: #555;
+  }
+
+  .btn-upgrade {
+    background: var.$color2;
+    color: white;
+    padding: 0.7rem 1.5rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: background-color 0.2s;
+    &:hover {
+      background: var.$color3;
+    }
+  }
+}

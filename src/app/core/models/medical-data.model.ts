@@ -18,6 +18,7 @@ export interface MedicalProfile {
   conditions: string;
   notes: string;
   emergencyContacts: EmergencyContact[];
+  isActive?: boolean;
 }
 
 export type MedicalData = MedicalProfile;

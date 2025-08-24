@@ -12,38 +12,39 @@
   } @else {
     <div class="profiles-list">
       @for (profile of profiles; track profile.id) {
-        <div class="profile-card" [class.is-main-profile]="profile.id === auth.user?.mainProfileId">
-          
+        <div class="profile-card" 
+            [class.is-main-profile]="profile.id === auth.user?.mainProfileId"
+            [class.is-inactive]="!profile.isActive">
+
           @if (profile.id === auth.user?.mainProfileId) {
             <div class="main-profile-badge">Principale</div>
           }
 
           <div class="card-header">
-             <div class="profile-icon">
-                <i class="fas fa-id-badge"></i>
-             </div>
-             <div class="profile-info">
-                <h3>{{ profile.profileName }}</h3>
-                <p>Gruppo Sanguigno: {{ profile.bloodType || 'Non specificato' }}</p>
-             </div>
-          </div>
-          
-          <div class="profile-actions">
-            <a [routerLink]="['/medical-form', profile.id]" class="btn-edit">Modifica</a>
-            
-            @if (profile.id !== auth.user?.mainProfileId) {
-              <button class="btn-delete" (click)="openDeleteModal(profile)">Elimina</button>
-            }
+            <div class="profile-icon"><i class="fas fa-id-badge"></i></div>
+            <div class="profile-info">
+              <h3>{{ profile.profileName }}</h3>
+              <p>Gruppo Sanguigno: {{ profile.bloodType || 'Non specificato' }}</p>
+            </div>
           </div>
 
-          @if (auth.user?.premium && profile.id !== auth.user?.mainProfileId) {
+          @if (profile.isActive) {
+            <div class="profile-actions">
+              <a [routerLink]="['/medical-form', profile.id]" class="btn-edit">Modifica</a>
+              @if (profile.id !== auth.user?.mainProfileId) {
+                <button class="btn-delete" (click)="openDeleteModal(profile)">Elimina</button>
+              }
+            </div>
+          }
+
+          @if (auth.user?.premium && profile.isActive && profile.id !== auth.user?.mainProfileId) {
             <button class="btn-set-main" (click)="setAsMainProfile(profile.id!)">
               Imposta come Principale
             </button>
           }
           
           <div class="associated-tags">
-            <h4>Caschi Associati a Questo Profilo:</h4>
+            <h4>Caschi Associati:</h4>
             @if (getTagsForProfile(profile.id!).length > 0) {
               <ul>
                 @for (tag of getTagsForProfile(profile.id!); track tag.id) {
@@ -53,8 +54,22 @@
             } @else {
               <p>Nessun casco associato.</p>
             }
-            <button class="btn-manage-tags" (click)="openTagSyncModal(profile)">Gestisci Caschi</button>
+            
+            @if (profile.isActive) {
+              <button class="btn-manage-tags" (click)="openTagSyncModal(profile)">Gestisci Caschi</button>
+            }
           </div>
+          
+          @if (!profile.isActive) {
+            <div class="inactive-overlay">
+              <div class="inactive-content">
+                <i class="fas fa-lock"></i>
+                <span>Profilo bloccato</span>
+                <p>Passa a Premium per riattivare e gestire profili multipli.</p>
+                <a routerLink="/account-settings" class="btn-upgrade">Fai l'Upgrade</a>
+              </div>
+            </div>
+          }
         </div>
       }
     </div>
