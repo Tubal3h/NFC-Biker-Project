@@ -306,7 +306,7 @@ app.get('/api/user/:userId', async (req, res) => {
  * @desc    Ottiene un singolo profilo medico.
  * @access  Protected
  */
-app.get('/api/profiles/:profileId', authMiddleware, async (req, res) => {
+app.get('/api/profiles/:profileId', async (req, res) => {
   try {
     const profile = await MedicalProfile.findById(req.params.profileId);
     if (!profile) return res.status(404).json({ error: 'Profilo non trovato' });
