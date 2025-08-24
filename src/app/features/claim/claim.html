@@ -30,8 +30,8 @@
         </div>
         <div class="auth-tabs">
           <!-- Usiamo [queryParams] per passare l'ID del tag alle pagine di login/register, così possiamo tornarci dopo -->
-          <a class="auth-button" [routerLink]="['/login']" [queryParams]="{ nfcId: nfcId }">Login</a>
-          <a class="auth-button" [routerLink]="['/register']" [queryParams]="{ nfcId: nfcId }">Registrati</a>
+          <a class="auth-button" [routerLink]="['/login']" [queryParams]="{ returnUrl: '/claim/' + nfcId }">Login</a>
+          <a class="auth-button" [routerLink]="['/register']" [queryParams]="{ returnUrl: '/claim/' + nfcId }">Registrati</a>
         </div>
         <div class="info-box">
           <b>Perché serve un account?</b>

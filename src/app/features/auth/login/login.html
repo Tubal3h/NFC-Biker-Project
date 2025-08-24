@@ -53,6 +53,14 @@
       </div>
     </div>
 
+    <div class="form-options">
+      <label class="checkbox-container">
+        <input type="checkbox" name="rememberMe" [(ngModel)]="rememberMe">
+        <span class="checkmark"></span>
+        Resta collegato per 30 giorni
+      </label>
+    </div>
+
     <!-- Pulsante di Invio -->
     <button type="submit" class="btn-submit" [disabled]="loginForm.invalid || isLoggingIn">
       <span *ngIf="!isLoggingIn">Accedi</span>

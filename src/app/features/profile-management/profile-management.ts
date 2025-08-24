@@ -36,7 +36,7 @@ export class ProfileManagement implements OnInit {
   selectedTagIds: Set<string> = new Set();
 
   ngOnInit(): void {
-    this.loadProfiles();
+    // this.loadProfiles();
     this.loadInitialData();
   }
 
@@ -244,7 +244,7 @@ export class ProfileManagement implements OnInit {
           this.notification.showSuccess('Profilo principale aggiornato!');
           // Aggiorniamo l'utente locale nell'AuthService per riflettere il cambiamento
           const updatedUser = { ...this.auth.user!, mainProfileId: profileId };
-          this.auth.login(updatedUser as AuthUser); // Usiamo il metodo login per aggiornare lo stato
+          this.auth.updateUser(updatedUser as AuthUser); // Usiamo il metodo login per aggiornare lo stato
         } else {
           this.notification.showError(res.error || "Impossibile aggiornare il profilo.");
         }

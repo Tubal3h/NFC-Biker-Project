@@ -134,3 +134,55 @@ h2 {
       }
     }
   }
+
+  // in src/app/features/login/login.scss
+
+// ... (altri stili del form)
+
+.form-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+}
+
+.checkbox-container {
+  color: var.$color1;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  
+  input {
+    display: none; // Nascondiamo la checkbox di default
+  }
+  
+  .checkmark {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    margin-right: 0.75rem;
+    display: inline-block;
+    position: relative;
+    transition: all 0.2s;
+  }
+  
+  // Stile quando la checkbox è spuntata
+  input:checked + .checkmark {
+    background-color: var.$color2;
+    border-color: var.$color2;
+  }
+  
+  // Aggiungiamo il segno di spunta
+  input:checked + .checkmark::after {
+    content: '✔';
+    position: absolute;
+    color: white;
+    font-size: 14px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+}

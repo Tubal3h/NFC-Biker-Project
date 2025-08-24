@@ -89,7 +89,7 @@ export class AccountSettings implements OnInit {
       next: (response) => {
         if (response.success && response.data) {
           // Aggiorniamo lo stato dell'utente con i nuovi dati premium
-          this.auth.login(response.data);
+          this.auth.updateUser(response.data);
           this.notification.showSuccess('Congratulazioni, il tuo account è ora Premium!');
         } else {
           this.notification.showError(response.error || 'Si è verificato un errore.');

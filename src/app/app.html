@@ -2,5 +2,16 @@
   <app-navbar></app-navbar>
   <router-outlet></router-outlet> 
   <app-footer></app-footer>
-
+  @if (inactivityService.showWarningPopup$ | async) {
+  <div class="inactivity-backdrop">
+    <div class="inactivity-popup">
+      <h3>Sessione in Scadenza</h3>
+      <p>La tua sessione sta per scadere per inattività. Vuoi rimanere collegato?</p>
+      <div class="popup-actions">
+        <button (click)="logout()" class="btn-logout">Logout</button>
+        <button (click)="stay()" class="btn-stay">Resta Collegato</button>
+      </div>
+    </div>
+  </div>
+  }
 </div>

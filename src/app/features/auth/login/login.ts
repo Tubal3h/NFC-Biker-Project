@@ -21,6 +21,7 @@ export class Login implements OnInit {
   password = '';
   errorMsg = '';
   isLoggingIn = false; // Per disabilitare il pulsante durante la chiamata
+  rememberMe = false;
 
   /* -------------------------------------------------------------------------- */
   /*                                  Iniezione                                 */
@@ -51,30 +52,26 @@ doLogin() {
 
   this.isLoggingIn = true;
 
-  this.api.login(this.email, this.password).subscribe({
+  this.api.login(this.email, this.password, this.rememberMe).subscribe({
     next: (response) => {
-      if (response.success && response.data) {
+      // La risposta è di tipo AuthResponse: { success, data: AuthUser, token: string }
+      if (response.success && response.data && response.token) {
         
-        // <-- ECCO LA RIGA MANCANTE E FONDAMENTALE! -->
-        // Prima di fare qualsiasi altra cosa, salviamo l'utente!
-        this.authService.login(response.data);
+        // --- ECCO LA CORREZIONE ---
+        // L'utente è in response.data e il token è in response.token
+        this.authService.login(response.data, response.token);
 
-        // Ora che l'utente è salvato, possiamo navigare
-        if (this.nfcId) {
-          this.router.navigate(['/claim', this.nfcId]);
-        } else if (this.returnUrl) {
-          this.router.navigateByUrl(this.returnUrl);
-        } else {
-          this.router.navigate(['/dashboard']);
-        }
+        const targetRoute = this.returnUrl || '/dashboard';
+        this.router.navigateByUrl(targetRoute);
+
       } else {
         this.errorMsg = response.error || 'Credenziali non valide.';
       }
-      this.isLoggingIn = false;
     },
     error: (err) => {
-      console.error("Errore durante il login:", err);
-      this.errorMsg = 'Errore di connessione con il server.';
+      this.errorMsg = err?.error?.error || 'Errore di connessione con il server.';
+    },
+    complete: () => {
       this.isLoggingIn = false;
     }
   });

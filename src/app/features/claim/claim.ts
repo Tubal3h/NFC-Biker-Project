@@ -6,6 +6,7 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ApiService } from '@app/core/services/api';
 import { AuthService } from '@app/core/services/auth'; // Importiamo AuthService
 import { ApiResponse, NfcTag, AuthUser } from '@app/core/models'; // <-- MODIFICA 1: Importa AuthUser
+import { NotificationService } from '@app/core/services/notification';
 import { Observable } from 'rxjs';
 
 @Component({
@@ -20,6 +21,7 @@ export class Claim implements OnInit {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private authService = inject(AuthService); // <-- Inietta AuthService
+  private notification = inject(NotificationService); // <-- Inietta NotificationService
 
   nfcId: string | null = null;
   step: 'checking' | 'ok' | 'claimed' | 'notfound' = 'checking';
@@ -71,42 +73,53 @@ export class Claim implements OnInit {
       }
     });
   }
-
+  
   /**
-   * Associa il tag NFC all'utente attualmente loggato.
+   * Associa il tag NFC all'utente e decide il reindirizzamento intelligente.
    */
   claimAuto(): void {
-    const currentUserId = this.authService.user?.id;
-    if (!this.nfcId || !currentUserId) {
-      console.error("Impossibile associare: ID del tag o dell'utente mancante.");
-      this.router.navigate(['/login'], { queryParams: { nfcId: this.nfcId } });
+    const currentUser = this.authService.user;
+    
+    if (!this.nfcId || !currentUser?.id) {
+      this.notification.showError("Per favore, effettua il login per associare un casco.");
+      this.router.navigate(['/login'], { queryParams: { returnUrl: this.router.url } });
       return;
     }
 
-    // Chiamiamo l'ApiService, che ora si aspetta di ricevere un profileId nella risposta
-    this.api.claimNfc(this.nfcId, currentUserId).subscribe({
+    this.api.claimNfc(this.nfcId, currentUser.id).subscribe({
       next: (response) => {
-        // --- QUESTA È LA NUOVA LOGICA ---
-        if (response.success && response.data?.profileId) {
-          // Se l'API ha successo e ci restituisce l'ID del profilo,
-          // reindirizziamo l'utente all'URL di modifica corretto.
-          console.log(`Tag associato, reindirizzamento al profilo: ${response.data.profileId}`);
-          this.router.navigate(['/medical-form', response.data.profileId]);
+        // 1. Assegniamo .data a una variabile locale.
+        const responseData = response.data;
+
+        // 2. Facciamo il controllo sulla variabile locale. Ora TypeScript è sicuro.
+        if (response.success && responseData && responseData.profileId) {
           
+          this.notification.showSuccess('Casco associato con successo!');
+
+          // 3. Logica di reindirizzamento intelligente
+          if (currentUser.premium) {
+            this.api.getUserProfiles(currentUser.id).subscribe(profileRes => {
+              const profiles = profileRes.data;
+              if (profileRes.success && profiles && profiles.length > 1) {
+                // Utente Premium con PIÙ profili -> vai alla gestione generale
+                this.router.navigate(['/profile-management']);
+              } else {
+                // Utente Premium con UN SOLO profilo -> vai a compilare quel profilo
+                this.router.navigate(['/medical-form', responseData.profileId]);
+              }
+            });
+          } else {
+            // Utente Gratuito -> vai sempre a compilare il suo unico profilo
+            this.router.navigate(['/medical-form', responseData.profileId]);
+          }
+
         } else {
-          // Se la risposta non contiene l'ID (caso anomalo), mostriamo un errore
-          // e mandiamo l'utente alla pagina di gestione come fallback.
-          this.claimResult = 'Associazione riuscita, ma si è verificato un errore nel reindirizzamento.';
-          this.router.navigate(['/profile-management']);
+          this.notification.showError(response.error || 'Risposta dal server non valida.');
         }
       },
       error: (err) => {
-        // La tua gestione degli errori rimane identica
-        if (err.error?.error?.includes('Limite massimo raggiunto')) {
-          this.claimResult = 'Hai raggiunto il limite di 1 casco per l\'account gratuito.';
-        } else {
-          this.claimResult = err.error?.error || 'Errore durante l’associazione.';
-        }
+        const errorMsg = err.error?.error || 'Errore di connessione.';
+        this.notification.showError(errorMsg);
       }
     });
   }

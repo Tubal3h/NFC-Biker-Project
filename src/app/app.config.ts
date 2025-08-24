@@ -1,26 +1,38 @@
-import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZoneChangeDetection } from '@angular/core';
-import { provideRouter , withComponentInputBinding } from '@angular/router';
-import { provideHttpClient, withFetch } from '@angular/common/http';
+// in src/app/app.config.ts
 
-import { provideToastr } from 'ngx-toastr';
+import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
+import { provideRouter, withComponentInputBinding } from '@angular/router';
+import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import { provideAnimations } from '@angular/platform-browser/animations';
+import { provideToastr } from 'ngx-toastr';
 
 import { routes } from './app.routes';
+import { authInterceptor } from './core/interceptors/auth.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideRouter(routes, withComponentInputBinding()),
-    provideBrowserGlobalErrorListeners(),
+    // Provider fondamentale di Angular per il rilevamento delle modifiche
     provideZoneChangeDetection({ eventCoalescing: true }),
-    provideHttpClient(withFetch()),
+
+    // Provider per la gestione delle rotte
+    provideRouter(routes, withComponentInputBinding()),
+
+    // Provider per le animazioni (richiesto da ngx-toastr)
+    provideAnimations(),
+
+    // Provider per le chiamate HTTP, con il nostro interceptor e withFetch
+    provideHttpClient(
+      withInterceptors([authInterceptor]),
+      withFetch()
+    ),
     
-    provideAnimations(), // richiesto per le animazioni di ngx-toastr
-    provideToastr({      // configurazione opzionale per i toast
-      positionClass: 'toast-bottom-center', // Posizione dei toast
-      timeOut: 5000,                      // Il toast scompare dopo 5 secondi
-      preventDuplicates: true,            // Evita di mostrare toast identici
-      progressBar: true,                  // Aggiunge una barra di progresso visiva
-      closeButton: true,                  // Aggiunge un pulsante per chiudere il toast
+    // Provider per il servizio di notifiche (ngx-toastr)
+    provideToastr({
+      positionClass: 'toast-bottom-center',
+      timeOut: 5000,
+      preventDuplicates: true,
+      progressBar: true,
+      closeButton: true,
     }),
   ]
 };

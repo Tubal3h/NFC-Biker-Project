@@ -14,10 +14,6 @@
 
 .page-header {
   @include mixins.page-header;
-  // USA VARIABILE: Testo secondario con opacità per un grigio tematico
-  a { color: rgba(var.$color4, 0.7); }
-  h1 { color: rgba(var.$color3, 0.7); }
-  p { color: rgba(var.$color4, 0.7); }
 }
 .state-container {
   @include mixins.page-state-container;
@@ -35,32 +31,34 @@
 table {
   width: 100%;
   border-collapse: collapse;
-  color: var.$color1;
 }
 
+// Su mobile, l'header della tabella non serve
 thead {
   display: none;
 }
 
+// Ogni riga <tr> diventa una card
 tr {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 1.25rem; // Spazio tra le sezioni interne
   margin-bottom: 1.5rem;
   background: white;
   border-radius: 16px;
-  // USA VARIABILE: Ombra e bordo usano i colori di sistema
   box-shadow: 0 4px 25px rgba(var.$color1, 0.07);
   border: 1px solid var.$color-border;
   padding: 1.5rem;
-  position: relative;
+  position: relative; // Necessario per posizionare i pulsanti
 }
 
+// Le celle <td> sono gli elementi dentro la card
 td {
   display: block;
   border: none;
   padding: 0;
   text-align: left;
+  color: var.$color1;
   &::before { display: none; }
 }
 
@@ -76,13 +74,13 @@ td {
   .alias {
     font-size: 1.4rem;
     font-weight: 700;
-    color: var.$color1; // Usa nero profondo
+    color: var.$color1;
     display: block;
   }
   .nfc-id {
     font-family: monospace;
     font-size: 0.9rem;
-    color: rgba(var.$color1, 0.6); // Usa nero profondo con opacità
+    color: #888;
   }
 }
 
@@ -105,43 +103,53 @@ td {
 
     &.btn-rename {
       color: var.$color1;
-      &:hover {
-        background-color: var.$color4; // Usa grigio chiaro
-        border-color: var.$color4;
-      }
+      &:hover { background-color: var.$color4; border-color: var.$color4; }
     }
     &.btn-dissociate {
-      color: var.$color3; // Usa rosso vibrante
+      color: var.$color3;
       border-color: transparent;
-      &:hover {
-        background-color: rgba(var.$color3, 0.1); // Usa rosso con opacità
-      }
+      &:hover { background-color: rgba(var.$color3, 0.1); }
     }
   }
 }
 
 // --- Sezione Dettagli della Card ---
 .card-details {
+  // Stile per la data (etichetta sopra, valore sotto)
   td[data-label="Data di Associazione"] {
     font-size: 1rem;
-    color: var.$color1; // Usa nero profondo
+    color: var.$color1;
     
+    // Creiamo l'etichetta con ::before
     &::before {
       content: 'Associato il';
       display: block;
       font-size: 0.8rem;
       font-weight: 500;
-      color: rgba(var.$color1, 0.6); // Usa nero con opacità per l'etichetta
+      color: #888;
       margin-bottom: 0.25rem;
     }
   }
 }
 
+
 /* =================================================================
    Breakpoint per Tablet e Desktop (> 768px)
    ================================================================= */
 @media (min-width: 768px) {
-  thead { display: table-header-group; }
+  // Ripristiniamo la tabella classica
+  thead {
+    display: table-header-group;
+    th {
+      padding: 1rem 1.25rem;
+      text-align: left;
+      border-bottom: 1px solid var.$color-border;
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      color: #6c757d;
+    }
+  }
   tr {
     display: table-row;
     flex-direction: row;
@@ -152,17 +160,24 @@ td {
     border-bottom: 1px solid var.$color-border;
   }
   tbody tr:last-child { border-bottom: none; }
-  tbody tr:hover { background-color: var.$color-bg; } // Usa sfondo neutro
+  tbody tr:hover { background-color: var.$color-bg; }
 
   td {
     display: table-cell;
     padding: 1.25rem;
     vertical-align: middle;
+    color: var.$color1;
     &::before { display: none; }
   }
 
   .card-header, .card-details, .card-title { display: contents; }
-  .actions { justify-content: flex-start; }
+  
+  .alias { font-size: 1.1rem; }
+
+  .actions {
+    justify-content: flex-start;
+    position: static;
+  }
 
   .table-container {
     background: white;
@@ -199,13 +214,13 @@ td {
   max-width: 500px;
   width: 100%;
   box-shadow: 0 10px 50px rgba(0, 0, 0, 0.2);
+  color: var.$color1;
 
   h3 {
     text-align: center;
     margin-top: 0;
     font-size: 1.8rem;
     font-weight: 700;
-    color: var.$color1;
   }
   p {
     text-align: center;
@@ -220,7 +235,6 @@ td {
       display: block;
       font-weight: 600;
       margin-bottom: 0.5rem;
-      color: var.$color1;
     }
     input {
       width: 100%;
@@ -254,31 +268,52 @@ td {
   .btn-cancel {
     background: var.$color4;
     color: var.$color1;
-    &:hover {
-      background: darken(var.$color4, 10%);
-    }
+    &:hover { background: darken(var.$color4, 10%); }
   }
   .btn-confirm {
     background: var.$color2;
     color: white;
-    &:hover {
-      background: var.$color3;
-    }
+    &:hover { background: var.$color3; }
   }
 }
 
-// Stile specifico per il popup di pericolo (cancellazione)
 .modal-content.modal-danger {
   border-top: 5px solid var.$color2;
-  h3 {
-    color: var.$color2;
-  }
+  h3 { color: var.$color2; }
 }
 
 .btn-confirm-delete {
   background-color: var.$color2;
   color: white;
-  &:hover {
-    background-color: darken(var.$color2, 10%);
+  &:hover { background-color: darken(var.$color2, 10%); }
+}
+
+// in tag-management.scss, dopo .card-title
+
+.card-main-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.tag-icon {
+  font-size: 2rem;
+  color: var.$color2; // Usa il colore rosso scuro del brand
+  // Aggiungiamo un leggero sfondo per far risaltare l'icona
+  background-color: lighten(var.$color2, 50%);
+  width: 50px;
+  height: 50px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+}
+
+// Nel breakpoint per desktop, riduciamo leggermente l'icona
+@media (min-width: 768px) {
+  .tag-icon {
+    font-size: 1.5rem;
+    width: 40px;
+    height: 40px;
+    background-color: transparent; // Su desktop lo sfondo non serve
   }
 }

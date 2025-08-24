@@ -1,10 +1,15 @@
+// ======================================================
+// --- SETUP INIZIALE E IMPORT ---
+// ======================================================
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
-require('dotenv').config(); // Carica le variabili dal file .env
 const bcrypt = require('bcryptjs');
+const jwt =require('jsonwebtoken');
+const nodemailer = require('nodemailer');
+require('dotenv').config();
 
-// Importiamo i nostri nuovi modelli Mongoose
+// Import dei Modelli
 const User = require('./src/models/user.model.js');
 const Tag = require('./src/models/tag.model.js');
 const PremiumCode = require('./src/models/premium-code.model.js');
@@ -24,13 +29,36 @@ mongoose.connect(process.env.MONGODB_URI)
   .catch(err => console.error('🔴 Errore di connessione a MongoDB:', err));
 
 
-// --- Endpoint API (Ora con la logica del Database) ---
+// ======================================================
+// --- MIDDLEWARE DI AUTENTICAZIONE (La nostra "guardia") ---
+// ======================================================
+const authMiddleware = (req, res, next) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ success: false, error: 'Accesso negato. Token non fornito.' });
+  }
+  const token = authHeader.split(' ')[1];
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded; // Salva i dati dell'utente (es. id, email) nella richiesta
+    next();
+  } catch (error) {
+    res.status(401).json({ success: false, error: 'Sessione scaduta o token non valido.' });
+  }
+};
 
-/* -------------------------------------------------------------------------- */
-/*                                LOGIN/SIGNUP                                */
-/* -------------------------------------------------------------------------- */
+// ======================================================
+// --- ROTTE API ---
+// ======================================================
 
-// Registrazione
+// ======================================================
+// --- SEZIONE AUTENTICAZIONE (Pubblica) ---
+// ======================================================
+
+/**
+ * @route   POST /api/register
+ * @desc    Registra un nuovo utente, crea il suo profilo principale e lo logga.
+ */
 app.post('/api/register', async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -39,29 +67,16 @@ app.post('/api/register', async (req, res) => {
     if (existingUser) return res.status(400).json({ error: 'Email già registrata' });
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
-
-    // 1. Crea l'utente in memoria (Mongoose gli assegna un _id temporaneo)
     const newUser = new User({ email, password: hashedPassword });
-    
-    // 2. Crea il suo Profilo Principale, usando l'_id temporaneo dell'utente
-    const mainProfile = new MedicalProfile({
-      ownerId: newUser._id,
-      profileName: 'Profilo Principale'
-    });
-    // Salva il profilo nel database
+    const mainProfile = new MedicalProfile({ ownerId: newUser._id, profileName: 'Profilo Principale' });
     await mainProfile.save();
-
-    // 3. Ora che il profilo è salvato e ha un suo _id, lo colleghiamo all'utente
     newUser.mainProfileId = mainProfile._id;
-    
-    // 4. Solo adesso salviamo l'utente, che ora è completo di tutte le informazioni
     const savedUser = await newUser.save();
-
-    // Prepariamo l'oggetto da restituire al frontend
+    const payload = { id: savedUser._id, email: savedUser.email, premium: savedUser.premium };
+    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '30m' });
     const userToReturn = savedUser.toObject();
     delete userToReturn.password;
-    
-    res.status(201).json({ success: true, data: userToReturn });
+    res.status(201).json({success: true, token: token, data: userToReturn});
   } catch (error) {
     console.error("Errore durante la registrazione:", error);
     res.status(500).json({ success: false, error: 'Errore interno del server' });
@@ -69,87 +84,52 @@ app.post('/api/register', async (req, res) => {
 });
 
 
-// Login
-// in server.js
 
+/**
+ * @route   POST /api/login
+ * @desc    Autentica un utente, esegue il controllo della scadenza premium e restituisce token e dati.
+ */
 app.post('/api/login', async (req, res) => {
   try {
-    const { email, password } = req.body;
-
-    // 1. Trova l'utente e la sua password
+    const { email, password, rememberMe } = req.body;
     const user = await User.findOne({ email: email.toLowerCase() }).select('+password');
-    if (!user) {
-      return res.status(401).json({ success: false, error: 'Credenziali non valide' });
-    }
-
-    // 2. Verifica la password
+    if (!user) return res.status(401).json({ success: false, error: 'Credenziali non valide' });
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res.status(401).json({ success: false, error: 'Credenziali non valide' });
-    }
-
-    // --- NUOVA LOGICA DI CONTROLLO SCADENZA PREMIUM ---
-    // 3. Controlliamo se l'utente era premium e se il suo abbonamento è scaduto
+    if (!isMatch) return res.status(401).json({ success: false, error: 'Credenziali non valide' });
     if (user.premium && user.premiumExpiresAt && new Date() > user.premiumExpiresAt) {
-      console.log(`L'abbonamento premium per ${user.email} è scaduto. Avvio procedura di downgrade.`);
-
-      // A. Imposta lo stato premium a false
       user.premium = false;
       user.premiumExpiresAt = null;
-
-      // B. Disattiva tutti i profili tranne quello principale
-      await MedicalProfile.updateMany(
-        { ownerId: user._id, _id: { $ne: user.mainProfileId } }, // Trova tutti i profili che NON sono quello principale
-        { $set: { isActive: false } }
-      );
-
-      // C. Riassocia tutti i tag dell'utente al profilo principale
-      await Tag.updateMany(
-        { userId: user._id },
-        { $set: { profileId: user.mainProfileId } }
-      );
-      
-      // D. Salva le modifiche sull'utente
+      await MedicalProfile.updateMany({ ownerId: user._id, _id: { $ne: user.mainProfileId } }, { $set: { isActive: false } });
+      await Tag.updateMany({ userId: user._id }, { $set: { profileId: user.mainProfileId } });
       await user.save();
-      console.log(`Downgrade per ${user.email} completato.`);
     }
-    // --- FINE LOGICA DI CONTROLLO ---
-
-    // 4. Recupera il profilo medico principale (che ora è l'unico attivo se l'utente è stato declassato)
-    const profile = await MedicalProfile.findOne({ ownerId: user._id, _id: user.mainProfileId });
-
-    // 5. Prepara l'oggetto finale da inviare al frontend
+    const payload = { id: user._id, email: user.email, premium: user.premium };
+    const expiresIn = rememberMe ? '30d' : '30m';
+    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn });
+    const profile = await MedicalProfile.findById(user.mainProfileId);
     const userObject = user.toObject();
     delete userObject.password;
-
     if (profile) {
       userObject.name = profile.name;
       userObject.surname = profile.surname;
-      userObject.medicalData = {
-        bloodType: profile.bloodType,
-        allergies: profile.allergies,
-        conditions: profile.conditions,
-        notes: profile.notes,
-        emergencyContacts: profile.emergencyContacts
-      };
-    } else {
-      userObject.name = '';
-      userObject.surname = '';
-      userObject.medicalData = {};
     }
-    
-    res.json({ success: true, data: userObject });
-
+    res.json({ success: true, token, data: userObject });
   } catch (error) {
     console.error("Errore critico durante il login:", error);
     res.status(500).json({ success: false, error: 'Errore interno del server' });
   }
 });
 
-/* -------------------------------------------------------------------------- */
-/*                               CAMBIO PASSWORD                              */
-/* -------------------------------------------------------------------------- */
-app.post('/api/user/:userId/change-password', async (req, res) => {
+// ======================================================
+// --- SEZIONE UTENTE (Protetta) ---
+// ======================================================
+
+/**
+ * @route   POST /api/user/:userId/change-password
+ * @desc    Permette a un utente loggato di cambiare la propria password.
+ * @access  Protected
+ */
+app.post('/api/user/:userId/change-password', authMiddleware, async (req, res) => {
   try {
     const { currentPassword, newPassword } = req.body;
     const { userId } = req.params;
@@ -195,12 +175,12 @@ app.get('/api/tag/:nfcId', async (req, res) => {
   } catch (error) { res.status(500).json({ success: false, error: 'Errore server' }); }
 });
 
-// in server.js
-
-/* -------------------------------------------------------------------------- */
-/* Associa un Casco/NFC a un Utente                                           */
-/* -------------------------------------------------------------------------- */
-app.post('/api/claim', async (req, res) => {
+/**
+ * @route   POST /api/claim
+ * @desc    Associa un tag a un utente loggato.
+ * @access  Protected
+ */
+app.post('/api/claim', authMiddleware, async (req, res) => {
   try {
     const { nfcId, userId } = req.body;
 
@@ -254,51 +234,13 @@ app.post('/api/claim', async (req, res) => {
   }
 });
 
-app.get('/api/user/:userId/tags', async (req, res) => {
-  try {
-    const user = await User.findById(req.params.userId).populate('nfcTags');
-    if (!user) return res.status(404).json({ success: false, error: 'Utente non trovato' });
-    res.json({ success: true, data: user.nfcTags });
-  } catch (error) { res.status(500).json({ success: false, error: 'Errore server' }); }
-});
 
-// Claim casco/NFC
-app.post('/api/claim', async (req, res) => {
-  try {
-    const { nfcId, userId } = req.body;
-    const user = await User.findById(userId);
-    const tag = await Tag.findOne({ nfcId: nfcId });
-
-    if (!user || !tag) return res.status(404).json({ success: false, error: 'Utente o Tag non trovato' });
-    if (tag.profileId || tag.userId) return res.status(400).json({ success: false, error: 'Tag già associato' });
-
-    if (!user.premium && user.nfcTags.length >= 1) {
-      return res.status(403).json({ success: false, error: 'Limite raggiunto' });
-    }
-
-    const userProfile = await MedicalProfile.findOne({ ownerId: user._id });
-    if (!userProfile) return res.status(404).json({ success: false, error: 'Profilo medico non trovato.' });
-    
-    // --- ECCO LA CORREZIONE FONDAMENTALE ---
-    tag.profileId = userProfile._id;
-    tag.userId = user._id; // <-- Aggiungi questa riga
-    user.nfcTags.push(tag._id);
-    
-    await tag.save();
-    await user.save();
-    
-    res.json({ 
-      success: true, 
-      data: { 
-        message: 'Tag associato con successo',
-        profileId: userProfile._id 
-      } 
-    });
-  } catch (error) { res.status(500).json({ success: false, error: 'Errore server' }); }
-});
-
-// Rinomina un tag/casco
-app.patch('/api/tags/:tagId/rename', async (req, res) => {
+/**
+ * @route   PATCH /api/tags/:tagId/rename
+ * @desc    Rinomina un tag.
+ * @access  Protected
+ */
+app.patch('/api/tags/:tagId/rename', authMiddleware, async (req, res) => {
   try {
     const { tagId } = req.params;
     const { alias } = req.body; // Prendiamo il nuovo nome dal corpo della richiesta
@@ -359,16 +301,12 @@ app.get('/api/user/:userId', async (req, res) => {
 /*                            gestione piu profili                            */
 /* -------------------------------------------------------------------------- */
 
-// Ottiene TUTTI i profili medici di un utente (per la pagina di gestione)
-app.get('/api/user/:userId/profiles', async (req, res) => {
-  try {
-    const profiles = await MedicalProfile.find({ ownerId: req.params.userId });
-    res.json({ success: true, data: profiles });
-  } catch (error) { res.status(500).json({ success: false, error: 'Errore server' }); }
-});
-
-// Ottiene un SINGOLO profilo medico tramite il suo ID (per la Scheda e il Form)
-app.get('/api/profiles/:profileId', async (req, res) => {
+/**
+ * @route   GET /api/profiles/:profileId
+ * @desc    Ottiene un singolo profilo medico.
+ * @access  Protected
+ */
+app.get('/api/profiles/:profileId', authMiddleware, async (req, res) => {
   try {
     const profile = await MedicalProfile.findById(req.params.profileId);
     if (!profile) return res.status(404).json({ error: 'Profilo non trovato' });
@@ -376,8 +314,12 @@ app.get('/api/profiles/:profileId', async (req, res) => {
   } catch (error) { res.status(500).json({ success: false, error: 'Errore server' }); }
 });
 
-// Aggiorna un SINGOLO profilo medico
-app.put('/api/profiles/:profileId', async (req, res) => {
+/**
+ * @route   PUT /api/profiles/:profileId
+ * @desc    Aggiorna un profilo medico.
+ * @access  Protected
+ */
+app.put('/api/profiles/:profileId', authMiddleware, async (req, res) => {
   try {
     const profile = await MedicalProfile.findByIdAndUpdate(req.params.profileId, req.body, { new: true });
     if (!profile) return res.status(404).json({ error: 'Profilo non trovato' });
@@ -385,12 +327,17 @@ app.put('/api/profiles/:profileId', async (req, res) => {
   } catch (error) { res.status(500).json({ success: false, error: 'Errore server' }); }
 });
 
-// in server.js
 
 /* -------------------------------------------------------------------------- */
 /* IMPOSTA UN NUOVO PROFILO PRINCIPALE (SOLO PREMIUM)             */
 /* -------------------------------------------------------------------------- */
-app.patch('/api/user/:userId/set-main-profile', async (req, res) => {
+
+/**
+ * @route   PATCH /api/user/:userId/set-main-profile
+ * @desc    Permette a un utente Premium di cambiare il suo profilo principale.
+ * @access  Protected
+ */
+app.patch('/api/user/:userId/set-main-profile', authMiddleware, async (req, res) => {
   try {
     const { userId } = req.params;
     const { newProfileId } = req.body;
@@ -442,36 +389,34 @@ app.patch('/api/user/:userId/set-main-profile', async (req, res) => {
   }
 });
 
-/* -------------------------------------------------------------------------- */
-/*                             CAMBIO NOME/COGNOME                            */
-/* -------------------------------------------------------------------------- */
-app.patch('/api/user/:userId/profile', async (req, res) => {
+
+/**
+ * @route   PATCH /api/tags/:nfcId/switch-profile
+ * @desc    Cambia il profilo associato a un tag (per utenti Premium).
+ * @access  Protected
+ */
+app.patch('/api/tags/:nfcId/switch-profile', authMiddleware, async (req, res) => {
   try {
-    const { name, surname } = req.body;
-    const { userId } = req.params;
+    const { nfcId } = req.params;
+    const { newProfileId } = req.body;
 
-    // 1. Trova l'utente nel database
-    const user = await User.findById(userId);
-    if (!user) {
-      return res.status(404).json({ success: false, error: 'Utente non trovato' });
+    const tag = await Tag.findOne({ nfcId: nfcId });
+    const newProfile = await MedicalProfile.findById(newProfileId);
+
+    if (!tag || !newProfile) {
+      return res.status(404).json({ success: false, error: 'Tag o Profilo non trovato.' });
     }
 
-    // 2. Valida i dati in arrivo (best practice!)
-    if (!name || !surname || name.trim() === '' || surname.trim() === '') {
-      return res.status(400).json({ success: false, error: 'Nome e cognome sono obbligatori.' });
+    // Sicurezza: controlla che il tag e il nuovo profilo appartengano allo stesso utente
+    if (tag.userId.toString() !== newProfile.ownerId.toString()) {
+      return res.status(403).json({ success: false, error: 'Non hai il permesso di eseguire questa azione.' });
     }
 
-    // 3. Aggiorna i campi e salva il documento
-    user.name = name;
-    user.surname = surname;
-    const savedUser = await user.save();
-    
-    // 4. Restituisci l'utente aggiornato e completo (la trasformazione toJSON toglie la password)
-    res.json({ success: true, data: savedUser });
-
+    tag.profileId = newProfile._id;
+    await tag.save();
+    res.json({ success: true, data: tag });
   } catch (error) {
-    console.error("Errore durante l'aggiornamento del profilo:", error);
-    res.status(500).json({ success: false, error: 'Errore interno del server' });
+    res.status(500).json({ success: false, error: 'Errore interno del server.' });
   }
 });
 
@@ -480,16 +425,16 @@ app.patch('/api/user/:userId/profile', async (req, res) => {
 /* -------------------------------------------------------------------------- */
 
 
-// 1. OTTIENI TUTTI i profili di un utente 
-app.get('/api/user/:userId/profiles', async (req, res) => {
-  try {
-    const profiles = await MedicalProfile.find({ ownerId: req.params.userId });
-    res.json({ success: true, data: profiles });
-  } catch (error) { res.status(500).json({ success: false, error: 'Errore server' }); }
-});
+// ======================================================
+// --- SEZIONE PROFILI MEDICI (Protetta) ---
+// ======================================================
 
-// 2. CREA un nuovo profilo per un utente
-app.post('/api/user/:userId/profiles', async (req, res) => {
+/**
+ * @route   POST /api/user/:userId/profiles
+ * @desc    Crea un nuovo profilo medico per un utente Premium.
+ * @access  Protected
+ */
+app.post('/api/user/:userId/profiles', authMiddleware, async (req, res) => {
   try {
     const { userId } = req.params;
     const { profileName } = req.body;
@@ -512,12 +457,27 @@ app.post('/api/user/:userId/profiles', async (req, res) => {
   } catch (error) { res.status(500).json({ success: false, error: 'Errore server' }); }
 });
 
+/**
+ * @route   GET /api/user/:userId/profiles
+ * @desc    Ottiene tutti i profili medici di un utente.
+ * @access  Protected
+ */
+app.get('/api/user/:userId/profiles', authMiddleware, async (req, res) => {
+  try {
+    const profiles = await MedicalProfile.find({ ownerId: req.params.userId });
+    res.json({ success: true, data: profiles });
+  } catch (error) { 
+    res.status(500).json({ success: false, error: 'Errore server' }); 
+  }
+});
 
-// 3. ELIMINA un profilo medico specifico
-// in server.js
 
-// ELIMINA un profilo medico specifico (Logica Aggiornata)
-app.delete('/api/profiles/:profileId', async (req, res) => {
+/**
+ * @route   DELETE /api/profiles/:profileId
+ * @desc    Elimina un profilo medico (se non è quello principale).
+ * @access  Protected
+ */
+app.delete('/api/profiles/:profileId', authMiddleware, async (req, res) => {
   try {
     const { profileId } = req.params;
     
@@ -541,7 +501,7 @@ app.delete('/api/profiles/:profileId', async (req, res) => {
     // --- FINE CONTROLLO ---
 
     // 4. Se non è il profilo principale, procedi con l'eliminazione
-    await Tag.updateMany({ profileId: profileId }, { $set: { profileId: null } });
+  await Tag.updateMany({ profileId: profileId }, { $set: { profileId: owner.mainProfileId } });
     await MedicalProfile.findByIdAndDelete(profileId);
 
     res.json({ success: true, data: { message: 'Profilo eliminato con successo.' } });
@@ -552,33 +512,31 @@ app.delete('/api/profiles/:profileId', async (req, res) => {
 });
 
 
-/* -------------------------------------------------------------------------- */
-/*               Visualizza i caschi (tag) associati a un utente              */
-/* -------------------------------------------------------------------------- */
-app.get('/api/user/:userId/tags', async (req, res) => {
+/**
+ * @route   GET /api/user/:userId/tags
+ * @desc    Ottiene tutti i tag di un utente, completi di dettagli.
+ * @access  Protected
+ */
+app.get('/api/user/:userId/tags', authMiddleware, async (req, res) => {
   try {
     const { userId } = req.params;
+    const user = await User.findById(userId).populate('nfcTags'); // <-- USA .populate()
 
-    // 1. Trova l'utente e usa .populate() per caricare i dettagli dei tag
-    const user = await User.findById(userId).populate('nfcTags');
-    
     if (!user) {
       return res.status(404).json({ success: false, error: 'Utente non trovato' });
     }
-
-    // 2. Restituisci l'array di oggetti Tag completi
     res.json({ success: true, data: user.nfcTags });
-
   } catch (error) {
-    console.error("Errore nel recuperare i tag dell'utente:", error);
     res.status(500).json({ success: false, error: 'Errore interno del server' });
   }
 });
 
-/* -------------------------------------------------------------------------- */
-/*                     Dissocia un casco/tag da un utente                     */
-/* -------------------------------------------------------------------------- */
-app.delete('/api/tags/:nfcId/dissociate', async (req, res) => {
+/**
+ * @route   DELETE /api/tags/:nfcId/dissociate
+ * @desc    Dissocia un tag da un utente.
+ * @access  Protected
+ */
+app.delete('/api/tags/:nfcId/dissociate', authMiddleware, async (req, res) => {
   try {
     const { nfcId } = req.params;
     
@@ -614,8 +572,7 @@ app.delete('/api/tags/:nfcId/dissociate', async (req, res) => {
 /* -------------------------------------------------------------------------- */
 
 
-const jwt = require('jsonwebtoken');
-const nodemailer = require('nodemailer');
+// const nodemailer = require('nodemailer');
 
 app.post('/api/auth/forgot-password', async (req, res) => {
   try {
@@ -678,7 +635,13 @@ app.post('/api/auth/reset-password/:token', async (req, res) => {
 /* -------------------------------------------------------------------------- */
 /*               Attiva l'abbonamento Premium tramite un codice               */
 /* -------------------------------------------------------------------------- */
-app.post('/api/user/:userId/upgrade-premium', async (req, res) => {
+
+/**
+ * @route   POST /api/user/:userId/upgrade-premium
+ * @desc    Attiva il premium per un utente con un codice.
+ * @access  Protected
+ */
+app.post('/api/user/:userId/upgrade-premium', authMiddleware, async (req, res) => {
   try {
     const { userId } = req.params;
     const { activationCode } = req.body;
@@ -724,98 +687,20 @@ app.post('/api/user/:userId/upgrade-premium', async (req, res) => {
 /* -------------------------------------------------------------------------- */
 /*                                MULTI PROFILO                               */
 /* -------------------------------------------------------------------------- */
-app.get('/api/medical-profile/:profileId', async (req, res) => {
-  try {
-    const profile = await MedicalProfile.findById(req.params.profileId);
-    if (!profile) {
-      return res.status(404).json({ success: false, error: 'Profilo medico non trovato' });
-    }
-    res.json({ success: true, data: profile });
-  } catch (error) { res.status(500).json({ success: false, error: 'Errore server' }); }
-});
 
-app.patch('/api/tags/:nfcId/switch-profile', async (req, res) => {
-  try {
-    const { nfcId } = req.params;
-    const { newProfileId } = req.body;
-    
-    const tag = await Tag.findOne({ nfcId: nfcId });
-    if (!tag) return res.status(404).json({ error: 'Tag non trovato' });
-    
-    // Logica di sicurezza: solo il proprietario può cambiare il profilo
-    // (Aggiungeremo questa logica dopo)
-    
-    tag.profileId = newProfileId;
-    await tag.save();
-    res.json({ success: true, data: tag });
-  } catch (error) { res.status(500).json({ error: 'Errore server' }); }
-});
 
-// Cambia il profilo medico associato a un tag
-app.patch('/api/tags/:nfcId/switch-profile', async (req, res) => {
-  try {
-    const { nfcId } = req.params;
-    const { newProfileId } = req.body;
 
-    // 1. Trova il tag e il nuovo profilo
-    const tag = await Tag.findOne({ nfcId: nfcId });
-    const newProfile = await MedicalProfile.findById(newProfileId);
-
-    if (!tag || !newProfile) {
-      return res.status(404).json({ success: false, error: 'Tag o Profilo non trovato.' });
-    }
-
-    // 2. Logica di sicurezza (fondamentale):
-    // Assicurati che il tag appartenga all'utente che possiede il nuovo profilo.
-    // (Questa logica andrebbe migliorata con l'autenticazione JWT, ma per ora va bene)
-    if (tag.userId.toString() !== newProfile.ownerId.toString()) {
-      return res.status(403).json({ success: false, error: 'Non hai il permesso di modificare questo tag.' });
-    }
-
-    // 3. Aggiorna il riferimento e salva
-    tag.profileId = newProfile._id;
-    await tag.save();
-
-    res.json({ success: true, data: tag });
-  } catch (error) {
-    res.status(500).json({ success: false, error: 'Errore interno del server.' });
-  }
-});
-// 1. Ottiene la lista dei tag di un utente che NON sono ancora associati a un profilo
-app.get('/api/user/:userId/unassigned-tags', async (req, res) => {
-  try {
-    const user = await User.findById(req.params.userId).populate('nfcTags');
-    if (!user) return res.status(404).json({ error: 'Utente non trovato' });
-
-    // Filtra i tag per trovare solo quelli senza un profileId
-    const unassignedTags = user.nfcTags.filter(tag => !tag.profileId);
-    
-    res.json({ success: true, data: unassignedTags });
-  } catch (error) { res.status(500).json({ error: 'Errore server' }); }
-});
-
-// 2. Associa un tag specifico a un profilo medico specifico
-app.patch('/api/tags/:tagId/assign-profile', async (req, res) => {
-  try {
-    const { tagId } = req.params;
-    const { profileId } = req.body;
-
-    const tag = await Tag.findById(tagId);
-    if (!tag) return res.status(404).json({ error: 'Tag non trovato' });
-
-    tag.profileId = profileId;
-    await tag.save();
-    
-    res.json({ success: true, data: tag });
-  } catch (error) { res.status(500).json({ error: 'Errore server' }); }
-});
 
 // in backend/server.js
 
 // in server.js
 
-// Sincronizza i tag associati a un profilo medico
-app.post('/api/profiles/:profileId/sync-tags', async (req, res) => {
+/**
+ * @route   POST /api/profiles/:profileId/sync-tags
+ * @desc    Sincronizza i tag associati a un profilo.
+ * @access  Protected
+ */
+app.post('/api/profiles/:profileId/sync-tags', authMiddleware, async (req, res) => {
   try {
     const { profileId } = req.params;
     const { tagIds, ownerId } = req.body; // L'ownerId è l'ID dell'utente
@@ -848,13 +733,15 @@ app.post('/api/profiles/:profileId/sync-tags', async (req, res) => {
   }
 });
 
+// ======================================================
+// --- SEZIONE UTILITY (Pubblica) ---
+// ======================================================
 
-/* -------------------------------------------------------------------------- */
-/*                                    EXTRA                                   */
-/* -------------------------------------------------------------------------- */
-
-// in server.js, aggiungi questa nuova rotta
-
+/**
+ * @route   GET /api/location-info
+ * @desc    Proxy per ottenere dati di geolocalizzazione senza problemi di CORS.
+ * @access  Public
+ */
 app.get('/api/location-info', async (req, res) => {
   try {
     const { lat, lon } = req.query;
@@ -882,6 +769,7 @@ app.get('/api/location-info', async (req, res) => {
   }
 });
 
+// --- Avvio del Server ---
 app.listen(PORT, () => {
-  console.log(`S.O.S. Helmet backend attivo su http://localhost:${PORT}`);
+  console.log(`✅ S.O.S. Helmet backend attivo su http://localhost:${PORT}`);
 });

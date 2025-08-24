@@ -29,7 +29,7 @@
     /* Configurazione degli Alias di Percorso (la parte importante per noi) */
     "paths": {
       "@app/*": ["src/app/*"],
-      "@environments/*": ["src/environments/*"]
+      "@env/*": ["src/environments/*"]
     }
   },
   "angularCompilerOptions": {

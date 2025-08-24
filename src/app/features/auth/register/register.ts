@@ -6,6 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ApiService } from '@app/core/services/api';
 import { AuthService } from '@app/core/services/auth';
+import { NotificationService } from '@app/core/services/notification';
 
 @Component({
   selector: 'app-register',
@@ -19,6 +20,7 @@ export class Register implements OnInit {
   private authService = inject(AuthService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
+    private notification = inject(NotificationService);
 
   email = '';
   password = '';
@@ -46,27 +48,31 @@ export class Register implements OnInit {
     
     this.isRegistering = true;
 
-    this.api.register({ email: this.email, password: this.password }).subscribe({
-      next: (response) => {
-        if (response.success && response.data) {
-          this.authService.login(response.data);
-          
-          // Ora questo 'if' funzionerà correttamente
-          if (this.nfcId) {
-            this.router.navigate(['/claim', this.nfcId]);
-          } else {
-            this.router.navigate(['/dashboard']);
-          }
+  // in src/app/features/auth/register/register.ts
 
-        } else {
-          this.errorMsg = response.error || 'Errore durante la registrazione.';
-        }
-        this.isRegistering = false;
-      },
-      error: (err) => {
-        this.errorMsg = err.error?.error || 'Errore di connessione.';
-        this.isRegistering = false;
+  this.api.register({ email: this.email, password: this.password }).subscribe({
+    next: (response) => {
+      // La risposta è di tipo AuthResponse: { success, data: AuthUser, token: string }
+      if (response.success && response.data && response.token) {
+
+        // --- ECCO LA CORREZIONE ---
+        this.authService.login(response.data, response.token);
+        this.notification.showSuccess('Registrazione completata! Benvenuto.');
+
+        const targetRoute = this.nfcId ? ['/claim', this.nfcId] : ['/dashboard'];
+        this.router.navigate(targetRoute);
+
+      } else {
+        this.errorMsg = response.error || 'Errore durante la registrazione.';
       }
-    });
+    },
+    error: (err) => {
+      this.errorMsg = err.error?.error || 'Errore di connessione.';
+    },
+    complete: () => {
+      this.isRegistering = false;
+    }
+  });
+
   }
 }
