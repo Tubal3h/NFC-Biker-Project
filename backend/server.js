@@ -105,7 +105,7 @@ app.post('/api/login', async (req, res) => {
     }
     const payload = { id: user._id, email: user.email, premium: user.premium };
     const expiresIn = rememberMe ? '30d' : '1m';
-    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1d' });
+    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn });
     const profile = await MedicalProfile.findById(user.mainProfileId);
     const userObject = user.toObject();
     delete userObject.password;
