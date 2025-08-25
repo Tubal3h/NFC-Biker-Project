@@ -44,7 +44,7 @@
     gap: 1.5rem;
   }
 
-  .profile-icon i { font-size: 2.5rem; color: var.$color2; }
+  .profile-icon .icon-wrapper { font-size: 2.5rem; color: var.$color2; }
 
   .profile-info {
     h3 { margin: 0 0 0.25rem 0; font-size: 1.3rem; color: var.$color1; }
@@ -452,8 +452,8 @@
 
 .inactive-content {
   color: var.$color1;
-  
-  i {
+
+  .icon-wrapper {
     font-size: 2rem;
     color: var.$color2;
   }

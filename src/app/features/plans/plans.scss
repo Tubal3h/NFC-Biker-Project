@@ -152,8 +152,8 @@ input:checked + .slider:before {
       gap: 1rem;
       font-size: 1.05rem;
       &:not(:last-child) { margin-bottom: 1.25rem; }
-      
-      i {
+
+      .icon-wrapper {
         font-size: 1.2rem;
         width: 24px;
         text-align: center;

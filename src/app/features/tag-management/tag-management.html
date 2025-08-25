@@ -1,6 +1,6 @@
 <div class="management-container">
   <div class="page-header">
-    <a routerLink="/dashboard" class="back-link"><i class="fas fa-arrow-left"></i> Torna alla Dashboard</a>
+    <a routerLink="/dashboard" class="back-link"><fa-icon [icon]="faArrowLeft"></fa-icon> Torna alla Dashboard</a>
     <h1>Gestione Caschi</h1>
     <p>Visualizza e gestisci tutti i tuoi dispositivi NFC associati al tuo account.</p>
   </div>
@@ -45,10 +45,10 @@
                 <td data-label="Data di Associazione">{{ tag.createdAt | date:'dd/MM/yyyy' }}</td>
                 <td class="actions" data-label="Azioni">
                   <button (click)="openRenameModal(tag)" class="btn-rename" title="Rinomina">
-                    <i class="fas fa-pencil-alt"></i>
+                    <fa-icon [icon]="faPencilAlt"></fa-icon>
                   </button>
                   <button (click)="openDeleteModal(tag)" class="btn-dissociate" title="Dissocia Casco">
-                    <i class="fas fa-trash"></i>
+                    <fa-icon [icon]="faTrash"></fa-icon>
                   </button>
                 </td>
               </tr>

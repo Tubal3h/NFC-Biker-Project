@@ -8,11 +8,14 @@ import { AuthService } from '@app/core/services/auth';
 import { NfcTag } from '@app/core/models';
 import { NotificationService } from '@app/core/services/notification';
 import { FormsModule } from '@angular/forms';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faArrowLeft, faTrash, faPencilAlt } from '@fortawesome/free-solid-svg-icons';
+
 
 @Component({
   selector: 'app-tag-management',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [CommonModule, RouterModule, FormsModule, FontAwesomeModule],
   templateUrl: './tag-management.html',
   styleUrls: ['./tag-management.scss']
 })
@@ -20,6 +23,10 @@ export class TagManagement implements OnInit {
   private api = inject(ApiService);
   private auth = inject(AuthService);
   private notification = inject(NotificationService);
+
+  faArrowLeft = faArrowLeft;
+  faTrash = faTrash;
+  faPencilAlt = faPencilAlt;
 
   isLoading = true;
   errorMsg = '';

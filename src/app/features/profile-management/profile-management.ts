@@ -2,18 +2,21 @@
 
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterModule } from '@angular/router';
+import {  RouterModule } from '@angular/router';
 import { ApiService } from '@app/core/services/api';
 import { AuthService } from '@app/core/services/auth';
 import { NotificationService } from '@app/core/services/notification';
 import { MedicalProfile, NfcTag, AuthUser } from '@app/core/models';
 import { FormsModule } from '@angular/forms';
 import { forkJoin } from 'rxjs';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faIdBadge, faArrowLeft, faPlus, faLock } from '@fortawesome/free-solid-svg-icons';
+
 
 @Component({
   selector: 'app-profile-management',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [CommonModule, RouterModule, FormsModule, FontAwesomeModule],
   templateUrl: './profile-management.html',
   styleUrls: ['./profile-management.scss']
 })
@@ -22,6 +25,12 @@ export class ProfileManagement implements OnInit {
   auth = inject(AuthService); // Pubblico per l'uso nel template
   private notification = inject(NotificationService);
   // private router = inject(Router);
+
+  // Icone FontAwesome
+  faIdBadge = faIdBadge;
+  faArrowLeft = faArrowLeft;
+  faPlus = faPlus;
+  faLock = faLock;
 
   isLoading = true;
   profiles: MedicalProfile[] = [];

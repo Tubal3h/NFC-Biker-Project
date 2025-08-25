@@ -10,15 +10,33 @@ import { MedicalProfile, AuthUser, NfcTag } from '@app/core/models';
 import { forkJoin, of } from 'rxjs';
 import { switchMap, catchError } from 'rxjs/operators';
 import { FormsModule } from '@angular/forms';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faSyncAlt, faExclamationTriangle, faIdCard, faUser, faBirthdayCake, faMapMarkerAlt, faHome, faTint, faAllergies, faNotesMedical, faStickyNote, faAddressBook, faPhoneAlt } from '@fortawesome/free-solid-svg-icons';
+
 
 @Component({
   selector: 'app-scheda',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [CommonModule, RouterModule, FormsModule, FontAwesomeModule],
   templateUrl: './scheda.html',
   styleUrl: './scheda.scss'
 })
 export class Scheda implements OnInit {
+  // Icone FontAwesome
+  faSyncAlt = faSyncAlt;
+  faExclamationTriangle = faExclamationTriangle;
+  faIdCard = faIdCard;
+  faUser = faUser;
+  faBirthdayCake = faBirthdayCake;
+  faMapMarkerAlt = faMapMarkerAlt;
+  faHome = faHome;
+  faTint = faTint;
+  faAllergies = faAllergies;
+  faNotesMedical = faNotesMedical;
+  faStickyNote = faStickyNote;
+  faAddressBook = faAddressBook;
+  faPhoneAlt = faPhoneAlt;
+
   private api = inject(ApiService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);

@@ -22,11 +22,11 @@
         <p class="description">Le funzioni essenziali per iniziare a proteggerti subito.</p>
       </div>
       <ul class="features-list">
-        <li><i class="fas fa-check"></i> 1 Profilo Medico</li>
-        <li><i class="fas fa-check"></i> 1 Casco / Tag NFC</li>
-        <li><i class="fas fa-check"></i> Fino a 3 Contatti (per profilo)</li>
-        <li class="disabled"><i class="fas fa-times"></i> Associazione Multi-Profilo</li>
-        <li class="disabled"><i class="fas fa-times"></i> Notifiche SMS e Email</li>
+        <li><fa-icon [icon]="faUserCircle"></fa-icon> 1 Profilo Medico</li>
+        <li><fa-icon [icon]="faHelmetSafety"></fa-icon> 1 Casco / Tag NFC</li>
+        <li><fa-icon [icon]="faUserEdit"></fa-icon> Fino a 3 Contatti (per profilo)</li>
+        <li class="disabled"><span class="icon-wrapper fa-times"><fa-icon [icon]="faTimes"></fa-icon></span> Associazione Multi-Profilo</li>
+        <li class="disabled"><span class="icon-wrapper fa-times"><fa-icon [icon]="faTimes"></fa-icon></span> Notifiche SMS e Email</li>
       </ul>
       <div class="plan-card-footer">
         
@@ -39,7 +39,7 @@
               </div>
             } @else {
               <div class="plan-status lifetime">
-                <i class="fas fa-crown"></i> A VITA
+                <fa-icon [icon]="faCrown"></fa-icon> A VITA
               </div>
             }
           } @else {
@@ -66,18 +66,18 @@
         <p class="description">Massima sicurezza e flessibilità per te e i tuoi cari.</p>
       </div>
       <ul class="features-list">
-        <li><i class="fas fa-star"></i> <strong>Tutto dal piano Gratuito, e in più:</strong></li>
-        <li><i class="fas fa-check"></i> Fino a 10 Profili Medici</li>
-        <li><i class="fas fa-check"></i> Fino a 10 Caschi / Tag NFC</li>
-        <li><i class="fas fa-check"></i> Fino a 10 Contatti (per profilo)</li>
-        <li><i class="fas fa-check"></i> Associazione Multi-Profilo (Switch)</li>
-        <li><i class="fas fa-check"></i> Accesso a tutte le funzioni della Roadmap</li>
+        <li><span class="icon-wrapper fa-star"><fa-icon [icon]="faStar"></fa-icon></span> <strong>Tutto dal piano Gratuito, e in più:</strong></li>
+        <li><span class="icon-wrapper fa-check"><fa-icon [icon]="faCheck"></fa-icon></span> Fino a 10 Profili Medici</li>
+        <li><span class="icon-wrapper fa-check"><fa-icon [icon]="faCheck"></fa-icon></span> Fino a 10 Caschi / Tag NFC</li>
+        <li><span class="icon-wrapper fa-check"><fa-icon [icon]="faCheck"></fa-icon></span> Fino a 10 Contatti (per profilo)</li>
+        <li><span class="icon-wrapper fa-check"><fa-icon [icon]="faCheck"></fa-icon></span> Associazione Multi-Profilo (Switch)</li>
+        <li><span class="icon-wrapper fa-check"><fa-icon [icon]="faCheck"></fa-icon></span> Accesso a tutte le funzioni della Roadmap</li>
       </ul>
       <div class="plan-card-footer">
         
         @if (auth.user?.premium && !auth.user?.premiumExpiresAt) {
           <div class="plan-status lifetime">
-            PER UN AMICO<i class="fas fa-crown"></i>
+            PER UN AMICO<fa-icon [icon]="faCrown"></fa-icon>
           </div>
         } @else {
           <a routerLink="/account-settings" class="btn-primary">Attiva o Rinnova Premium</a>
@@ -95,7 +95,7 @@
 
     <div class="roadmap-list">
         <div class="roadmap-step">
-            <div class="roadmap-icon"><i class="fas fa-camera-retro"></i></div>
+            <div class="roadmap-icon"><fa-icon [icon]="faCameraRetro"></fa-icon></div>
             <div class="roadmap-content">
                 <div class="status-badge development">In Sviluppo</div>
                 <h3>Foto Veicolo e Casco</h3>
@@ -103,7 +103,7 @@
             </div>
         </div>
         <div class="roadmap-step">
-            <div class="roadmap-icon"><i class="fas fa-comment-medical"></i></div>
+            <div class="roadmap-icon"><fa-icon [icon]="faCommentMedical"></fa-icon></div>
             <div class="roadmap-content">
                 <div class="status-badge planned">Pianificato</div>
                 <h3>Pulsante Allerta Soccorritore</h3>
@@ -111,7 +111,7 @@
             </div>
         </div>
         <div class="roadmap-step">
-            <div class="roadmap-icon"><i class="fas fa-sms"></i></div>
+            <div class="roadmap-icon"><fa-icon [icon]="faSms"></fa-icon></div>
             <div class="roadmap-content">
                 <div class="status-badge planned">Pianificato</div>
                 <h3>Notifica Scansione via SMS</h3>

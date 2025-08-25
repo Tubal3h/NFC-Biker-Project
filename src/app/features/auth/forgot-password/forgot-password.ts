@@ -6,17 +6,22 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { ApiService } from '@app/core/services/api';
 import { NotificationService } from '@app/core/services/notification';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faCheckCircle, faArrowLeft} from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-forgot-password',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, FontAwesomeModule],
   templateUrl: './forgot-password.html',
   styleUrl: './forgot-password.scss'
 })
 export class ForgotPassword {
   private api = inject(ApiService);
   private notification = inject(NotificationService);
+
+  faCheckCircle = faCheckCircle;
+  faArrowLeft = faArrowLeft;
 
   email = '';
   isLoading = false;

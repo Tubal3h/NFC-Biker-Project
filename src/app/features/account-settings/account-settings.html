@@ -1,6 +1,6 @@
 <div class="settings-container">
   <div class="settings-header">
-    <a routerLink="/dashboard" class="back-link"><i class="fas fa-arrow-left"></i> Torna alla Dashboard</a>
+    <a routerLink="/dashboard" class="back-link"><fa-icon [icon]="faArrowLeft"></fa-icon> Torna alla Dashboard</a>
     <h1>Impostazioni Account</h1>
     <p>Gestisci la sicurezza del tuo account e il tuo piano di abbonamento.</p>
   </div>
@@ -16,7 +16,7 @@
     <!-- Card per il Cambio Password -->
     <form #passwordForm="ngForm" (ngSubmit)="changePassword(passwordForm)">
       <fieldset>
-        <legend><i class="fas fa-key"></i> Sicurezza</legend>
+        <legend><fa-icon [icon]="faBolt"></fa-icon> Sicurezza</legend>
 
         <div class="form-group">
           <label for="currentPassword">Password Attuale</label>
@@ -47,7 +47,7 @@
       @if (!user.premium) {
         <form #premiumForm="ngForm" (ngSubmit)="upgradeToPremium()">
           <fieldset>
-            <legend><i class="fas fa-star"></i> Passa a Premium</legend>
+            <legend><fa-icon [icon]="faStar"></fa-icon> Passa a Premium</legend>
             <div class="premium-promo">
               <p>Hai un codice di attivazione? Inseriscilo qui per sbloccare le funzionalità Premium per un anno.</p>
               <div class="form-group">
@@ -65,7 +65,7 @@
       } @else {
         <!-- Messaggio di conferma per utenti già premium -->
         <div class="premium-status">
-          <h3><i class="fas fa-check-circle"></i> Account Premium Attivo</h3>
+          <h3><fa-icon [icon]="faCheckCircle"></fa-icon> Account Premium Attivo</h3>
           <p>
             Grazie per il tuo supporto! Il tuo abbonamento scadrà il: 
             <strong>{{ user.premiumExpiresAt | date:'dd MMMM yyyy' }}</strong>

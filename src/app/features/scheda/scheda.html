@@ -1,12 +1,11 @@
 @if (showPrivacyPopup) {
   <div class="privacy-popup-backdrop">
     <div class="privacy-popup">
-      <h3><i class="fas fa-exclamation-triangle"></i> Accesso Riservato</h3>
-      <p>
-        Stai per visualizzare dati sanitari sensibili. L'accesso è consentito 
-        <b>esclusivamente in caso di emergenza sanitaria</b>.
-        Ogni accesso viene registrato.
-      </p>
+      <h3><fa-icon [icon]="faExclamationTriangle"></fa-icon> Accesso Riservato</h3>
+        <p>
+          Stai per accedere a dati sanitari personali e sensibili, protetti dal <b>Regolamento GDPR</b>.
+          L'accesso a queste informazioni è consentito <b>esclusivamente per finalità di primo soccorso in caso di emergenza</b>.
+        </p>
       <div class="info-box">
         <b>IP rilevato:</b> {{ visitorIp || 'Rilevamento...' }}<br>
         <b>Posizione:</b> {{ visitorLocation || 'Rilevamento...' }}
@@ -58,19 +57,19 @@
       <div class="scheda-wrapper">
         
         <div class="warning-banner">
-          <div class="warning-icon"><i class="fas fa-exclamation-triangle"></i></div>
+          <div class="warning-icon"><fa-icon [icon]="faExclamationTriangle"></fa-icon></div>
           <div class="warning-text">
             <b>Accesso Riservato:</b> Stai visualizzando dati sanitari sensibili. L'utilizzo è consentito solo in caso di reale emergenza.
           </div>
         </div>
 
         <div class="scheda-header">
-          <i class="icon-header fas fa-id-card"></i>
+          <fa-icon [icon]="faIdCard" class="icon-header"></fa-icon>
           <h2>Scheda Sanitaria</h2>
         </div>
 
         <div class="info-item">
-          <div class="icon"><i class="fas fa-user"></i></div>
+          <div class="icon"><fa-icon [icon]="faUser"></fa-icon></div>
           <div class="text">
             <div class="label">Nome e Cognome</div>
             <div class="value">{{ medicalData.name }} {{ medicalData.surname }}</div>
@@ -79,7 +78,7 @@
         
         @if (medicalData.birthDate) {
           <div class="info-item">
-            <div class="icon"><i class="fas fa-birthday-cake"></i></div>
+            <div class="icon"><fa-icon [icon]="faBirthdayCake"></fa-icon></div>
             <div class="text">
               <div class="label">Data di Nascita</div>
               <div class="value">{{ medicalData.birthDate | date:'dd/MM/yyyy' }}</div>
@@ -89,7 +88,7 @@
 
         @if (medicalData.birthPlace) {
           <div class="info-item">
-            <div class="icon"><i class="fas fa-map-marker-alt"></i></div>
+            <div class="icon"><fa-icon [icon]="faMapMarkerAlt"></fa-icon></div>
             <div class="text">
               <div class="label">Luogo di Nascita</div>
               <div class="value">{{ medicalData.birthPlace }}</div>
@@ -99,7 +98,7 @@
 
         @if (medicalData.residence) {
           <div class="info-item">
-            <div class="icon"><i class="fas fa-home"></i></div>
+            <div class="icon"><fa-icon [icon]="faHome"></fa-icon></div>
             <div class="text">
               <div class="label">Residenza</div>
               <div class="value">{{ medicalData.residence }}</div>
@@ -108,7 +107,7 @@
         }
         
         <div class="info-item info-item--critical">
-          <div class="icon"><i class="fas fa-tint"></i></div>
+          <div class="icon"><fa-icon [icon]="faTint"></fa-icon></div>
           <div class="text">
             <div class="label">Gruppo Sanguigno</div>
             <div class="value">{{ medicalData.bloodType || 'Non specificato' }}</div>
@@ -116,7 +115,7 @@
         </div>
         
         <div class="info-item info-item--critical">
-          <div class="icon"><i class="fas fa-allergies"></i></div>
+          <div class="icon"><fa-icon [icon]="faAllergies"></fa-icon></div>
           <div class="text">
             <div class="label">Allergie</div>
             <div class="value">{{ medicalData.allergies || 'Nessuna' }}</div>
@@ -124,7 +123,7 @@
         </div>
         
         <div class="info-item">
-          <div class="icon"><i class="fas fa-notes-medical"></i></div>
+          <div class="icon"><fa-icon [icon]="faNotesMedical"></fa-icon></div>
           <div class="text">
             <div class="label">Patologie Rilevanti</div>
             <div class="value">{{ medicalData.conditions || 'Nessuna' }}</div>
@@ -132,7 +131,7 @@
         </div>
         
         <div class="info-item">
-          <div class="icon"><i class="fas fa-sticky-note"></i></div>
+          <div class="icon"><fa-icon [icon]="faStickyNote"></fa-icon></div>
           <div class="text">
             <div class="label">Note Aggiuntive</div>
             <div class="value">{{ medicalData.notes || 'Nessuna' }}</div>
@@ -141,16 +140,18 @@
         
         @if (medicalData.emergencyContacts && medicalData.emergencyContacts.length > 0) {
           <div class="info-item">
-            <div class="icon"><i class="fas fa-address-book"></i></div>
+            <div class="icon"><fa-icon [icon]="faAddressBook"></fa-icon></div>
             <div class="text">
               <div class="label">Contatti d'Emergenza</div>
               <ul class="contacts-list">
                 @for (c of medicalData.emergencyContacts; track c.phone) {
                   <li>
-                    <b>{{ c.name }}</b> ({{ c.relation }})<br>
+                    <div class="contact-info">
+                      <b>{{ c.name }}</b> ({{ c.relation }})
+                    </div>
                     <a class="phone-link" [href]="'tel:' + c.phone">
-                      <i class="fas fa-phone-alt"></i>
-                      {{ c.phone }}
+                      <fa-icon [icon]="faPhoneAlt"></fa-icon>
+                      Chiama {{ c.phone }}
                     </a>
                   </li>
                 }
@@ -162,7 +163,7 @@
 
       @if (isOwner && auth.user?.premium && availableProfiles.length > 1) {
         <div class="profile-switcher">
-          <h4><i class="fas fa-sync-alt"></i> Cambia Profilo Associato</h4>
+          <h4><fa-icon [icon]="faSyncAlt"></fa-icon> Cambia Profilo Associato</h4>
           <p>Questo casco sta mostrando il profilo medico di <strong>{{ medicalData?.profileName }}</strong>. Puoi cambiarlo con un altro dei tuoi profili.</p>
           <div class="switcher-form">
             <select [(ngModel)]="selectedProfileId">

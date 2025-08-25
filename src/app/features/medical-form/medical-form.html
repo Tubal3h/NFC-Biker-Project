@@ -6,7 +6,7 @@
 
   @if (!isLoading) {
     <div class="form-header">
-      <a routerLink="/profile-management" class="back-link"><i class="fas fa-arrow-left"></i> Torna ai Profili</a>
+      <a routerLink="/profile-management" class="back-link"><fa-icon [icon]="faArrowLeft"></fa-icon> Torna ai Profili</a>
       <h1>Modifica Scheda Medica</h1>
       <p>Queste informazioni saranno visibili solo in caso di emergenza.</p>
     </div>
@@ -14,7 +14,7 @@
     <form #medicalForm="ngForm" (ngSubmit)="openConfirmationModal()">
       
       <fieldset>
-        <legend><i class="fas fa-user-circle"></i> Dati Anagrafici</legend>
+        <legend><fa-icon [icon]="faUserCircle"></fa-icon> Dati Anagrafici</legend>
         <div class="form-group">
           <label for="profileName">Nome del Profilo</label>
           <input 
@@ -49,7 +49,7 @@
       </fieldset>
       
       <fieldset>
-        <legend><i class="fas fa-first-aid"></i> Dati Sanitari</legend>
+        <legend><fa-icon [icon]="faFirstAid"></fa-icon> Dati Sanitari</legend>
         <div class="form-group">
           <label for="bloodType">Gruppo Sanguigno</label>
           <select id="bloodType" name="bloodType" [(ngModel)]="model.bloodType">
@@ -72,7 +72,7 @@
       </fieldset>
 
       <fieldset>
-        <legend><i class="fas fa-address-book"></i> Contatti d'Emergenza</legend>
+        <legend><fa-icon [icon]="faAddressBook"></fa-icon> Contatti d'Emergenza</legend>
         <div class="contacts-header">
           <h4>Lista Contatti</h4>
           <p>Hai aggiunto {{ model.emergencyContacts.length }} su un massimo di {{ maxContacts }} contatti.</p>
@@ -83,7 +83,7 @@
               <div class="contact-card">
                 <div class="contact-info">
                   <span class="contact-name">{{ contact.name }} ({{ contact.relation }})</span>
-                  <span class="contact-phone"><i class="fas fa-phone"></i> {{ contact.phone }}</span>
+                  <span class="contact-phone"><fa-icon [icon]="faPhone"></fa-icon> {{ contact.phone }}</span>
                 </div>
                 <div class="contact-actions">
                   <button type="button" class="btn-edit" (click)="openContactModal(contact, $index)">Modifica</button>
@@ -100,7 +100,7 @@
           class="btn-add-contact" 
           (click)="openContactModal()"
           [disabled]="model.emergencyContacts.length >= maxContacts">
-          <i class="fas fa-plus"></i> Aggiungi Contatto
+          <fa-icon [icon]="faPlus"></fa-icon> Aggiungi Contatto
         </button>
       </fieldset>
 

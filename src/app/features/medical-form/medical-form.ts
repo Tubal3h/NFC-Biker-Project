@@ -8,20 +8,33 @@ import { ApiService } from '@app/core/services/api';
 import { NotificationService } from '@app/core/services/notification';
 import { MedicalProfile, EmergencyContact } from '@app/core/models';
 import { AuthService } from '@app/core/services/auth';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faArrowLeft, faUserCircle, faFirstAid, faAddressBook, faPhone, faPlus,  } from '@fortawesome/free-solid-svg-icons';
+import { faTelegramPlane } from '@fortawesome/free-brands-svg-icons';
 
 @Component({
   selector: 'app-medical-form',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, FontAwesomeModule],
   templateUrl: './medical-form.html',
   styleUrls: ['./medical-form.scss']
 })
 export class MedicalForm implements OnInit {
+  faArrowLeft = faArrowLeft;
+  faUserCircle = faUserCircle;
+  faFirstAid = faFirstAid;
+  faAddressBook = faAddressBook;
+  faPhone = faPhone;
+  faPlus = faPlus;
+  
+
+
   private api = inject(ApiService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private notification = inject(NotificationService);
   auth = inject(AuthService); // Inietta AuthService e rendilo pubblico
+
 
   private profileId: string | null = null;
   isLoading = true;

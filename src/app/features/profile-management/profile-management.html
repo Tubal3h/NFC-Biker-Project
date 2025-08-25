@@ -1,6 +1,6 @@
 <div class="management-container">
   <div class="page-header">
-    <a routerLink="/dashboard" class="back-link"><i class="fas fa-arrow-left"></i> Torna alla Dashboard</a>
+    <a routerLink="/dashboard" class="back-link"><fa-icon [icon]="faArrowLeft"></fa-icon> Torna alla Dashboard</a>
     <h1>Gestione Profili Medici</h1>
     <p>Da qui puoi gestire i profili medici associati al tuo account.</p>
   </div>
@@ -21,7 +21,7 @@
           }
 
           <div class="card-header">
-            <div class="profile-icon"><i class="fas fa-id-badge"></i></div>
+            <div class="profile-icon"><span class="icon-wrapper"><fa-icon [icon]="faIdBadge"></fa-icon></span></div>
             <div class="profile-info">
               <h3>{{ profile.profileName }}</h3>
               <p>Gruppo Sanguigno: {{ profile.bloodType || 'Non specificato' }}</p>
@@ -63,7 +63,8 @@
           @if (!profile.isActive) {
             <div class="inactive-overlay">
               <div class="inactive-content">
-                <i class="fas fa-lock"></i>
+                <span class="icon-wrapper">
+                  <fa-icon [icon]="faLock"></fa-icon></span>
                 <span>Profilo bloccato</span>
                 <p>Passa a Premium per riattivare e gestire profili multipli.</p>
                 <a routerLink="/account-settings" class="btn-upgrade">Fai l'Upgrade</a>
@@ -77,7 +78,7 @@
     <div class="new-profile-action">
       @if (auth.user?.premium && profiles.length < 10) {
         <button class="btn-primary" (click)="openCreateModal()">
-          <i class="fas fa-plus"></i> Crea Nuovo Profilo Medico
+          <fa-icon [icon]="faPlus"></fa-icon> Crea Nuovo Profilo Medico
         </button>
       } @else if (!auth.user?.premium) {
         <p class="premium-upsell">

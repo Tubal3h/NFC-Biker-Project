@@ -8,11 +8,13 @@ import { ApiService } from '@app/core/services/api';
 import { AuthService } from '@app/core/services/auth';
 import { NotificationService } from '@app/core/services/notification';
 import { DatePipe } from '@angular/common';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faBolt, faStar, faCheckCircle, faArrowLeft} from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-account-settings',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, DatePipe],
+  imports: [CommonModule, FormsModule, RouterModule, DatePipe, FontAwesomeModule],
   templateUrl: './account-settings.html',
   styleUrl: './account-settings.scss'
 })
@@ -20,6 +22,11 @@ export class AccountSettings implements OnInit {
   private notification = inject(NotificationService);
   private api = inject(ApiService);
   auth = inject(AuthService);
+
+  faBolt = faBolt;
+  faStar = faStar;
+  faCheckCircle = faCheckCircle;
+  faArrowLeft = faArrowLeft;
 
   isLoading = true; // <-- Decommentato
   isSavingPassword = false;
