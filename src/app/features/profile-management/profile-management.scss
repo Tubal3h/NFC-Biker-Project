@@ -75,7 +75,7 @@
   text-align: center;
   text-decoration: none;
   
-  &:hover {
+  &:hover:not(:disabled) {
     transform: translateY(-2px);
     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
   }
@@ -88,8 +88,15 @@
   background: var.$color4;
   border-color: var.$color4;
   color: var.$color1;
-  &:hover {
+  &:hover:not(:disabled) {
     background: darken(var.$color4, 5%);
+  }
+   &:disabled {
+    background-color: darken(var.$color4, 2%); // Colore più "spento"
+    color: #aaa; // Testo grigio chiaro
+    cursor: not-allowed; // Cursore "non permesso"
+    box-shadow: none; // Nessuna ombra
+    transform: none; // Nessun effetto di sollevamento
   }
 }
 
@@ -483,4 +490,10 @@
       background: var.$color3;
     }
   }
+}
+
+.text-muted {
+  font-size: 0.9rem;
+  color: #6c757d;
+  margin-top: 0.75rem;
 }

@@ -56,7 +56,16 @@
             }
             
             @if (profile.isActive) {
-              <button class="btn-manage-tags" (click)="openTagSyncModal(profile)">Gestisci Caschi</button>
+              <button class="btn-manage-tags" 
+                (click)="openTagSyncModal(profile)"
+                [disabled]="!auth.user?.premium">
+                  Gestisci Caschi
+              </button>
+            }
+            @if (!auth.user?.premium) {
+              <p class="text-muted">
+                Con il piano Gratuito, i tuoi caschi sono associati automaticamente al tuo profilo principale.
+              </p>
             }
           </div>
           
