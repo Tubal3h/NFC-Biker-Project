@@ -73,7 +73,7 @@ app.post('/api/register', async (req, res) => {
     newUser.mainProfileId = mainProfile._id;
     const savedUser = await newUser.save();
     const payload = { id: savedUser._id, email: savedUser.email, premium: savedUser.premium };
-    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '30m' });
+    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1d' });
     const userToReturn = savedUser.toObject();
     delete userToReturn.password;
     res.status(201).json({success: true, token: token, data: userToReturn});
@@ -104,8 +104,8 @@ app.post('/api/login', async (req, res) => {
       await user.save();
     }
     const payload = { id: user._id, email: user.email, premium: user.premium };
-    const expiresIn = rememberMe ? '30d' : '1d';
-    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn });
+    const expiresIn = rememberMe ? '30d' : '1m';
+    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1d' });
     const profile = await MedicalProfile.findById(user.mainProfileId);
     const userObject = user.toObject();
     delete userObject.password;
