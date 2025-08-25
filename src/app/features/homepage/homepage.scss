@@ -61,6 +61,10 @@
       color: var.$color2;
     }
   }
+  .hero-image-container img {
+    width: 50px;  // Usa width/height invece di font-size
+    height: 50px;
+  }
 
   .scroll-down-link {
     color: var.$color4;
