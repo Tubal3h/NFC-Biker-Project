@@ -5,6 +5,8 @@ import { RouterOutlet } from '@angular/router'; // Importa Router
 import { CommonModule } from '@angular/common';
 import { Navbar } from "./shared/components/navbar/navbar";
 import { Footer } from "./shared/components/footer/footer";
+import { inject } from '@vercel/analytics';
+import { injectSpeedInsights } from '@vercel/speed-insights';
 
 @Component({
   selector: 'app-root',
@@ -16,7 +18,8 @@ import { Footer } from "./shared/components/footer/footer";
 export class App {
 
   constructor() {
-
+    inject();
+    injectSpeedInsights();
   }
   
 
