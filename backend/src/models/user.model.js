@@ -9,6 +9,11 @@ const Schema = mongoose.Schema;
 const userSchema = new Schema({
     email: { type: String, required: true, unique: true, lowercase: true, trim: true },
     password: { type: String, required: true, select: false },
+    // --- CAMPI AGGIUNTI PER LA VERIFICA ---
+    isVerified: { type: Boolean, default: false },
+    verificationToken: { type: String, select: false },
+    verificationExpires: { type: Date, select: false },
+    // --- FINE AGGIUNTE ---
     resetPasswordToken: { type: String, select: false },
     resetPasswordExpires: { type: Date, select: false },
     premium: { type: Boolean, default: false },

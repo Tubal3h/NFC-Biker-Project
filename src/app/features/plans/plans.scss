@@ -336,3 +336,8 @@ input:checked + .slider:before {
     gap: 0.5rem;
   }
 }
+
+  .hero-image-container img {
+    width: 21px;  // Usa width/height invece di font-size
+    height: 21px;
+  }

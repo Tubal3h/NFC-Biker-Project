@@ -21,6 +21,7 @@ import { MedicalForm } from '@app/features/medical-form/medical-form';
 import { AccountSettings } from '@app/features/account-settings/account-settings';
 import { TagManagement } from './features/tag-management/tag-management';
 import { ProfileManagement } from './features/profile-management/profile-management';
+import { VerifyEmail } from './features/auth/verify-email/verify-email';
 
 
 export const routes: Routes = [
@@ -33,7 +34,7 @@ export const routes: Routes = [
   { path: 'scheda/:nfcId', component: Scheda },
   { path: 'about', component: About },
   { path: 'plans', component: Plans },
-  
+  { path: 'verify-email/:token', component: VerifyEmail },
 
   // --- ROTTE DI AUTENTICAZIONE ---
   ...AUTH_ROUTES,
@@ -44,6 +45,7 @@ export const routes: Routes = [
   { path: 'account-settings', component: AccountSettings, canActivate: [authGuard] },
   { path: 'tag-management', component: TagManagement, canActivate: [authGuard] },
   { path: 'profile-management', component: ProfileManagement, canActivate: [authGuard] },
+  
 
   // --- REDIRECTS & FALLBACK ---
   { path: '', redirectTo: 'homepage', pathMatch: 'full' },

@@ -34,9 +34,18 @@ export class ApiService {
    * @param rememberMe Booleano per impostare una durata della sessione più lunga.
    * @returns Un oggetto contenente il token JWT e i dati dell'utente.
    */
-login(email: string, password: string, rememberMe: boolean): Observable<AuthResponse> {
-  return this.http.post<AuthResponse>(`${this.apiUrl}/login`, { email, password, rememberMe });
-}
+  login(email: string, password: string, rememberMe: boolean): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.apiUrl}/login`, { email, password, rememberMe });
+  }
+
+  /**
+   * Invia il token di verifica dell'email al backend per la validazione.
+   * @param token Il token ricevuto dall'utente tramite il link nell'email.
+   * @returns Un observable con la risposta del server.
+   */
+  verifyEmail(token: string): Observable<ApiResponse<{ message: string }>> {
+    return this.http.get<ApiResponse<{ message: string }>>(`${this.apiUrl}/auth/verify-email/${token}`);
+  }
 
 
   /**
@@ -48,8 +57,6 @@ login(email: string, password: string, rememberMe: boolean): Observable<AuthResp
   changePassword(userId: string, passwordData: any): Observable<ApiResponse<any>> {
     return this.http.post<ApiResponse<any>>(`${this.apiUrl}/user/${userId}/change-password`, passwordData);
   }
-
-  // --- FUNZIONI DI RESET PASSWORD (REINSERITE) ---
 
   /**
    * Invia una richiesta per iniziare il processo di reset password.
@@ -101,6 +108,11 @@ login(email: string, password: string, rememberMe: boolean): Observable<AuthResp
    */
   upgradeToPremium(userId: string, activationCode: string): Observable<ApiResponse<AuthUser>> {
     return this.http.post<ApiResponse<AuthUser>>(`${this.apiUrl}/user/${userId}/upgrade-premium`, { activationCode });
+  }
+  
+
+  resendVerificationEmail(): Observable<ApiResponse<any>> {
+  return this.http.post<ApiResponse<any>>(`${this.apiUrl}/auth/resend-verification`, {});
   }
 
   // ======================================================

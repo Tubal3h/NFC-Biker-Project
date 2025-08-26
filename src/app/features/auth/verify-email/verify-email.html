@@ -1,0 +1,26 @@
+<div class="verify-container">
+
+  <div [ngSwitch]="status">
+
+    <div *ngSwitchCase="'loading'" class="state-card">
+      <fa-icon [icon]="icons.loading" class="icon spinner"></fa-icon>
+      <h2 class="title">Verifica in corso...</h2>
+      <p class="message">Stiamo controllando la validità del tuo token. Attendi un istante.</p>
+    </div>
+
+    <div *ngSwitchCase="'success'" class="state-card is-success">
+      <fa-icon [icon]="icons.success" class="icon"></fa-icon>
+      <h2 class="title">Account Verificato!</h2>
+      <p class="message">Complimenti, il tuo account è ora attivo. Puoi accedere a tutte le funzionalità.</p>
+      <a routerLink="/login" class="action-button">Vai al Login</a>
+    </div>
+
+    <div *ngSwitchCase="'error'" class="state-card is-error">
+      <fa-icon [icon]="icons.error" class="icon"></fa-icon>
+      <h2 class="title">Operazione Fallita</h2>
+      <p class="message">{{ errorMessage }}</p>
+      <a routerLink="/register" class="action-button">Torna alla Registrazione</a>
+    </div>
+
+  </div>
+</div>

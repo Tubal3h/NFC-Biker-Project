@@ -1,0 +1,85 @@
+// Importiamo le variabili globali per mantenere la coerenza visiva
+@use 'styles/variables' as var;
+
+// Contenitore principale per centrare il contenuto verticalmente e orizzontalmente
+.verify-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 80vh;
+  padding: 1rem;
+}
+
+// Stile base della card, ispirato a .dashboard-card
+.state-card {
+  background-color: #ffffff;
+  border-radius: 16px;
+  padding: 2.5rem;
+  max-width: 500px;
+  text-align: center;
+  border: 1px solid #e1e4e8;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+
+  .icon {
+    font-size: 3.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var.$color1;
+    margin: 0;
+  }
+
+  .message {
+    font-size: 1.1rem;
+    color: #666;
+    line-height: 1.6;
+    margin: 0 0 1.5rem 0;
+  }
+}
+
+// Variazioni di colore per gli stati
+.state-card.is-success .icon {
+  color: var.$color-success;
+}
+
+.state-card.is-error .icon {
+  color: var.$color3; // Rosso vibrante per l'errore
+}
+
+// Animazione per l'icona di caricamento
+.spinner {
+  color: var.$color2;
+  animation: spin 1.5s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+// Stile del pulsante di azione
+.action-button {
+  display: inline-block;
+  padding: 0.8rem 2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: white;
+  background-color: var.$color2;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color 0.2s, transform 0.2s;
+
+  &:hover {
+    background-color: var.$color3;
+    transform: translateY(-2px);
+  }
+}

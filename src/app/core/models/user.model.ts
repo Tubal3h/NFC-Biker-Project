@@ -7,5 +7,7 @@ export interface AuthUser {
   mainProfileId?: string;
   premiumExpiresAt?: Date | string | null;
   nfcTags: string[]; 
+  isVerified: boolean;
+  createdAt: string;
   // RIMOSSI: name, surname
 }

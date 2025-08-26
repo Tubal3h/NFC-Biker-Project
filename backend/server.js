@@ -7,6 +7,10 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const jwt =require('jsonwebtoken');
 const nodemailer = require('nodemailer');
+const crypto = require('crypto');
+const cron = require('node-cron');
+const fs = require('fs');
+const path = require('path');
 require('dotenv').config();
 
 // Import dei Modelli
@@ -68,6 +72,48 @@ app.post('/api/register', async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
     const newUser = new User({ email, password: hashedPassword });
+    // --- NUOVA LOGICA DI VERIFICA ---
+    // 1. Genera un token di verifica sicuro e univoco
+    const verificationToken = crypto.randomBytes(32).toString('hex');
+    newUser.verificationToken = verificationToken;
+    newUser.verificationExpires = Date.now() + 3600000 * 24; // Scade tra 24 ore
+
+    // 2. Invia l'email di verifica
+    const verificationUrl = `https://www.soshelmet.it/verify-email/${verificationToken}`;
+
+    // --- INTEGRAZIONE TEMPLATE ---
+
+    const templatePath = path.join(__dirname, 'templates', 'email-template.html');
+    let htmlContent = fs.readFileSync(templatePath, 'utf8');
+
+    const replacements = {
+        SUBJECT: "Benvenuto in S.O.S. Helmet! Verifica il tuo Account",
+        PREHEADER_TEXT: "Manca solo un ultimo passo per attivare il tuo account.",
+        EMAIL_TITLE: "Conferma il tuo Indirizzo Email",
+        EMAIL_BODY: "Grazie per esserti registrato su S.O.S. Helmet! Per favore, clicca sul pulsante qui sotto per verificare il tuo account e sbloccare tutte le funzionalità.",
+        ACTION_URL: verificationUrl,
+        BUTTON_TEXT: "Verifica il mio Account"
+    };
+
+    for (const key in replacements) {
+        htmlContent = htmlContent.replace(new RegExp(`{{${key}}}`, 'g'), replacements[key]);
+    }
+
+    // --- FINE INTEGRAZIONE ---
+    
+    
+    const transporter = nodemailer.createTransport({
+      host: 'smtp.sendgrid.net', port: 587,
+      auth: { user: 'apikey', pass: process.env.SENDGRID_API_KEY }
+    });
+    
+    await transporter.sendMail({
+      from: `S.O.S. Helmet <${process.env.FROM_EMAIL}>`,
+      to: user.email,
+      subject: replacements.SUBJECT,
+      html: htmlContent
+    });
+    // --- FINE NUOVA LOGICA ---    
     const mainProfile = new MedicalProfile({ ownerId: newUser._id, profileName: 'Profilo Principale' });
     await mainProfile.save();
     newUser.mainProfileId = mainProfile._id;
@@ -103,7 +149,7 @@ app.post('/api/login', async (req, res) => {
       await Tag.updateMany({ userId: user._id }, { $set: { profileId: user.mainProfileId } });
       await user.save();
     }
-    const payload = { id: user._id, email: user.email, premium: user.premium };
+    const payload = { id: user._id, email: user.email, premium: user.premium, isVerified: user.isVerified };
     const expiresIn = rememberMe ? '30d' : '1m';
     const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn });
     const profile = await MedicalProfile.findById(user.mainProfileId);
@@ -612,6 +658,28 @@ app.post('/api/auth/forgot-password', async (req, res) => {
     await user.save();
 
     const resetUrl = `https://www.soshelmet.it/reset-password/${resetToken}`;
+
+        // --- INTEGRAZIONE TEMPLATE ---
+
+    // 1. Leggi il template HTML
+    const templatePath = path.join(__dirname, 'templates', 'email-template.html');
+    let htmlContent = fs.readFileSync(templatePath, 'utf8');
+
+    // 2. Definisci il contenuto specifico per QUESTA email
+    const replacements = {
+        SUBJECT: "Reset della tua password per S.O.S. Helmet",
+        PREHEADER_TEXT: "Abbiamo ricevuto una richiesta per resettare la tua password.",
+        EMAIL_TITLE: "Richiesta di Reset Password",
+        EMAIL_BODY: "Abbiamo ricevuto una richiesta per resettare la password del tuo account. Clicca sul pulsante qui sotto per sceglierne una nuova. Se non hai richiesto tu questa modifica, puoi ignorare questa email.",
+        ACTION_URL: resetUrl,
+        BUTTON_TEXT: "Resetta la Password"
+    };
+
+    // 3. Sostituisci i placeholder
+    for (const key in replacements) {
+        htmlContent = htmlContent.replace(new RegExp(`{{${key}}}`, 'g'), replacements[key]);
+    }
+
     
     const transporter = nodemailer.createTransport({
       host: 'smtp.sendgrid.net', port: 587,
@@ -621,8 +689,8 @@ app.post('/api/auth/forgot-password', async (req, res) => {
     await transporter.sendMail({
       from: `S.O.S. Helmet <${process.env.FROM_EMAIL}>`,
       to: user.email,
-      subject: 'Reset della tua password per S.O.S. Helmet',
-      html: `<p>Clicca su questo link per resettare la tua password (valido per 1 ora): <a href="${resetUrl}">${resetUrl}</a></p>`
+      subject: replacements.SUBJECT,
+      html: htmlContent
     });
 
     res.json({ success: true, data: { message: 'Email di reset inviata.' } });
@@ -655,6 +723,108 @@ app.post('/api/auth/reset-password/:token', async (req, res) => {
 
     res.json({ success: true, data: { message: 'Password resettata con successo.' } });
   } catch (error) { res.status(500).json({ success: false, error: 'Token non valido o scaduto.' }); }
+});
+
+/**
+ * @route   GET /api/auth/verify-email/:token
+ * @desc    Verifica l'email di un utente tramite il token.
+ */
+app.get('/api/auth/verify-email/:token', async (req, res) => {
+  try {
+    const { token } = req.params;
+
+    // Cerca un utente con questo token che non sia ancora scaduto
+    const user = await User.findOne({ 
+      verificationToken: token,
+      verificationExpires: { $gt: Date.now() } 
+    });
+
+    if (!user) {
+      return res.status(400).json({ success: false, error: 'Token non valido o scaduto. Richiedi una nuova verifica.' });
+    }
+
+    // Se l'utente viene trovato, verificalo!
+    user.isVerified = true;
+    user.verificationToken = undefined;
+    user.verificationExpires = undefined;
+    await user.save();
+
+    res.json({ success: true, data: { message: 'Account verificato con successo!' } });
+
+  } catch (error) {
+    console.error("Errore durante la verifica email:", error);
+    res.status(500).json({ success: false, error: 'Errore interno del server.' });
+  }
+});
+
+
+app.post('/api/auth/resend-verification', authMiddleware, async (req, res) => {
+  try {
+    // 1. Trova l'utente usando l'ID salvato nel token dal middleware
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ success: false, error: 'Utente non trovato.' });
+    }
+
+    // 2. Controlla se l'utente è già verificato
+    if (user.isVerified) {
+      return res.status(400).json({ success: false, error: 'Il tuo account è già verificato.' });
+    }
+
+    // 3. Genera un nuovo token di verifica e imposta una nuova scadenza
+    const verificationToken = crypto.randomBytes(32).toString('hex');
+    user.verificationToken = verificationToken;
+    user.verificationExpires = Date.now() + 3600000 * 24; // Scadenza tra 24 ore
+    await user.save();
+
+    const verificationUrl = `https://www.soshelmet.it/verify-email/${verificationToken}`;
+
+        // --- NUOVA LOGICA PER IL TEMPLATE ---
+
+    // 1. Leggi il template HTML
+    const templatePath = path.join(__dirname, 'templates', 'email-template.html');
+    let htmlContent = fs.readFileSync(templatePath, 'utf8');
+
+    // 2. Definisci il contenuto specifico per questa email
+    const replacements = {
+        SUBJECT: "Verifica il tuo Account S.O.S. Helmet",
+        PREHEADER_TEXT: "Manca solo un ultimo passo per attivare il tuo account.",
+        EMAIL_TITLE: "Conferma il tuo Indirizzo Email",
+        EMAIL_BODY: "Grazie per esserti registrato su S.O.S. Helmet! Per favore, clicca sul pulsante qui sotto per verificare il tuo account e sbloccare tutte le funzionalità.",
+        ACTION_URL: verificationUrl,
+        BUTTON_TEXT: "Verifica il mio Account"
+    };
+
+    // 3. Sostituisci i placeholder con il contenuto reale
+    for (const key in replacements) {
+        htmlContent = htmlContent.replace(new RegExp(`{{${key}}}`, 'g'), replacements[key]);
+    }
+    
+    // --- FINE NUOVA LOGICA ---
+
+    // 4. Inizializza e usa nodemailer per inviare l'email
+    const transporter = nodemailer.createTransport({
+      host: 'smtp.sendgrid.net',
+      port: 587,
+      auth: {
+        user: 'apikey',
+        pass: process.env.SENDGRID_API_KEY
+      }
+    });
+
+    await transporter.sendMail({
+      from: `S.O.S. Helmet <${process.env.FROM_EMAIL}>`,
+      to: user.email,
+      subject: replacements.SUBJECT,
+      html: htmlContent
+    });
+
+    res.json({ success: true, message: 'Email di verifica inviata nuovamente.' });
+
+  } catch (error) {
+    console.error("Errore durante il reinvio dell'email di verifica:", error);
+    res.status(500).json({ success: false, error: 'Errore interno del server.' });
+  }
 });
 
 /* -------------------------------------------------------------------------- */
@@ -792,6 +962,49 @@ app.get('/api/location-info', async (req, res) => {
   } catch (error) {
     res.status(500).json({ success: false, error: 'Impossibile recuperare le informazioni sulla posizione.' });
   }
+});
+
+/* -------------------------------------------------------------------------- */
+/*                           AUTO DELETE USER & DATA                          */
+/* -------------------------------------------------------------------------- */
+
+cron.schedule('0 3 * * *', async () => {
+  console.log('⏰ Esecuzione del cron job: pulizia account non verificati dopo 90 giorni...');
+  
+  try {
+    // Calcola la data di 90 giorni fa
+    const ninetyDaysAgo = new Date();
+    ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
+
+    // 1. Trova tutti gli utenti che NON sono verificati E che sono stati creati più di 90 giorni fa
+    const usersToDelete = await User.find({
+      isVerified: false,
+      createdAt: { $lt: ninetyDaysAgo }
+    });
+
+    if (usersToDelete.length > 0) {
+      const userIds = usersToDelete.map(user => user._id);
+      
+      console.log(`Trovati ${userIds.length} account da eliminare.`);
+      
+      // 2. ELIMINA I DATI COLLEGATI (Profili e Tag)
+      await MedicalProfile.deleteMany({ ownerId: { $in: userIds } });
+      await Tag.deleteMany({ userId: { $in: userIds } });
+      
+      // 3. ELIMINA GLI UTENTI
+      await User.deleteMany({ _id: { $in: userIds } });
+      
+      console.log(`✅ Cron job completato: ${userIds.length} account e tutti i loro dati sono stati eliminati.`);
+    } else {
+      console.log('✅ Cron job completato: nessun account da eliminare.');
+    }
+
+  } catch (error) {
+    console.error('🔴 Errore durante il cron job di pulizia:', error);
+  }
+}, {
+  scheduled: true,
+  timezone: "Europe/Rome"
 });
 
 // --- Avvio del Server ---

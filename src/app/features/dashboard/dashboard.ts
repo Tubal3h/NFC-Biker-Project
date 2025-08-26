@@ -7,29 +7,32 @@ import { AuthService } from '@app/core/services/auth';
 import { ApiService } from '@app/core/services/api'; // Importa ApiService
 import { forkJoin } from 'rxjs';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faUsers, faUserAstronaut, faHelmetSafety, faGear  } from '@fortawesome/free-solid-svg-icons';
+import { faUsers, faUserAstronaut, faHelmetSafety, faGear, faExclamationTriangle, faPaperPlane, faSpinner   } from '@fortawesome/free-solid-svg-icons';
+import { NotificationService } from '@app/core/services/notification';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule , FontAwesomeModule,],
+  imports: [CommonModule, RouterModule , FontAwesomeModule],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss'
 })
 export class Dashboard implements OnInit {
   private authService = inject(AuthService);
-  private apiService = inject(ApiService); // Inietta ApiService
+  private apiService = inject(ApiService); 
+  private notificationService = inject(NotificationService);
 
   user$ = this.authService.user$;
 
-  
-  // FontAwesomeIcons = {
-  //   faUsers:faUsers
-  // };
-  faUsers = faUsers;
-  faUserAstronaut = faUserAstronaut;
-  faHelmetSafety = faHelmetSafety;
-  faGear = faGear;
+  icons = {
+    faUsers,
+    faUserAstronaut,
+    faHelmetSafety,
+    faGear,
+    faWarning: faExclamationTriangle,
+    faSend: faPaperPlane,
+    faSpinner: faSpinner
+  };
 
   // Nuovo stato per memorizzare la lista dei tag
   profileCount = 0;
@@ -37,8 +40,13 @@ export class Dashboard implements OnInit {
   userName: string | null = null;
   isLoadingData = true;
 
+    // Stato specifico per la verifica
+  daysUntilDeletion: number | null = null;
+  isResendingEmail = false;
+
   ngOnInit(): void {
     this.loadDashboardData();
+    this.checkVerificationStatus();
   }
 
   loadDashboardData(): void {
@@ -72,6 +80,46 @@ export class Dashboard implements OnInit {
       error: () => {
         this.isLoadingData = false;
         // Qui potresti mostrare una notifica di errore se il caricamento fallisce
+      }
+    });
+  }
+
+    /**
+   * Controlla lo stato di verifica dell'utente e calcola i giorni rimanenti.
+   */
+  private checkVerificationStatus(): void {
+    const currentUser = this.authService.user;
+    if (currentUser && !currentUser.isVerified && currentUser.createdAt) {
+      const creationDate = new Date(currentUser.createdAt);
+
+      // --- ECCO LA MODIFICA ---
+      // Imposta la scadenza a 90 giorni dalla data di creazione
+      const expirationDate = new Date(creationDate.setDate(creationDate.getDate() + 90));
+      // --- FINE MODIFICA ---
+
+      const today = new Date();
+      const timeDiff = expirationDate.getTime() - today.getTime();
+      this.daysUntilDeletion = Math.max(0, Math.ceil(timeDiff / (1000 * 3600 * 24)));
+    }
+  }
+
+  /**
+   * Chiama l'API per inviare nuovamente l'email di verifica.
+   */
+  resendVerificationEmail(): void {
+    if (this.isResendingEmail) return;
+
+    this.isResendingEmail = true;
+    // NOTA: Dovrai creare il metodo 'resendVerificationEmail' in ApiService
+    // che farà una POST a '/api/auth/resend-verification'
+    this.apiService.resendVerificationEmail().subscribe({
+      next: () => {
+        this.notificationService.showSuccess('Email di verifica inviata di nuovo. Controlla la tua casella di posta, inclusa la cartella spam.');
+        this.isResendingEmail = false;
+      },
+      error: (err) => {
+        this.notificationService.showError(err.error?.error || 'Si è verificato un errore.');
+        this.isResendingEmail = false;
       }
     });
   }

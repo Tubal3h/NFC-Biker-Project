@@ -1,48 +1,78 @@
 <div class="dashboard-container">
   
-  <div class="welcome-header" *ngIf="user$ | async as user">
-    <div class="account-status-badge" [class.is-premium]="user.premium">
-      {{ user.premium ? 'Account Premium' : 'Account Gratuito' }}
-    </div>
-    <h1>Ciao, {{ userName  || 'Biker' }}!</h1>
-    <p>Benvenuto nella tua area riservata. Da qui puoi gestire il tuo profilo e i tuoi dispositivi.</p>
-  </div>
+  <ng-container *ngIf="(user$ | async) as user">
 
-  <div class="summary-grid">
-    <div class="summary-card">
-      <div class="count">{{ profileCount }}</div>
-      <div class="label">Profili Medici Creati</div>
-    </div>
-    <div class="summary-card">
-      <div class="count">{{ tagCount }}</div>
-      <div class="label">Caschi Associati</div>
-    </div>
-  </div>
-
-  <div class="dashboard-grid">
-
-    <a [routerLink]="['/profile-management']" class="dashboard-card">
-      <div class="card-icon"><fa-icon [icon]="faUserAstronaut"></fa-icon></div>
-      <div class="card-content">
-        <h3>Gestisci Profili</h3>
-        <p>Crea e modifica i tuoi profili medici e quelli dei tuoi familiari.</p>
+    <div *ngIf="!user.isVerified && daysUntilDeletion !== null" class="verification-banner">
+      <div class="banner-icon">
+        <fa-icon [icon]="icons.faWarning"></fa-icon>
       </div>
-    </a>
-
-    <a [routerLink]="['/tag-management']" class="dashboard-card">
-      <div class="card-icon"><img src="assets/img/icons/helmet.png" alt=""></div>
-      <div class="card-content">
-        <h3>Gestisci Caschi</h3>
-        <p>Visualizza, rinomina o dissocia i tuoi dispositivi NFC.</p>
+      <div class="banner-text">
+        <h3>Azione Richiesta: Verifica il tuo Account</h3>
+        <p>
+          Per la tua sicurezza e per sbloccare tutte le funzionalità, verifica il tuo indirizzo email.
+          <strong>Il tuo account verrà eliminato automaticamente tra {{ daysUntilDeletion }} giorni</strong> se non verificato.
+        </p>
       </div>
-    </a>
+      <button (click)="resendVerificationEmail()" [disabled]="isResendingEmail" class="resend-button">
+        <fa-icon *ngIf="isResendingEmail" [icon]="icons.faSpinner" class="fa-spin"></fa-icon>
+        <fa-icon *ngIf="!isResendingEmail" [icon]="icons.faSend"></fa-icon>
+        <span>{{ isResendingEmail ? 'Invio...' : 'Invia di nuovo l\'email' }}</span>
+      </button>
+    </div>
 
-    <a [routerLink]="['/account-settings']" class="dashboard-card">
-      <div class="card-icon"><fa-icon [icon]="faGear"></fa-icon></div>
-      <div class="card-content">
-        <h3>Impostazioni Account</h3>
-        <p>Modifica la tua email, la password e gestisci il tuo abbonamento.</p>
+    <div class="welcome-header">
+      <div class="account-status-badge" [class.is-premium]="user.premium">
+        {{ user.premium ? 'Account Premium' : 'Account Gratuito' }}
       </div>
-    </a>
-  </div>
+      <h1>Ciao, {{ userName || 'Biker' }}!</h1>
+      <p>Benvenuto nella tua area riservata. Da qui puoi gestire il tuo profilo e i tuoi dispositivi.</p>
+    </div>
+
+    <div class="summary-grid">
+      <div class="summary-card">
+        <div class="count">{{ profileCount }}</div>
+        <div class="label">Profili Medici Creati</div>
+      </div>
+      <div class="summary-card">
+        <div class="count">{{ tagCount }}</div>
+        <div class="label">Caschi Associati</div>
+      </div>
+    </div>
+
+    <div class="dashboard-grid">
+      <a [routerLink]="user.isVerified ? ['/profile-management'] : null"
+         [class.is-disabled]="!user.isVerified"
+         class="dashboard-card">
+        <div class="card-icon"><fa-icon [icon]="icons.faUserAstronaut"></fa-icon></div>
+        <div class="card-content">
+          <h3>Gestisci Profili</h3>
+          <p>Crea e modifica i tuoi profili medici e quelli dei tuoi familiari.</p>
+        </div>
+        <div *ngIf="!user.isVerified" class="locked-badge">Verifica l'account per sbloccare</div>
+      </a>
+
+      <a [routerLink]="user.isVerified ? ['/tag-management'] : null"
+         [class.is-disabled]="!user.isVerified"
+         class="dashboard-card">
+        <div class="card-icon"><img src="assets/img/icons/helmet.png" alt="Icona Casco"></div>
+        <div class="card-content">
+          <h3>Gestisci Caschi</h3>
+          <p>Visualizza, rinomina o dissocia i tuoi dispositivi NFC.</p>
+        </div>
+        <div *ngIf="!user.isVerified" class="locked-badge">Verifica l'account per sbloccare</div>
+      </a>
+
+      <a [routerLink]="user.isVerified ? ['/account-settings'] : null"
+         [class.is-disabled]="!user.isVerified"
+         class="dashboard-card">
+        <div class="card-icon"><fa-icon [icon]="icons.faGear"></fa-icon></div>
+        <div class="card-content">
+          <h3>Impostazioni Account</h3>
+          <p>Modifica la tua email, la password e gestisci il tuo abbonamento.</p>
+        </div>
+        <div *ngIf="!user.isVerified" class="locked-badge">Verifica l'account per sbloccare</div>
+      </a>
+    </div>
+
+  </ng-container>
 </div>

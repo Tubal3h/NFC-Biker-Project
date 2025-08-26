@@ -151,3 +151,104 @@ $coming-soon-bg: #6c757d;
 .dashboard-grid {
   margin-top: 0; // Rimuovi il margine extra
 }
+
+// --- NUOVI STILI PER IL BANNER DI VERIFICA (RESPONSIVE) ---
+.verification-banner {
+  display: flex;
+  background-color: var.$color-warning-bg;
+  border: 1px solid var.$color-warning-border;
+  color: var.$color-warning-text;
+  border-radius: 12px;
+  padding: 1.25rem;
+  margin-bottom: 2.5rem;
+  box-shadow: 0 4px 15px rgba(var.$color-warning-border, 0.2);
+
+  // Stili di default (Mobile First)
+  flex-direction: column; // Impila gli elementi verticalmente su mobile
+  align-items: center;    // Centra tutto orizzontalmente
+  text-align: center;
+  gap: 1rem;            // Un po' meno spazio in verticale
+
+  .banner-icon {
+    font-size: 2rem;
+    color: #b98900;
+  }
+
+  .banner-text {
+    flex-grow: 1;
+    h3 {
+      margin: 0 0 0.5rem 0; // Aggiunto un po' di margine sotto il titolo
+      font-size: 1.2rem;
+      font-weight: 700;
+    }
+    p {
+      margin: 0;
+      line-height: 1.5;
+    }
+  }
+
+  .resend-button {
+    background-color: var.$color2;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 0.75rem 1.25rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    white-space: nowrap;
+    width: 100%; // Il pulsante occupa tutta la larghezza su mobile
+    justify-content: center; // Centra il contenuto del pulsante
+
+    &:hover {
+      background-color: var.$color3;
+    }
+
+    &:disabled {
+      background-color: lighten(var.$color2, 20%);
+      cursor: not-allowed;
+    }
+  }
+  
+  // Stili per schermi più grandi (es. tablet e desktop)
+  @media (min-width: 768px) {
+    flex-direction: row;     // Torna al layout orizzontale
+    align-items: center;
+    text-align: left;        // Allinea il testo a sinistra
+    gap: 1.5rem;
+
+    .resend-button {
+      width: auto; // Il pulsante si adatta al suo contenuto
+    }
+  }
+}
+
+// --- STILI PER LE CARD BLOCCATE ---
+.dashboard-card.is-disabled {
+  position: relative; // Necessario per posizionare il badge
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none; // Impedisce qualsiasi interazione col mouse
+
+  &:hover {
+    transform: none; // Rimuove l'effetto di sollevamento
+    box-shadow: none;
+  }
+}
+
+.locked-badge {
+  position: absolute;
+  bottom: 1.5rem; // Posizionato in basso
+  left: 50%;
+  transform: translateX(-50%); // Centrato orizzontalmente
+  background-color: var.$color1; // Nero profondo
+  color: white;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.4rem 0.9rem;
+  border-radius: 12px;
+  white-space: nowrap;
+}
