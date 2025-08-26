@@ -43,3 +43,7 @@ Thumbs.db
 backend/.env
 backend/add-nfc-id.js
 backend/generate-premium-code.js
+backend/generate-premium-code.js
+backend/fly.toml
+backend/Dockerfile
+backend/.dockerignore
