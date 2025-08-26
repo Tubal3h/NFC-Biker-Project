@@ -9,7 +9,7 @@ import { AuthService } from '@app/core/services/auth';
 import { NotificationService } from '@app/core/services/notification';
 import { DatePipe } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faBolt, faStar, faCheckCircle, faArrowLeft} from '@fortawesome/free-solid-svg-icons';
+import { faBolt, faStar, faCheckCircle, faArrowLeft, faGem} from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-account-settings',
@@ -27,6 +27,7 @@ export class AccountSettings implements OnInit {
   faStar = faStar;
   faCheckCircle = faCheckCircle;
   faArrowLeft = faArrowLeft;
+  faGem = faGem;
 
   isLoading = true; // <-- Decommentato
   isSavingPassword = false;

@@ -68,7 +68,17 @@
           <h3><fa-icon [icon]="faCheckCircle"></fa-icon> Account Premium Attivo</h3>
           <p>
             Grazie per il tuo supporto! Il tuo abbonamento scadrà il: 
-            <strong>{{ user.premiumExpiresAt | date:'dd MMMM yyyy' }}</strong>
+            <strong>
+              @if (user.premiumExpiresAt) {
+                {{ user.premiumExpiresAt | date:'dd MMMM yyyy' }}
+              }@else{
+                
+                <h1 style="color: green;">
+                  <fa-icon style="color: goldenrod;" [icon]="faGem"></fa-icon>
+                  Lifetime
+                </h1>
+              }
+            </strong>
           </p>
         </div>
       }
