@@ -43,8 +43,8 @@ export class ApiService {
    * @param token Il token ricevuto dall'utente tramite il link nell'email.
    * @returns Un observable con la risposta del server.
    */
-  verifyEmail(token: string): Observable<ApiResponse<{ message: string }>> {
-    return this.http.get<ApiResponse<{ message: string }>>(`${this.apiUrl}/auth/verify-email/${token}`);
+  verifyEmail(token: string): Observable<ApiResponse<{ message: string; user: AuthUser; token: string; }>> {
+    return this.http.get<ApiResponse<{ message: string; user: AuthUser; token: string; }>>(`${this.apiUrl}/auth/verify-email/${token}`);
   }
 
 

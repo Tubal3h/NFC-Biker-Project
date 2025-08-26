@@ -1,8 +1,11 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ActivatedRoute, RouterModule, Router  } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faSpinner, faCheckCircle, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
+import { AuthService } from '@app/core/services/auth';
+import { HttpErrorResponse } from '@angular/common/http';
+import { ApiResponse, AuthUser } from '@app/core/models';
 
 // Importa il tuo ApiService per centralizzare le chiamate
 import { ApiService } from '@app/core/services/api';
@@ -19,6 +22,8 @@ export class VerifyEmail implements OnInit {
   // Iniezione delle dipendenze con il metodo moderno inject()
   private route = inject(ActivatedRoute);
   private apiService = inject(ApiService);
+  private router = inject(Router);
+  private authService = inject(AuthService);
 
   // Proprietà per gestire lo stato e i messaggi mostrati nel template
   status: VerificationStatus = 'loading';
@@ -48,17 +53,36 @@ export class VerifyEmail implements OnInit {
    * @param token Il token estratto dall'URL.
    */
   private verifyUserToken(token: string): void {
-    // NOTA: Dovrai creare il metodo 'verifyEmail' nel tuo ApiService.
-    // Questo metodo farà una GET a `/api/auth/verify-email/${token}`
     this.apiService.verifyEmail(token).subscribe({
-      next: () => {
-        this.status = 'success';
+      next: (response: ApiResponse<{ message: string; user: AuthUser; token:string; }>) => {
+        // --- CORREZIONE: Aggiungi un controllo di sicurezza ---
+        if (response.success && response.data) {
+          this.status = 'success';
+          
+          const { user, token } = response.data; // Ora questa riga è sicura
+          const wasAlreadyLoggedIn = this.authService.isLogged;
+
+          if (user && token) {
+            this.authService.login(user, token);
+          }
+
+          if (wasAlreadyLoggedIn) {
+            setTimeout(() => {
+              this.router.navigate(['/dashboard']);
+            }, 2000);
+          }
+        } else {
+          // Gestisce il caso in cui la chiamata ha successo ma non ci sono dati
+          this.status = 'error';
+          this.errorMessage = response.error || 'Risposta non valida dal server.';
+        }
       },
-      error: (err) => {
+      error: (err: HttpErrorResponse) => {
         this.status = 'error';
-        // Estraiamo un messaggio di errore specifico dall'API, se presente
-        this.errorMessage = err.error?.error || 'Il token non è valido o è scaduto. Prova a registrarti di nuovo.';
+        this.errorMessage = err.error?.error || 'Il token non è valido o è scaduto.';
       }
     });
   }
+
+  
 }

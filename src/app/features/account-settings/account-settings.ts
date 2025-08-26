@@ -67,6 +67,7 @@ export class AccountSettings implements OnInit {
     this.api.changePassword(currentUser.id, dataToSend).subscribe({
       next: (response) => {
         if (response.success) {
+          this.auth.updateUser(response.data);
           // 4. Sostituisci alert() con una notifica di successo
           this.notification.showSuccess('Password aggiornata con successo!');
           passwordForm.resetForm();

@@ -731,25 +731,45 @@ app.post('/api/auth/reset-password/:token', async (req, res) => {
  */
 app.get('/api/auth/verify-email/:token', async (req, res) => {
   try {
-    const { token } = req.params;
-
-    // Cerca un utente con questo token che non sia ancora scaduto
     const user = await User.findOne({ 
-      verificationToken: token,
+      verificationToken: req.params.token,
       verificationExpires: { $gt: Date.now() } 
     });
 
     if (!user) {
-      return res.status(400).json({ success: false, error: 'Token non valido o scaduto. Richiedi una nuova verifica.' });
+      return res.status(400).json({ success: false, error: 'Token non valido o scaduto.' });
     }
 
-    // Se l'utente viene trovato, verificalo!
     user.isVerified = true;
     user.verificationToken = undefined;
     user.verificationExpires = undefined;
     await user.save();
 
-    res.json({ success: true, data: { message: 'Account verificato con successo!' } });
+    // --- NUOVA LOGICA: RESTITUISCI I DATI AGGIORNATI ---
+    // 1. Crea un nuovo payload con lo stato aggiornato
+    const payload = { id: user._id, email: user.email, premium: user.premium, isVerified: user.isVerified };
+    
+    // 2. Genera un nuovo token JWT
+    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1d' });
+
+    // 3. Prepara l'oggetto utente da restituire (senza password)
+    const userToReturn = user.toObject();
+    const profile = await MedicalProfile.findById(user.mainProfileId);
+    if (profile) {
+      userToReturn.name = profile.name;
+      userToReturn.surname = profile.surname;
+    }
+    delete userToReturn.password;
+
+    // 4. Invia tutto al frontend
+    res.json({ 
+      success: true, 
+      data: { 
+        message: 'Account verificato con successo!',
+        user: userToReturn,
+        token: token 
+      }
+    });
 
   } catch (error) {
     console.error("Errore durante la verifica email:", error);
