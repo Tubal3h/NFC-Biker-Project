@@ -3,7 +3,76 @@
 // Importiamo le variabili per poterle usare nei mixin
 @use 'variables' as var;
 
+// --- Pacchetto di Stili per gli Header delle Pagine (Migliorato) ---
+@mixin page-header {
+  text-align: center;
+  margin-bottom: 3rem;
+  h1 {
+    font-size: 2.8rem;
+    color: var.$color3;
+    margin-bottom: 0.8rem;
+    font-weight: 700;
+  }
+  a {
+    color: var.$color2;
+    font-weight: 600;
+    text-decoration: none;
+    &:hover { color: var.$color3; }
+  }
+  p {
+    font-size: 1.2rem;
+    color: var(--text-sub-primary);
+    max-width: 800px;
+    margin: 0 auto;
+    line-height: 1.5;
+  }
+}
+
+
+// --- NUOVI MIXIN AGGIUNTI ---
+
+// --- Mixin per i Breakpoint (Fondamentale per il Responsive Design) ---
+@mixin breakpoint($size) {
+  @if $size == md {
+    @media (min-width: 768px) { @content; }
+  }
+  @else if $size == lg {
+    @media (min-width: 992px) { @content; }
+  }
+}
+
+// --- Pacchetto di Stili per i Contenitori dei Form ---
+@mixin form-container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+// --- Pacchetto di Stili per i Pulsanti di Salvataggio ---
+@mixin btn-save {
+  display: block;
+  width: 100%;
+  padding: 1rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: white;
+  background-color: var.$color2;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  
+  &:disabled {
+    background-color: lighten(var.$color2, 20%);
+    cursor: not-allowed;
+  }
+}
+
 // --- Pacchetto di Stili per gli Stati di Pagina (Caricamento/Errore) ---
+// (Questo era già presente ma è bene tenerlo per coerenza)
 @mixin page-state-container {
   max-width: 500px;
   margin: 4rem auto;
@@ -34,65 +103,5 @@
     font-weight: 600;
     font-size: 1.25rem;
     line-height: 1.6;
-  }
-}
-
-// --- Pacchetto di Stili per gli Header delle Pagine ---
-@mixin page-header {
-  text-align: center;
-  margin-bottom: 2.5rem;
-  
-  .back-link {
-    display: inline-block;
-    color: #606266;
-    text-decoration: none;
-    margin-bottom: 1rem;
-    &:hover { color: var.$color3; }
-  }
-  
-  h1 {
-    font-size: 2.2rem;
-    color: var.$color2;
-    margin-bottom: 0.5rem;
-  }
-  
-  p {
-    font-size: 1.1rem;
-    color: var.$color4;
-  }
-}
-
-
-// ======================================================
-// --- NUOVI MIXIN AGGIUNTI (CHE RISOLVONO L'ERRORE) ---
-// ======================================================
-
-// --- Pacchetto di Stili per i Contenitori dei Form ---
-@mixin form-container {
-  max-width: 800px;
-  margin: 2rem auto;
-  padding: 2rem;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-}
-
-// --- Pacchetto di Stili per i Pulsanti di Salvataggio ---
-@mixin btn-save {
-  display: block;
-  width: 100%;
-  padding: 1rem;
-  font-size: 1.2rem;
-  font-weight: 600;
-  color: white;
-  background-color: var.$color2;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.2s;
-  
-  &:disabled {
-    background-color: lighten(var.$color2, 20%);
-    cursor: not-allowed;
   }
 }

@@ -1,56 +1,14 @@
-$color1: #1D1616;
-$color2: #8E1616;
-$color3: #D84040;
-$color4: #EEEEEE;
+// Codice CORRETTO in app.component.scss
 
-
-html, body {
-  height: 100%;
-  margin: 0;
-  padding: 0;
-}
-
-.main-wrapper {
-  min-height: 100vh; // viewport height
+:host {
   display: flex;
   flex-direction: column;
+  min-height: 100vh;
+  // Ora lo sfondo cambierà in base al tema!
+  background-color: var(--background-primary); 
 }
 
-app-footer {
-  margin-top: auto; // spinge il footer in fondo se la pagina è corta
-  width: 100%;
-  background-color: $color1;
-  color: $color4;
-  text-align: center;
-  padding: 1rem;
-  position: relative; // NON absolute!
-}
-
-// in src/app/app.component.scss
-
-
-
-.popup-actions {
-  display: flex;
-  gap: 1rem;
-  button {
-    flex-grow: 1;
-    border: none;
-    padding: 0.8rem 1.5rem;
-    font-size: 1rem;
-    font-weight: 600;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  .btn-logout {
-    background: #EEEEEE;
-    color: #1D1616;
-    &:hover { background: #dddddd; }
-  }
-  .btn-stay {
-    background: #8E1616;
-    color: white;
-    &:hover { background: #D84040; }
-  }
+// Oppure, se hai un'altra classe:
+.main-wrapper {
+  background-color: var(--background-primary);
 }

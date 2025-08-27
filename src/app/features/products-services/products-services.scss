@@ -1,0 +1,494 @@
+@use 'styles/variables' as var;
+@use 'styles/mixins' as mixins;
+
+// ===============================================
+// Variabili di Design Locali (Invariate)
+// ===============================================
+// :host {
+//   --background-primary: #ffffff;
+//   --background-secondary: #{var.$color-bg};
+//   --border-color: #{var.$color-border};
+//   --color-accent: #{var.$color-accent};
+//   --color-premium: #{var.$color-premium};
+//   --box-shadow-light: #{var.$box-shadow-base};
+//   --box-shadow-medium: #{var.$box-shadow-hover};
+//   --border-radius: #{var.$border-radius-base};
+// }
+
+// ===============================================
+// Stili Generali e Contenitore Pagina
+// ===============================================
+.page-container {
+  max-width: 1200px; // Aumentata la larghezza massima per un look più arioso
+  margin: 0 auto;
+  padding: 2rem 1rem;
+
+  @include mixins.breakpoint(md) {
+    padding: 4rem 2rem;
+  }
+}
+
+// ===============================================
+// Pulsanti Generici (Aggiunti per coerenza)
+// ===============================================
+.btn {
+  display: inline-block;
+  padding: 0.85rem 1.75rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: var.$border-radius-small;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  border: 1px solid transparent;
+  text-align: center;
+
+  &-primary {
+    background-color: var.$color-accent;
+    color: white;
+    &:hover { background-color: darken(var.$color-accent, 8%); }
+  }
+
+  &-secondary {
+    background-color: transparent;
+    color: var(--text-secondary);
+    border-color: var(--border-color);
+    &:hover { 
+      background-color: var(--background-secondary); 
+      border-color: var.$color-accent; 
+      color: var.$color-accent;
+    }
+  }
+
+  &-premium {
+    background-color: var(--color-premium);
+    color: white;
+    &:hover { background-color: darken(var.$color-premium, 8%); }
+  }
+  
+  &-block { width: 100%; }
+}
+
+
+// ===============================================
+// Sezione Hero (Spaziatura e tipografia migliorate)
+// ===============================================
+.section-hero {
+  text-align: center;
+  padding: 3rem 1.5rem;
+  margin-bottom: 4rem;
+  
+  .hero-title {
+    font-size: 2.8rem;
+    font-weight: 800;
+    line-height: 1.15;
+    margin-bottom: 1.5rem;
+    color: var(--text-primary);
+  }
+  .hero-subtitle {
+    font-size: 1.25rem;
+    max-width: 800px;
+    margin: 0 auto;
+    line-height: 1.6;
+    color: var(--text-secondary);
+  }
+
+  @include mixins.breakpoint(md) {
+    padding: 5rem 2rem;
+    margin-bottom: 6rem;
+    .hero-title { font-size: 4rem; }
+    .hero-subtitle { font-size: 1.5rem; color: var(--text-sub-primary); }
+  }
+}
+
+// ===============================================
+// Header delle Sezioni (Look più pulito)
+// ===============================================
+.section-header {
+  text-align: center;
+  margin-bottom: 4rem;
+
+  .section-icon {
+    font-size: 2rem;
+    color: var(--background-primary);
+    margin-bottom: 1.25rem;
+    display: inline-block;
+    padding: 1.25rem;
+    background-color: var.$color3; // Usa il valore esplicito per l'alpha
+    border-radius: 50%;
+  }
+  h2 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+  }
+  .subtitle {
+    font-size: 1.15rem;
+    color: var(--text-sub-primary);
+    max-width: 650px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+  
+  @include mixins.breakpoint(md) {
+    h2 { font-size: 3rem; }
+  }
+}
+
+// ===============================================
+// Sezioni Principali
+// ===============================================
+.product-section, .plans-section {
+  margin-bottom: 6rem;
+  @include mixins.breakpoint(md) {
+    margin-bottom: 8rem;
+  }
+}
+
+// ===============================================
+// Product Card (Stile raffinato)
+// ===============================================
+.product-card {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 3rem;
+  background: var(--background-secondary);
+  border: 1px solid var(--border-color);
+  padding: 2.5rem;
+  border-radius: var.$border-radius-medium;
+  box-shadow: var(--box-shadow-light);
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--box-shadow-medium);
+  }
+
+  @include mixins.breakpoint(lg) {
+    grid-template-columns: 400px 1fr;
+    padding: 3.5rem;
+    gap: 4.5rem;
+    align-items: center;
+  }
+}
+
+// ===============================================
+// Galleria Prodotto (Migliorata con navigazione)
+// ===============================================
+.product-gallery {
+  position: relative; // Per posizionare i pulsanti
+  .main-image-container {
+    border-radius: var.$border-radius-small;
+    overflow: hidden;
+    margin-bottom: 1rem;
+    border: 1px solid var(--border-color);
+    position: relative;
+
+    .main-image {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      object-fit: contain;
+      background-color: #fff;
+      display: block;
+    }
+  }
+
+  .gallery-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid var(--border-color);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    color: var(--text-primary);
+    transition: all 0.2s ease;
+    opacity: 0; // Nascosto di default
+    &:hover { background: white; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+    &.prev { left: 10px; }
+    &.next { right: 10px; }
+  }
+
+  &:hover .gallery-nav {
+    opacity: 1; // Visibile su hover della galleria
+  }
+
+  .thumbnail-nav {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    img {
+      width: 100%;
+      height: auto;
+      aspect-ratio: 1 / 1;
+      object-fit: contain;
+      border-radius: 8px;
+      cursor: pointer;
+      border: 2px solid transparent; // Bordo trasparente per evitare scatti
+      transition: all 0.2s ease;
+      opacity: 0.6;
+      background: var(--background-secondary);
+      padding: 0.25rem;
+      &.active, &:hover {
+        border-color: var.$color-accent;
+        opacity: 1;
+      }
+    }
+  }
+}
+
+.product-details {
+  h3 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+    color: var.$color3;
+  }
+}
+
+// ===============================================
+// Footer Prodotto (Box prezzo ridisegnato)
+// ===============================================
+.product-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-top: 2rem;
+  
+  .price-box {
+    display: flex;
+    align-items: flex-end;
+    gap: 1rem;
+    
+    .price-current {
+      font-size: 3.2rem;
+      font-weight: 800;
+      color: var(--text-secondary);
+      line-height: 1;
+    }
+
+    .price-original-wrapper {
+      display: none; // Nascosto se non in offerta
+      flex-direction: column;
+      align-items: flex-start;
+      .price-original {
+        font-size: 1.5rem;
+        color: var(--text-secondary);
+        text-decoration: line-through;
+      }
+      .price-badge {
+          background: var(--color-premium);
+          color: white;
+          font-size: 0.8rem;
+          font-weight: 600;
+          padding: 0.3rem 0.7rem;
+          border-radius: 20px;
+      }
+    }
+
+    &.on-offer .price-original-wrapper {
+      display: flex;
+    }
+  }
+  
+  @include mixins.breakpoint(md) {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+}
+
+.offer-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: rgba(255, 127, 80, 0.1); // Usa il valore esplicito per l'alpha
+  color: #c25424;
+  padding: 0.8rem 1.2rem;
+  border-radius: var.$border-radius-small;
+  font-size: 1rem;
+  font-weight: 500;
+  margin-top: 1rem;
+}
+
+// ===============================================
+// Lista Feature (Stile raffinato)
+// ===============================================
+.features-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 2rem 0;
+  li {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    line-height: 1.7; // Aumentata per leggibilità
+    margin-bottom: 1.25rem;
+    color: var(--text-secondary);
+    font-size: 1.05rem;
+
+    fa-icon {
+      font-size: 1.2rem;
+      margin-top: 0.25rem;
+      color: var.$color-accent;
+    }
+    strong {
+      color: var(--text-secondary);
+      font-weight: 600;
+    }
+    &.highlight {
+      color: var(--color-premium);
+      strong { color: var(--color-premium); }
+      fa-icon { color: var(--color-premium); }
+    }
+    &.feature-disabled {
+      color: #adb5bd;
+      text-decoration: line-through;
+      fa-icon { color: #adb5bd; }
+      strong { color: #adb5bd; font-weight: 500;}
+    }
+  }
+  li img {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+// ===============================================
+// Sezione Piani e Selettore Fatturazione
+// ===============================================
+.plans-section {
+  padding-top: 1rem;
+}
+
+.billing-toggle {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 4rem;
+  font-weight: 600;
+
+  span {
+    color: var(--text-primary);
+    transition: color 0.3s ease;
+    cursor: pointer;
+    &.active { color: var.$color-accent; }
+  }
+
+  .badge-save {
+    background-color: #27ae60;
+    color: white;
+    padding: 0.3rem 0.7rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    margin-left: 0.5rem;
+  }
+}
+
+// Stile per lo Switch
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 28px;
+  input { opacity: 0; width: 0; height: 0; }
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background-color: #ccc;
+    transition: 0.3s;
+    border-radius: 34px;
+    &:before {
+      position: absolute;
+      content: "";
+      height: 20px;
+      width: 20px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      transition: 0.3s;
+      border-radius: 50%;
+    }
+  }
+  input:checked + .slider { background-color: var.$color-accent; }
+  input:checked + .slider:before { transform: translateX(22px); }
+}
+
+// ===============================================
+// Griglia e Card dei Piani
+// ===============================================
+.plans-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+
+  @include mixins.breakpoint(lg) {
+    grid-template-columns: repeat(2, 1fr);
+    align-items: start; // Allinea le card in cima
+  }
+}
+
+.plan-card {
+  background: var(--background-secondary);
+  border-radius: var.$border-radius-medium;
+  padding: 2.5rem;
+  border: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s ease;
+  position: relative;
+  box-shadow: var(--box-shadow-light);
+
+  &:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--box-shadow-medium);
+  }
+
+  &.premium-plan {
+    border: 2px solid var(--color-premium);
+  }
+}
+
+.badge-popular {
+  position: absolute;
+  top: -1px;
+  right: 24px;
+  background: var(--color-premium);
+  color: white;
+  padding: 0.6rem 1.2rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border-radius: 0 0 var.$border-radius-small var.$border-radius-small;
+}
+
+.plan-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+
+  fa-icon { font-size: 2.8rem; color: var.$color-accent; }
+  h3 { font-size: 1.6rem; margin: 1.25rem 0 0.5rem; color: var(--text-secondary); }
+  .plan-subtitle { font-size: 1.05rem; color: var(--text-sub-primary); min-height: 44px; line-height: 1.4; }
+  .plan-price { 
+    font-size: 3rem;
+    font-weight: 800;
+    margin-top: 1.5rem;
+    color: var(--text-secondary);
+    span { font-size: 1rem; font-weight: 500; color: var(--text-secondary); margin-left: 0.25rem; }
+  }
+  
+  .premium-plan & fa-icon { color: var(--color-premium); }
+}
+
+.plan-features-list { flex-grow: 1; }
+
+.plan-footer {
+  margin-top: 2.5rem;
+  .btn { width: 100%; }
+}

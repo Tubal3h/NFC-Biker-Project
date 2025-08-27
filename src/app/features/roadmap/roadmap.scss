@@ -1,0 +1,105 @@
+@use 'styles/variables' as var;
+
+.roadmap-section {
+  padding: 5rem 1.5rem;
+  // Puoi scegliere un colore di sfondo che stacchi, es. il grigio chiaro
+  background-color: var(--background-primary); 
+}
+
+.page-header {
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto 4rem auto;
+
+  .section-title {
+    color: var.$color3;
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+  }
+  .subtitle {
+    font-size: 1.15rem;
+    color: var(--text-sub-primary);
+    line-height: 1.6;
+  }
+}
+
+.roadmap-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+  max-width: 800px;
+  margin: 0 auto;
+  position: relative;
+
+  // Linea temporale verticale per schermi grandi
+  &::before {
+    content: '';
+    position: absolute;
+    top: 20px;
+    bottom: 20px;
+    left: 29px; // Centrato sull'icona
+    width: 2px;
+    background: var.$color-border;
+    display: none; // Nascosta di default
+  }
+
+  @media (min-width: 768px) {
+    &::before {
+      display: block;
+    }
+  }
+}
+
+.roadmap-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.5rem;
+  position: relative; // Per la linea temporale
+}
+
+.roadmap-icon {
+  flex-shrink: 0;
+  width: 60px;
+  height: 60px;
+  background-color: white;
+  border: 1px solid var.$color-border;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: var.$color2;
+  font-size: 1.8rem;
+  z-index: 1; // Sopra la linea temporale
+}
+
+.roadmap-content {
+  padding-top: 0.25rem;
+  
+  h3 { 
+    margin: 0 0 0.75rem 0; 
+    font-size: 1.5rem; 
+    color: var.$color3; 
+  }
+  p { 
+    margin: 0; 
+    color: var.$color-text-sub-primary; 
+    font-size: 1.1rem; 
+    line-height: 1.7; 
+  }
+  
+  .status-badge {
+    display: inline-block;
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: white;
+    
+    &.development { background: var.$color-info; } // Blu per "In Sviluppo"
+    &.planned { background: #6c757d; } // Grigio per "Pianificato"
+  }
+}

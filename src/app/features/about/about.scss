@@ -17,7 +17,7 @@
 // Sezione 1: Storia
 .story-section {
   padding: 4rem 0;
-  background-color: white;
+  background-color: var(--background-primary);
 
   .content-wrapper {
     display: flex;
@@ -33,15 +33,15 @@
       height: 200px;
       border-radius: 50%;
       object-fit: cover;
-      border: 5px solid var.$color4;
+      border: 5px solid var.$color2;
     }
   }
 
   .story-text {
     text-align: center;
-    h1 { font-size: 2.8rem; color: var.$color1; margin-top: 0; }
+    h1 { font-size: 2.8rem; color: var.$color3; margin-top: 0; }
     .subtitle { font-size: 1.3rem; color: #666; margin: -1rem 0 1.5rem 0; }
-    p { font-size: 1.1rem; line-height: 1.8; color: #333; }
+    p { font-size: 1.1rem; line-height: 1.8; color: var(--text-primary); }
   }
 
   @media (min-width: 768px) {
@@ -53,7 +53,7 @@
 // Sezione 2: Filosofia
 .philosophy-section {
   padding: 4rem 0;
-  background-color: var.$color4;
+  background-color: var(--background-secondary);
 
   .principles-grid {
     display: grid;
@@ -62,7 +62,7 @@
   }
 
   .principle-card {
-    background-color: white;
+    background-color: var(--background-primary);
     padding: 2rem;
     border-radius: 12px;
     text-align: center;
@@ -71,10 +71,10 @@
     .principle-icon { font-size: 2.5rem; color: var.$color2; margin-bottom: 1rem; }
     h3 {
       font-size: 1.5rem;
-      color: var.$color1; // Forza il colore a essere scuro
+      color: var.$color2; // Forza il colore a essere scuro
       margin-bottom: 0.75rem;
     }
-    p { color: #555; line-height: 1.6; }
+    p { color: var(--text-sub-primary); line-height: 1.6; }
 
   @media (min-width: 768px) {
     .principles-grid { grid-template-columns: repeat(3, 1fr); }

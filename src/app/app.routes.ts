@@ -10,7 +10,7 @@ import { Guide } from '@app/features/guide/guide';
 import { Claim } from '@app/features/claim/claim';
 import { Scheda } from '@app/features/scheda/scheda';
 import { About } from './features/about/about';
-import { Plans } from './features/plans/plans';
+import { ProductsServices } from './features/products-services/products-services';
 
 // Rotte di Autenticazione
 import { AUTH_ROUTES } from '@app/features/auth/auth.routes';
@@ -33,8 +33,8 @@ export const routes: Routes = [
   { path: 'claim', component: Claim },
   { path: 'scheda/:nfcId', component: Scheda },
   { path: 'about', component: About },
-  { path: 'plans', component: Plans },
   { path: 'verify-email/:token', component: VerifyEmail },
+  { path: 'products-services', component: ProductsServices },
 
   // --- ROTTE DI AUTENTICAZIONE ---
   ...AUTH_ROUTES,

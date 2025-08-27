@@ -1,22 +1,28 @@
 <nav class="navbar">
   
-  <!-- Logo (sempre visibile) -->
   <div class="navbar-logo">
     <a routerLink="/homepage">
       <h1>S.O.S.<br>HELMET</h1>
     </a>
   </div>
 
-  <!-- Links per Desktop (visibili solo su schermi grandi) -->
   <div class="navbar-links-desktop">
     <a routerLink="/homepage" routerLinkActive="active">Homepage</a>
     <a routerLink="/about" routerLinkActive="active">Chi Siamo</a>
     <a routerLink="/guide" routerLinkActive="active">Guida</a>
-    <a routerLink="/plans" routerLinkActive="active">Piani</a>
+    <a routerLink="/products-services" routerLinkActive="active">Kit e Piani</a>
   </div>
 
-  <!-- Sezione Utente per Desktop (visibile solo su schermi grandi) -->
   <div class="navbar-user-desktop">
+    <button 
+      class="theme-toggle" 
+      (click)="toggleTheme()" 
+      [class.dark]="isDark$ | async" 
+      aria-label="Toggle theme">
+      <fa-icon class="icon sun-icon" [icon]="faSun"></fa-icon>
+      <fa-icon class="icon moon-icon" [icon]="faMoon"></fa-icon>
+    </button>
+    
     @if (user$ | async; as user) {
       <a [routerLink]="['/dashboard']" class="user-link" routerLinkActive="active">Area Riservata</a>
       <button class="btn-logout" (click)="logout()">Logout</button>
@@ -25,7 +31,6 @@
     }
   </div>
   
-  <!-- Pulsante Hamburger per Mobile (visibile solo su schermi piccoli) -->
   <button class="navbar-toggler" (click)="toggleMenu()">
     <span class="toggler-icon"></span>
     <span class="toggler-icon"></span>
@@ -34,16 +39,12 @@
 
 </nav>
 
-<!-- ====================================================== -->
-<!-- MENU MOBILE (ORA SENZA @if ESTERNO) -->
-<!-- ====================================================== -->
-<!-- L'elemento esiste sempre, ma è nascosto/visibile tramite CSS -->
 <div class="mobile-menu" [class.is-open]="isMenuOpen">
-  <a routerLink="/homepage" (click)="closeMenu()">Homepage</a>
+  <a routerLink="/homepage" (click)="closeMenu()">Home</a>
   <a routerLink="/about" (click)="closeMenu()">Chi Siamo</a>
   <a routerLink="/guide" (click)="closeMenu()">Guida</a>
-  <a routerLink="/plans" (click)="closeMenu()">Piani</a>
-  
+  <a routerLink="/products-services" (click)="closeMenu()">Kit e Piani</a>
+
   <hr>
   
   @if (user$ | async; as user) {
@@ -52,4 +53,13 @@
   } @else {
     <a routerLink="/login" (click)="closeMenu()">Log In</a>
   }
+
+  <button 
+    class="theme-toggle" 
+    (click)="toggleTheme(); closeMenu()" 
+    [class.dark]="isDark$ | async" 
+    aria-label="Toggle theme">
+    <fa-icon class="icon sun-icon" [icon]="faSun"></fa-icon>
+    <fa-icon class="icon moon-icon" [icon]="faMoon"></fa-icon>
+  </button>
 </div>

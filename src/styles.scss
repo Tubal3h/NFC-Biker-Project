@@ -1,69 +1,61 @@
+// in src/styles.scss
+
+// Importa le variabili SASS solo per definire la palette
+@use 'styles/variables' as var;
+
+// ======================================================
+// Definizione delle Variabili CSS per i Temi
+// ======================================================
+
+// :root definisce le variabili per il tema di default (Light Mode)
+:root {
+  --background-primary: #{var.$color-bg};      // Sfondo principale chiaro
+  --background-secondary: #{var.$color1};             // Sfondo per le card
+  --text-primary: #{var.$color-text-primary};   // Testo principale scuro
+  --text-secondary: #{var.$color-text-secondary}; // Testo secondario grigio
+  --text-sub-primary: #{var.$color-text-sub-primary}; // Testo secondario grigio
+  --accent-color: #{var.$color3};              // Colore d'accento (Rosso vibrante)
+  --accent-color-dark: #{var.$color2};         // Variazione scura dell'accento
+  --border-color: #{var.$color-border};
+  --navbar-background: #{var.$color1};         // La navbar rimane scura
+  --navbar-text: #{var.$color4};
+  --color1-light: #{var.$color1-light};
+  --color2-light: #{var.$color2-light};
+  --color3-light: #{var.$color3-light};
+  --color4-light: #{var.$color4-light};
+  --color-premium: #{var.$color-premium};
+  --text-sub-primary: #{var.$color-text-sub-primary};
+}
 
 
-$color1: #1D1616;
-$color2: #8E1616;
-$color3: #D84040;
-$color4: #EEEEEE;
 
+// ======================================================
+// Reset e Stili di Base
+// ======================================================
 
-body{
-
-  // max-width: 1080px;
-  height: 100%;
-  background-color: $color1!important;
-  color: $color4!important;
+* {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
+}
+
+body {
   font-family: "League Spartan", sans-serif;
-  font-optical-sizing: auto;
-  font-weight: 700;
-  font-style: normal;
+  // Ora usiamo le variabili CSS!
+  background-color: var(--background-primary);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-body.light-theme {
-  height: 100%;
-  background-color: $color1!important;
-  color: $color4;
-  margin: 0;
-  padding: 0;
-}
-
+// Quando il body ha la classe .dark-theme, sovrascriviamo le variabili
 body.dark-theme {
-  height: 100%;
-  background-color: $color1!important;
-  color: $color4;
-  margin: 0;
-  padding: 0;
+  --background-primary: #{var.$color1};
+  --background-secondary: #{var.$color4};
+  --text-primary: #{var.$color4};
+  --text-secondary: #{var.$color1};
+  --border-color: #{lighten(var.$color1, 15%)};
+  --text-sub-primary: #969a9b;
+
+  // I colori di accento e della navbar possono rimanere gli stessi
+  // o essere modificati se necessario.
 }
-
-h1, h2, h3, h4, h5, h6 {
-  font-family: "League Spartan", Arial, sans-serif;
-  font-weight: 700;
-}
-
-
-
-.box {
-  border: 1px solid $color2;
-}
-
-a {
-  text-decoration: none;
-
-  // &:hover {
-  // color: $color3;
-  // }
-}
-
-ul {
-  list-style: none;
-}
-
-// Selettore per il toast in alto al centro
-.toast-bottom-center {
-  bottom: 12px;
-  margin: 0 auto;
-  left: 50%;
-  transform: translateX(-50%);
-}
-

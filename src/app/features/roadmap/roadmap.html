@@ -1,0 +1,31 @@
+<section class="roadmap-section">
+  <div class="page-header">
+    <h2 class="section-title">
+      <fa-icon [icon]="faRocket"></fa-icon> 
+      La Nostra Roadmap
+    </h2>
+    <p class="subtitle">S.O.S. Helmet è un progetto in continua evoluzione. Ecco le prossime funzionalità a cui stiamo lavorando per rendere la tua sicurezza ancora più completa.</p>
+  </div>
+
+  <div class="roadmap-list">
+    <div *ngFor="let item of roadmapItems" class="roadmap-step">
+      
+      <div class="roadmap-icon">
+        <fa-icon [icon]="item.icon"></fa-icon>
+      </div>
+
+      <div class="roadmap-content">
+        <span class="status-badge" 
+              [ngClass]="{
+                'development': item.status === 'In Sviluppo',
+                'planned': item.status === 'Pianificato'
+              }">
+          {{ item.status }}
+        </span>
+        <h3>{{ item.title }}</h3>
+        <p>{{ item.description }}</p>
+      </div>
+
+    </div>
+  </div>
+</section>

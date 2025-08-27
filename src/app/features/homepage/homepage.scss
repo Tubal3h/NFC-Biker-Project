@@ -1,256 +1,175 @@
 @use 'styles/variables' as var;
+@use 'styles/mixins'; // Importa i mixin per i breakpoint
 
-// Stile generale e reset
+// Stili generali
 .homepage-container {
   font-family: "League Spartan", sans-serif;
+  overflow-x: hidden; // Previene scroll orizzontale
 }
+
 .section-title {
   text-align: center;
-  font-size: 2.2rem;
+  font-size: 2.5rem;
   font-weight: 700;
-  margin-bottom: 3rem;
-  color: var.$color1;
+  margin-bottom: 1rem;
+  color: var.$color3;
+  line-height: 1.2;
+}
+
+// Stili Pulsanti Generici
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 0.85rem 1.75rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border-radius: var.$border-radius-small;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  border: 2px solid transparent;
+
+  &.btn-primary {
+    background: var.$color3;
+    color: white;
+    &:hover { background: var.$color2; transform: translateY(-3px); }
+  }
+  &.btn-secondary {
+    background: transparent;
+    color: var(--text-primary);
+    border-color: var.$color-border;
+    &:hover { background: var.$color3; border-color: var.$color3; }
+  }
 }
 
 // Sezione 1: Hero
 .hero-section {
-  // immagine di sfondo
   background: url('/assets/img/helmet-bg.png') no-repeat center center / cover;
   color: var.$color4;
-  padding: 4rem 1.5rem;
-  text-align: center;
   min-height: 100vh;
+  padding: 6rem 1.5rem;
+  text-align: center;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  align-items: center;
   position: relative;
-  overflow: hidden;
-
-  // overlay per rendere leggibile il testo
+  
   &::before {
     content: "";
     position: absolute;
     inset: 0;
-    background: rgba(0, 0, 0, 0.55); // leggero scuro sopra l'immagine
-    z-index: 0;
+    background: rgba(var.$color1, 0.6);
+    z-index: 1;
   }
 
-  h1 {
-    font-size: 2.8rem;
-    font-weight: 800;
-    color: var.$color3;
+  .hero-content {
     position: relative;
-    z-index: 1;
+    z-index: 2;
+    max-width: 800px;
+  }
+
+  .main-title {
+    font-size: 3rem;
+    font-weight: 800;
+    color: white;
+    margin-bottom: 1rem;
   }
 
   .subtitle {
-    font-size: 1.2rem;
-    max-width: 600px;
-    margin: 1rem auto 2rem auto;
-    position: relative;
-    z-index: 1;
-  }
-  
-  .hero-image-container {
-    padding: 2rem 0;
-    position: relative;
-    z-index: 1;
-
-    .hero-icon {
-      font-size: 8rem;
-      color: var.$color2;
-    }
-  }
-  .hero-image-container img {
-    width: 50px;  // Usa width/height invece di font-size
-    height: 50px;
-  }
-
-  .scroll-down-link {
-    color: var.$color4;
-    text-decoration: none;
-    font-weight: 500;
-    position: relative;
-    z-index: 1;
+    font-size: 1.3rem;
+    line-height: 1.6;
+    margin: 0 auto 2.5rem auto;
+    color: rgba(white, 0.9);
   }
 }
-
 
 // Sezione 2: Come Funziona
 .how-it-works-section {
-  padding: 4rem 1.5rem;
-  background-color: white;
+  padding: 5rem 1.5rem;
+  background-color: var(--background-secondary);
   
   .steps-container {
     display: grid;
-    grid-template-columns: 1fr; // Una colonna su mobile
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 2.5rem;
     max-width: 1100px;
-    margin: 0 auto;
+    margin: 4rem auto 0 auto;
   }
   .step-card { text-align: center; }
   .step-icon {
-    font-size: 3rem; color: var.$color2; margin-bottom: 1rem;
-    i { vertical-align: middle; }
+    font-size: 3rem; color: var.$color2; margin-bottom: 1.5rem;
   }
-  h3 { font-size: 1.5rem; color: var.$color1; margin-bottom: 0.5rem; }
-  p { color: #555; line-height: 1.6; }
+  h3 { font-size: 1.5rem; color: var(--text-secondary); margin-bottom: 0.75rem; }
+  p { color: var(--text-sub-primary); line-height: 1.6; }
 }
 
-/* ======================================================
-   SEZIONE 3: ACQUISTO (Stile Offerta di Lancio)
-   ====================================================== */
-.purchase-section {
-  background-color: white;
+// NUOVO: Sezione 3 - Kit
+.kit-section {
   padding: 5rem 1.5rem;
+  background-color: var(--background-primary);
 
-  .purchase-content {
+  .kit-content {
     display: grid;
-    grid-template-columns: 1fr;
-    gap: 2rem;
-    max-width: 900px;
+    align-items: center;
+    gap: 3rem;
+    max-width: 1000px;
     margin: 0 auto;
-    align-items: center;
+    
+    @include mixins.breakpoint(md) {
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+    }
   }
 
-  .purchase-image {
+  .kit-image img {
+    max-width: 100%;
+    border-radius: var.$border-radius-medium;
+    box-shadow: var.$box-shadow-base;
+  }
+
+  .kit-details {
     text-align: center;
-    fa-icon {
-      font-size: 10rem;
-      color: var.$color2;
-    }
-  }
-
-  .purchase-details {
-    text-align: center;
-    .section-title { color: var.$color1; }
-  }
-
-  .promo-tag {
-    display: inline-block;
-    background-color: var.$color3;
-    color: white;
-    padding: 0.4rem 1rem;
-    border-radius: 20px;
-    font-size: 0.9rem;
-    font-weight: 700;
-    margin-bottom: 1rem;
-    letter-spacing: 1px;
-  }
-  
-  .kit-contents {
-    list-style: none;
-    padding: 0;
-    margin: 2rem 0;
-    text-align: left;
-    display: inline-block; // Per centrare il blocco
-    li {
-      font-size: 1.1rem;
-      color: #333;
-      margin-bottom: 0.75rem;
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      i {
-        color: var.$color-success;
-      }
-    }
-  }
-
-  .price-box {
-    margin-bottom: 0.5rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 1.5rem;
-
-    .original-price {
-      font-size: 1.8rem;
-      font-weight: 500;
-      color: #999;
-      text-decoration: line-through;
-    }
-    .discounted-price {
-      font-size: 3.5rem;
-      font-weight: 700;
-      color: var.$color1;
-    }
-  }
-
-  .urgency-note {
-    font-weight: 600;
-    color: var.$color2;
-    margin-bottom: 2.5rem;
-  }
-
-  // Stili per schermi più grandi
-  @media (min-width: 768px) {
-    .purchase-content {
-      grid-template-columns: 1fr 1.5fr;
-      gap: 4rem;
-    }
-    .purchase-details {
+    @include mixins.breakpoint(md) {
       text-align: left;
     }
-    .kit-contents {
-      display: block; // Ripristina allineamento a sx
+    .section-title {
+      margin-bottom: 1.5rem;
+      color: var.$color3;
     }
-    .price-box {
-      justify-content: flex-start;
-    }
-  }
-}
-
-.btn-primary {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.75rem;
-  background: var.$color3;
-  color: white;
-  padding: 1rem 2.5rem;
-  border-radius: 8px;
-  text-decoration: none;
-  font-size: 1.2rem;
-  font-weight: 600;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(var.$color3, 0.2);
-
-  &:hover {
-    background: var.$color2;
-    transform: translateY(-3px);
-    box-shadow: 0 7px 20px rgba(var.$color3, 0.3);
-  }
-}
-
-// ======================================================
-// --- SEZIONE 3: ACQUISTA / SUPPORTO (CORRETTA) ---
-// ======================================================
-.purchase-section {
-  background-color: var.$color4; // Sfondo grigio chiaro
-  padding: 4rem 1.5rem;
-  text-align: center;
-
-  .purchase-content {
-    max-width: 700px;
-    margin: 0 auto;
-    
-    .section-title { color: var.$color1; }
-    
     p {
-      font-size: 1.2rem;
-      margin-bottom: 2.5rem;
-      color: #333;
-      line-height: 1.8;
+      font-size: 1.1rem;
+      color: var(--text-sub-primary);
+      line-height: 1.7;
+      margin-bottom: 2rem;
+    }
+  }
+
+  .kit-includes {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 2.5rem;
+    
+    li {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: 1rem;
+      
+      fa-icon { color: var.$color-success; font-size: 1.3rem; }
     }
   }
 }
 
-// ======================================================
-// --- SEZIONE 4: MISSION (MANCANTE) ---
-// ======================================================
+// Sezione 4: Mission
 .mission-section {
-  background-color: var.$color1;
-  padding: 4rem 1.5rem;
+  background-color: var(--background-secondary);
+  padding: 5rem 1.5rem;
   
   .mission-content {
     max-width: 800px;
@@ -259,40 +178,46 @@
     
     .section-title { color: var.$color3; }
     p {
-      font-size: 1.2rem;
+      font-size: 1.3rem;
       line-height: 1.8;
-      color: var.$color4;
+      color: var(--text-secondary);
     }
   }
 }
 
-// Sezione 5: FAQ
+// Sezione 6: FAQ
 .faq-section {
-  padding: 4rem 1.5rem;
-  background-color: white;
+  padding: 5rem 1.5rem;
+  background-color: var(--background-primary);
   
   .faq-grid {
     display: grid;
-    grid-template-columns: 1fr; // Una colonna su mobile
+    grid-template-columns: 1fr;
     gap: 2rem;
     max-width: 900px;
-    margin: 0 auto;
+    margin: 4rem auto 0 auto;
+    
+    @include mixins.breakpoint(md) {
+      grid-template-columns: 1fr 1fr;
+    }
   }
   .faq-item {
-    h4 { font-size: 1.2rem; margin: 0 0 0.5rem 0; color: var.$color1; }
-    p { margin: 0; color: #555; line-height: 1.6; }
+    background-color: var(--background-secondary);
+    padding: 1.5rem;
+    border: 1px solid var.$color3;
+    border-radius: var.$border-radius-medium;
+    h4 { font-size: 1.2rem; margin: 0 0 0.75rem 0; color: var.$color3; }
+    p { margin: 0; color: var(--text-sub-primary); line-height: 1.6; }
   }
 }
 
-/* ======================================================
-   Stile per l'invito a scorrere (Scroll Down Prompt) (Corretto)
-   ====================================================== */
-
+// Animazione Scroll Down
 .scroll-down-prompt {
   position: absolute;
   bottom: 2rem;
   left: 50%;
   transform: translateX(-50%);
+  z-index: 2;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -301,41 +226,10 @@
   text-decoration: none;
   font-weight: 500;
   cursor: pointer;
-  opacity: 0.7; // Leggermente più visibile di default
+  opacity: 0.8;
   transition: opacity 0.3s;
 
-  &:hover {
-    opacity: 1;
-  }
+  &:hover { opacity: 1; }
 }
 
-.mouse-icon {
-  width: 28px;
-  height: 48px;
-  border: 2px solid var.$color4;
-  border-radius: 15px;
-  position: relative;
-}
 
-.wheel {
-  width: 4px;
-  height: 8px;
-  background-color: var.$color4;
-  border-radius: 2px;
-  position: absolute;
-  top: 8px;
-  left: 50%;
-  transform: translateX(-50%);
-  animation: scroll-wheel 1.5s infinite;
-}
-
-@keyframes scroll-wheel {
-  0% {
-    opacity: 1;
-    transform: translate(-50%, 0);
-  }
-  100% {
-    opacity: 0;
-    transform: translate(-50%, 15px);
-  }
-}

@@ -29,7 +29,7 @@
 .profile-card {
   display: flex;
   flex-direction: column;
-  background: white;
+  background-color: var(--background-secondary);
   padding: 1.5rem;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.05);
@@ -44,12 +44,12 @@
     gap: 1.5rem;
   }
 
-  .profile-icon .icon-wrapper { font-size: 2.5rem; color: var.$color2; }
+  .profile-icon .icon-wrapper { font-size: 2.5rem; color: var(--background-primary); }
 
   .profile-info {
-    h3 { margin: 0 0 0.25rem 0; font-size: 1.3rem; color: var.$color1; }
+    h3 { margin: 0 0 0.25rem 0; font-size: 1.3rem; color: var.$color3; }
     // FIX: Aumentato contrasto del testo su sfondo bianco
-    p { margin: 0; color: #555; }
+    p { margin: 0; color: darken(var.$color3, 5%); }
   }
 
   .profile-actions {
@@ -76,7 +76,7 @@
   text-decoration: none;
   
   &:hover:not(:disabled) {
-    transform: translateY(-2px);
+    transform: translateY(-4px);
     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
   }
 }
@@ -85,14 +85,15 @@
 
 // Pulsante "Modifica" e "Gestisci Caschi" (Azione Neutra)
 .btn-edit, .btn-manage-tags {
-  background: var.$color4;
-  border-color: var.$color4;
-  color: var.$color1;
+  background: var(--background-primary);
+  border-color: var.$color2;
+  color: var(--text-primary);
   &:hover:not(:disabled) {
-    background: darken(var.$color4, 5%);
+    // background: darken(var.$color-accent, 5%);
+    color: var.$color2;
   }
    &:disabled {
-    background-color: darken(var.$color4, 2%); // Colore più "spento"
+    background-color: darken(var.$color4, 3%); // Colore più "spento"
     color: #aaa; // Testo grigio chiaro
     cursor: not-allowed; // Cursore "non permesso"
     box-shadow: none; // Nessuna ombra
@@ -170,16 +171,17 @@
     margin-top: 0;
     margin-bottom: 1rem;
     font-size: 1.1rem;
-    color: var.$color1;
+    color: var(--text-secondary);
   }
 
     ul {
+      list-style: none;
     padding-left: 0; // Rimuove il padding di default della lista
     margin-bottom: 1.5rem;
   }
 
   li, p {
-    color: var.$color1; // Imposta il colore del testo a nero
+    color: var(--text-secondary); // Imposta il colore del testo a nero
     font-size: 1rem;
     padding: 0.5rem 0; // Aggiunge un po' di spazio verticale
   }
@@ -391,7 +393,6 @@
   font-weight: 700;
   padding: 0.3rem 0.8rem;
   border-radius: 20px;
-  position: absolute;
   top: 1.5rem;
   right: 1.5rem;
   text-transform: uppercase;

@@ -1,4 +1,4 @@
-// in src/app/shared/components/navbar/navbar.scss
+// navbar.scss AGGIORNATO
 
 @use 'styles/variables' as var;
 
@@ -7,9 +7,9 @@
 // ======================================================
 
 :host {
-  display: block; // Assicura che la navbar occupi il suo spazio
+  display: block;
   position: relative;
-  z-index: 1000; // Mette la navbar sopra il resto
+  z-index: 1000;
 }
 
 .navbar {
@@ -17,7 +17,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 1rem 1.5rem;
-  background: var.$color1;
+  background-color: var(--background-primary);
 }
 
 .navbar-logo a {
@@ -31,13 +31,74 @@
   }
 }
 
+// ======================================================
+// NUOVI STILI PER IL THEME TOGGLE (con animazione)
+// ======================================================
+.theme-toggle {
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  cursor: pointer;
+  padding: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+
+  &:hover {
+    background-color: lighten(var.$color3, 15%);
+  }
+  
+  &:active {
+    transform: scale(0.9);
+  }
+
+  // Stile condiviso per i componenti <fa-icon>
+  .icon {
+    font-size: 1.4rem;
+    position: absolute;
+    transition: transform 0.4s cubic-bezier(0.445, 0.05, 0.55, 0.95), opacity 0.3s ease;
+  }
+
+  // --- MODIFICA SELETTORI ---
+  // Icona del sole (visibile di default in light-mode)
+  .sun-icon {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+
+  // Icona della luna (nascosta di default in light-mode)
+  .moon-icon {
+    transform: scale(0) rotate(360deg);
+    opacity: 0;
+  }
+
+  // Quando il pulsante ha la classe .dark (dark-mode attivo)
+  &.dark {
+    .sun-icon {
+      transform: scale(0) rotate(360deg);
+      opacity: 0;
+    }
+    .moon-icon {
+      transform: scale(1) rotate(0deg);
+      opacity: 1;
+    }
+  }
+}
+
+
 // Su mobile, i link e la sezione utente del desktop sono nascosti
 .navbar-links-desktop,
 .navbar-user-desktop {
   display: none;
 }
 
-// L'icona "Hamburger" è visibile solo su mobile (sotto i 768px)
+// Icona "Hamburger" per mobile
 .navbar-toggler {
   display: flex;
   flex-direction: column;
@@ -52,36 +113,32 @@
   .toggler-icon {
     width: 100%;
     height: 3px;
-    background-color: var.$color4;
+    background-color: var(--background-secondary);
     border-radius: 2px;
   }
 }
 
 // Menu a schermo intero per mobile
-// in navbar.scss
-
 .mobile-menu {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100vh;
-  background: var.$color1;
+  background-color: var(--background-primary);
   z-index: 999;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 1.5rem;
-  
-  // Stato di default (nascosto)
   opacity: 0;
   transform: translateY(-20px);
   pointer-events: none;
   transition: opacity 0.4s ease, transform 0.4s ease;
 
   a {
-    color: var.$color4;
+    color: var(--text-primary);
     text-decoration: none;
     font-size: 2rem;
     font-weight: 700;
@@ -95,18 +152,21 @@
     width: 80%;
     border: none;
     height: 5px;
-    // border-top: 1px solid var.$color3;
     background-color: var.$color3;
   }
 
-  // --- CORREZIONE ---
-  // Ora questo blocco è un figlio diretto di .mobile-menu
   &.is-open {
     opacity: 1;
-    transform: scale(1) translateY(0); // L'elemento torna alla sua scala e posizione normale
+    transform: translateY(0);
     pointer-events: auto;
   }
+  
+  // Aggiungiamo un margine al bottone nel menu mobile
+  .theme-toggle {
+    margin-top: 1rem;
+  }
 }
+
 
 // ======================================================
 // Stili per Desktop (oltre i 768px)
@@ -118,14 +178,13 @@
   
   .navbar-logo a h1 {
     font-size: 2.5rem;
+    color: var.$color3;
   }
 
-  // Nascondiamo l'hamburger su desktop
   .navbar-toggler {
     display: none;
   }
 
-  // Mostriamo le sezioni desktop
   .navbar-links-desktop,
   .navbar-user-desktop {
     display: flex;
@@ -134,7 +193,7 @@
   }
   
   .navbar-links-desktop a {
-    color: var.$color4;
+    color: var(--text-primary);
     text-decoration: none;
     font-weight: 600;
     font-size: 1.1rem;
@@ -144,7 +203,7 @@
 
     &:hover,
     &.active {
-      color: white;
+      color: var.$color3;
       border-bottom-color: var.$color3;
     }
   }
@@ -154,9 +213,8 @@
     a { text-decoration: none; }
     
     .user-link {
-      color: white;
-      // font-style: italic;
-      &:hover { color: var.$color4; }
+      color: var(--text-primary);
+      &:hover { color: var.$color3; }
     }
 
     .btn-login, .btn-logout {
@@ -182,3 +240,4 @@
     }
   }
 }
+

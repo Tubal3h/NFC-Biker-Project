@@ -150,7 +150,7 @@ app.post('/api/login', async (req, res) => {
       await user.save();
     }
     const payload = { id: user._id, email: user.email, premium: user.premium, isVerified: user.isVerified };
-    const expiresIn = rememberMe ? '30d' : '1m';
+    const expiresIn = rememberMe ? '30d' : '1d';
     const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn });
     const profile = await MedicalProfile.findById(user.mainProfileId);
     const userObject = user.toObject();

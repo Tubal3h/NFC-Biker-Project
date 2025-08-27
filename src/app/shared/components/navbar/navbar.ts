@@ -3,19 +3,28 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '@app/core/services/auth';
+import { Theme } from '@app/core/services/theme';
+import { faSun, faMoon } from '@fortawesome/free-solid-svg-icons';
+import { FaIconComponent } from "@fortawesome/angular-fontawesome";
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, FaIconComponent],
   templateUrl: './navbar.html',
   styleUrl: './navbar.scss'
 })
 export class Navbar {
   auth = inject(AuthService);
+  theme = inject(Theme);
   private router = inject(Router);
   user$ = this.auth.user$;
-  
+  isDark$ = this.theme.isDark$;
+
+  // Icone per il tema
+  faSun = faSun;
+  faMoon = faMoon;
+
   // Stato per il menu mobile
   isMenuOpen = false;
 
@@ -40,5 +49,10 @@ export class Navbar {
   logout() {
     this.auth.logout();
     this.router.navigate(['/homepage']);
+  }
+
+    // NUOVO METODO PER IL TEMA
+  toggleTheme() {
+    this.theme.toggleTheme();
   }
 }

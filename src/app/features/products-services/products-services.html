@@ -1,0 +1,140 @@
+<div class="page-container">
+
+  <section class="section-hero">
+    <div class="hero-content">
+      <h1 class="hero-title">La Sicurezza Intelligente, Accessibile a Tutti.</h1>
+      <p class="hero-subtitle">
+        S.O.S. Helmet è il sistema ID medico digitale che trasforma il tuo casco in un dispositivo salvavita. Parla per te quando è più importante.
+      </p>
+    </div>
+  </section>
+
+  <section class="product-section">
+    <div class="section-header">
+      <fa-icon [icon]="icons.faBoxOpen" class="section-icon"></fa-icon>
+      <h2>Tutto il Necessario in un Unico Kit</h2>
+      <p class="subtitle">Attiva la tua protezione in meno di 5 minuti con il nostro kit di partenza.</p>
+    </div>
+
+    <div class="product-card">
+      <div class="product-gallery">
+        <div class="main-image-container">
+          <img [src]="productImages[currentImageIndex]" alt="Immagine principale del Kit S.O.S. Helmet" class="main-image">
+          <button class="gallery-nav prev" (click)="prevImage()" aria-label="Immagine precedente">
+            <fa-icon [icon]="icons.faChevronLeft"></fa-icon>
+          </button>
+          <button class="gallery-nav next" (click)="nextImage()" aria-label="Immagine successiva">
+            <fa-icon [icon]="icons.faChevronRight"></fa-icon>
+          </button>
+        </div>
+        <div class="thumbnail-nav">
+          <img *ngFor="let img of productImages; let i = index" 
+               [src]="img" 
+               [class.active]="i === currentImageIndex" 
+               (click)="currentImageIndex = i" 
+               alt="Thumbnail prodotto {{i+1}}">
+        </div>
+      </div>
+      
+      <div class="product-details">
+        <h3>Cosa Include il Kit:</h3>
+        <ul class="features-list">
+          <li><fa-icon [icon]="icons.faCheckCircle"></fa-icon> <strong>Due Tag NFC Ultra-Resistenti</strong> per casco, progettati per resistere a qualsiasi condizione.</li>
+          <li><fa-icon [icon]="icons.faCheckCircle"></fa-icon> <strong>Materiale per l'Applicazione</strong> per una tenuta perfetta e duratura.</li>
+          <li><fa-icon [icon]="icons.faCheckCircle"></fa-icon> <strong>Card di Attivazione Rapida</strong> con QR Code per una configurazione guidata.</li>
+          <li class="highlight"><fa-icon [icon]="icons.faStar"></fa-icon> <strong>Accesso Immediato: 3 Mesi di Abbonamento Premium Inclusi</strong> per sbloccare tutte le funzionalità.</li>
+        </ul>
+        
+        <div class="product-footer">
+          <div class="price-box" [class.on-offer]="showLaunchOffer">
+            <span class="price-current">
+              @if(showLaunchOffer){
+                <strong>€9,99</strong>
+              }@else{
+                <strong>€14,99</strong>
+              }
+              
+            </span>
+            <div class="price-original-wrapper">
+              <span class="price-original">€14,99</span>
+              <span class="price-badge" *ngIf="showLaunchOffer">Offerta Lancio</span>
+            </div>
+          </div>
+          <a href="https://t.me/SOSHELMET" target="_blank" class="btn btn-primary btn-block">
+            Acquista Ora
+          </a>
+        </div>
+        <div class="offer-info" *ngIf="showLaunchOffer">
+          <fa-icon [icon]="icons.faInfoCircle"></fa-icon> 
+          <span>Solo <strong>{{ kitsRemaining }} Kit</strong> rimasti a questo prezzo.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="plans-section">
+    <div class="section-header">
+      <fa-icon [icon]="icons.faCrown" class="section-icon"></fa-icon>
+      <h2>Un Piano per Ogni Esigenza</h2>
+      <p class="subtitle">Parti con le funzionalità essenziali gratuite o scegli Premium per una sicurezza senza compromessi.</p>
+    </div>
+
+    <div class="billing-toggle">
+      <span [class.active]="!isYearly" (click)="isYearly = false">Mensile</span>
+      <label class="switch">
+        <input type="checkbox" [(ngModel)]="isYearly">
+        <span class="slider"></span>
+      </label>
+      <span [class.active]="isYearly" (click)="isYearly = true">
+        Annuale <span class="badge-save">Risparmia 16%</span>
+      </span>
+    </div>
+
+    <div class="plans-grid">
+      <div class="plan-card">
+        <div class="plan-header">
+          <fa-icon [icon]="icons.faUserCircle"></fa-icon>
+          <h3>Piano Gratuito</h3>
+          <p class="plan-subtitle">La protezione essenziale, per sempre.</p>
+          <p class="plan-price">€0<span>/per sempre</span></p>
+        </div>
+        <ul class="features-list plan-features-list">
+          <li><fa-icon [icon]="icons.faClipboardUser"></fa-icon> 1 Profilo Medico Completo</li>
+          <li><img src="assets/img/icons/helmet.png" alt=""> 1 Casco / Tag NFC Associato</li>
+          <li><fa-icon [icon]="icons.faAddressBook"></fa-icon> Fino a 3 Contatti d'Emergenza</li>
+          <li class="feature-disabled"><fa-icon [icon]="icons.faTimes"></fa-icon> Gestione Multi-Profilo</li>
+          <li class="feature-disabled"><fa-icon [icon]="icons.faTimes"></fa-icon> Accesso anticipato a nuove funzioni</li>
+        </ul>
+        <div class="plan-footer">
+          <a routerLink="/register" class="btn btn-secondary">Inizia Subito</a>
+        </div>
+      </div>
+
+      <div class="plan-card premium-plan">
+        <div class="badge-popular">Il Più Scelto</div>
+        <div class="plan-header">
+          <fa-icon [icon]="icons.faStar"></fa-icon>
+          <h3>Piano Premium</h3>
+          <p class="plan-subtitle">Sicurezza avanzata e massima flessibilità.</p>
+          <p class="plan-price" *ngIf="isYearly">€19.99<span>/anno</span></p>
+          <p class="plan-price" *ngIf="!isYearly">€1.99<span>/mese</span></p>
+        </div>
+        <ul class="features-list plan-features-list">
+          <li class="highlight"><fa-icon [icon]="icons.faCrown"></fa-icon> <strong>Tutto dal piano Gratuito, e in più:</strong></li>
+          <li><fa-icon [icon]="icons.faUsersRectangle"></fa-icon> Fino a 10 Profili Medici</li>
+          <li><img src="assets/img/icons/helmet.png" alt=""> Fino a 10 Caschi / Tag NFC</li>
+          <li><fa-icon [icon]="icons.faAddressBook"></fa-icon> Fino a 10 Contatti d'Emergenza</li>
+          <li><fa-icon [icon]="icons.faCheck"></fa-icon> Cambio rapido del profilo attivo (Switch)</li>
+          <li><fa-icon [icon]="icons.faCheck"></fa-icon> Accesso prioritario a nuove funzionalità</li>
+        </ul>
+        <div class="plan-footer">
+          <a routerLink="/account-settings" class="btn btn-premium">
+            <span *ngIf="auth.isLogged && auth.user?.premium">Gestisci Abbonamento</span>
+            <span *ngIf="!(auth.isLogged && auth.user?.premium)">Attiva Premium</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
