@@ -11,7 +11,7 @@
   font-size: 2.5rem;
   font-weight: 700;
   margin-bottom: 3rem;
-  color: var.$color1;
+  color: var(--text-primary);
 }
 
 // Sezione 1: Storia
@@ -33,15 +33,15 @@
       height: 200px;
       border-radius: 50%;
       object-fit: cover;
-      border: 5px solid var.$color2;
+      border: 5px solid var.$color3;
     }
   }
 
   .story-text {
     text-align: center;
     h1 { font-size: 2.8rem; color: var.$color3; margin-top: 0; }
-    .subtitle { font-size: 1.3rem; color: #666; margin: -1rem 0 1.5rem 0; }
-    p { font-size: 1.1rem; line-height: 1.8; color: var(--text-primary); }
+    .subtitle { font-size: 1.3rem; color: var(--text-secondary); margin: -1rem 0 1.5rem 0; }
+    p { font-size: 1.1rem; line-height: 1.8; color: var(--text-secondary); }
   }
 
   @media (min-width: 768px) {
@@ -74,7 +74,7 @@
       color: var.$color2; // Forza il colore a essere scuro
       margin-bottom: 0.75rem;
     }
-    p { color: var(--text-sub-primary); line-height: 1.6; }
+    p { color: var(--text-secondary); line-height: 1.6; }
 
   @media (min-width: 768px) {
     .principles-grid { grid-template-columns: repeat(3, 1fr); }

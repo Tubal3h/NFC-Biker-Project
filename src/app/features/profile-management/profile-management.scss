@@ -15,7 +15,6 @@
 .page-header {
   @include mixins.page-header;
   // FIX: Aumentato contrasto del sottotitolo nell'header per leggibilità
-  // p { color: #555; }
 }
 .state-container { @include mixins.page-state-container; }
 
@@ -44,12 +43,12 @@
     gap: 1.5rem;
   }
 
-  .profile-icon .icon-wrapper { font-size: 2.5rem; color: var(--background-primary); }
+  .profile-icon .icon-wrapper { font-size: 2.5rem; color: var.$color3; }
 
   .profile-info {
-    h3 { margin: 0 0 0.25rem 0; font-size: 1.3rem; color: var.$color3; }
+    h3 { margin: 0 0 0.25rem 0; font-size: 1.3rem; color: var(--text-primary); }
     // FIX: Aumentato contrasto del testo su sfondo bianco
-    p { margin: 0; color: darken(var.$color3, 5%); }
+    p { margin: 0; color: var(--text-secondary); }
   }
 
   .profile-actions {
@@ -85,8 +84,8 @@
 
 // Pulsante "Modifica" e "Gestisci Caschi" (Azione Neutra)
 .btn-edit, .btn-manage-tags {
-  background: var(--background-primary);
-  border-color: var.$color2;
+  background-color: darken(var.$color4, 30%); 
+  border-color: var(--border-color);
   color: var(--text-primary);
   &:hover:not(:disabled) {
     // background: darken(var.$color-accent, 5%);
@@ -163,7 +162,7 @@
 
 // Sezione Associazione Caschi
 .associated-tags {
-  border-top: 1px solid var.$color-border;
+  border-top: 1px solid var(--border-color);
   padding-top: 1.5rem;
   margin-top: 1.5rem;
 
@@ -176,9 +175,9 @@
 
     ul {
       list-style: none;
-    padding-left: 0; // Rimuove il padding di default della lista
-    margin-bottom: 1.5rem;
-  }
+      padding-left: 0; // Rimuove il padding di default della lista
+      margin-bottom: 1.5rem;
+      }
 
   li, p {
     color: var(--text-secondary); // Imposta il colore del testo a nero
@@ -418,7 +417,7 @@
   margin-top: 1rem;
   border: 1px solid var.$color-border;
   background: transparent;
-  color: var.$color1;
+  color: var(--text-primary);
   font-weight: 600;
   border-radius: 8px;
   cursor: pointer;

@@ -23,7 +23,7 @@ $coming-soon-bg: #6c757d;
   }
   p {
     font-size: 1.2rem;
-    color: var(--text-sub-primary);
+    color: var(--text-secondary);
   }
 }
 
@@ -61,7 +61,7 @@ $coming-soon-bg: #6c757d;
 
 // Stile della singola Card
 .dashboard-card {
-  background-color: $card-bg;
+  background-color: var(--background-secondary);
   border-radius: 16px;
   padding: 1.5rem;
   display: flex;
@@ -83,7 +83,7 @@ $coming-soon-bg: #6c757d;
 }
 .card-icon {
   font-size: 2.5rem;
-  color: #D84040; // Il tuo rosso vibrante
+  color: var.$color3; // Il tuo rosso vibrante
   margin-bottom: 1rem;
 }
 
@@ -91,12 +91,12 @@ $coming-soon-bg: #6c757d;
   h3 {
     font-size: 1.5rem;
     font-weight: 600;
-    color: #1D1616;
+    color: var(--text-primary);
     margin: 0 0 0.5rem 0;
   }
   p {
     font-size: 1rem;
-    color: #666;
+    color: var(--text-secondary);
     line-height: 1.5;
     margin: 0;
   }
@@ -110,7 +110,7 @@ $coming-soon-bg: #6c757d;
   .coming-soon-badge {
     display: inline-block;
     background-color: $coming-soon-bg;
-    color: white;
+    color: var(--text-primary);
     font-size: 0.8rem;
     font-weight: bold;
     padding: 0.3rem 0.8rem;
@@ -130,7 +130,7 @@ $coming-soon-bg: #6c757d;
 }
 
 .summary-card {
-  background-color: $card-bg;
+  background-color: var(--background-secondary);
   border-radius: 16px;
   padding: 1.5rem;
   text-align: center;
@@ -139,11 +139,11 @@ $coming-soon-bg: #6c757d;
   .count {
     font-size: 2.5rem;
     font-weight: 700;
-    color: var.$color2;
+    color: var.$color3;
   }
   .label {
     font-size: 1rem;
-    color: #666;
+    color: var(--text-secondary);
   }
 }
 
@@ -244,8 +244,8 @@ $coming-soon-bg: #6c757d;
   bottom: 1.5rem; // Posizionato in basso
   left: 50%;
   transform: translateX(-50%); // Centrato orizzontalmente
-  background-color: var.$color1; // Nero profondo
-  color: white;
+  background-color: var(--background-primary); // Nero profondo
+  color: var(--text-primary);
   font-size: 0.8rem;
   font-weight: 600;
   padding: 0.4rem 0.9rem;

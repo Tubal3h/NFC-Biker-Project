@@ -97,7 +97,7 @@
     padding: 5rem 2rem;
     margin-bottom: 6rem;
     .hero-title { font-size: 4rem; }
-    .hero-subtitle { font-size: 1.5rem; color: var(--text-sub-primary); }
+    .hero-subtitle { font-size: 1.5rem; color: var(--text-secondary); }
   }
 }
 
@@ -125,7 +125,7 @@
   }
   .subtitle {
     font-size: 1.15rem;
-    color: var(--text-sub-primary);
+    color: var(--text-secondary);
     max-width: 650px;
     margin: 0 auto;
     line-height: 1.6;
@@ -198,7 +198,7 @@
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    background: rgba(255, 255, 255, 0.8);
+    background-color: var.$color3;
     border: 1px solid var(--border-color);
     border-radius: 50%;
     width: 40px;
@@ -210,8 +210,8 @@
     transition: all 0.2s ease;
     opacity: 0; // Nascosto di default
     &:hover { background: white; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-    &.prev { left: 10px; }
-    &.next { right: 10px; }
+    &.prev { color:var.$color1; left: 10px; }
+    &.next { color:var.$color1; right: 10px; }
   }
 
   &:hover .gallery-nav {
@@ -474,7 +474,7 @@
 
   fa-icon { font-size: 2.8rem; color: var.$color-accent; }
   h3 { font-size: 1.6rem; margin: 1.25rem 0 0.5rem; color: var(--text-secondary); }
-  .plan-subtitle { font-size: 1.05rem; color: var(--text-sub-primary); min-height: 44px; line-height: 1.4; }
+  .plan-subtitle { font-size: 1.05rem; color: var(--text-secondary); min-height: 44px; line-height: 1.4; }
   .plan-price { 
     font-size: 3rem;
     font-weight: 800;

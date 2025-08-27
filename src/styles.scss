@@ -1,61 +1,39 @@
 // in src/styles.scss
-
-// Importa le variabili SASS solo per definire la palette
 @use 'styles/variables' as var;
-
 // ======================================================
 // Definizione delle Variabili CSS per i Temi
 // ======================================================
 
-// :root definisce le variabili per il tema di default (Light Mode)
 :root {
-  --background-primary: #{var.$color-bg};      // Sfondo principale chiaro
-  --background-secondary: #{var.$color1};             // Sfondo per le card
-  --text-primary: #{var.$color-text-primary};   // Testo principale scuro
-  --text-secondary: #{var.$color-text-secondary}; // Testo secondario grigio
-  --text-sub-primary: #{var.$color-text-sub-primary}; // Testo secondario grigio
-  --accent-color: #{var.$color3};              // Colore d'accento (Rosso vibrante)
-  --accent-color-dark: #{var.$color2};         // Variazione scura dell'accento
+  // --- TEMA CHIARO (CORRETTO) ---
+  --background-primary: #{var.$color-bg};          // Sfondo pagina (grigio chiarissimo)
+  --background-secondary: #ffffff;                 // Sfondo card (bianco)
+  --text-primary: #{var.$color1};                  // Testo principale (nero profondo)
+  --text-secondary: #{darken(var.$color4, 50%)};   // Testo secondario (grigio medio-scuro, leggibile)
+  --accent-color: #{var.$color3};                  // Accento (rosso vibrante)
   --border-color: #{var.$color-border};
-  --navbar-background: #{var.$color1};         // La navbar rimane scura
+  
+  // Variabili che non cambiano
+  --navbar-background: #{var.$color1};
   --navbar-text: #{var.$color4};
-  --color1-light: #{var.$color1-light};
-  --color2-light: #{var.$color2-light};
-  --color3-light: #{var.$color3-light};
-  --color4-light: #{var.$color4-light};
   --color-premium: #{var.$color-premium};
-  --text-sub-primary: #{var.$color-text-sub-primary};
 }
 
 
-
-// ======================================================
-// Reset e Stili di Base
-// ======================================================
-
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-body {
-  font-family: "League Spartan", sans-serif;
-  // Ora usiamo le variabili CSS!
-  background-color: var(--background-primary);
-  color: var(--text-primary);
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-// Quando il body ha la classe .dark-theme, sovrascriviamo le variabili
+// --- TEMA SCURO (MIGLIORATO) ---
 body.dark-theme {
+  // Sfondo pagina (il tuo nero profondo)
   --background-primary: #{var.$color1};
-  --background-secondary: #{var.$color4};
-  --text-primary: #{var.$color4};
-  --text-secondary: #{var.$color1};
-  --border-color: #{lighten(var.$color1, 15%)};
-  --text-sub-primary: #969a9b;
 
-  // I colori di accento e della navbar possono rimanere gli stessi
-  // o essere modificati se necessario.
+  // Sfondo card (leggermente più chiaro dello sfondo per creare profondità)
+  --background-secondary: #{lighten(var.$color1, 8%)};
+
+  // Testo principale (il tuo grigio chiaro, non bianco puro)
+  --text-primary: #{var.$color4};
+  
+  // Testo secondario (un grigio più scuro, per contrasto sulla card scura)
+  --text-secondary: #{darken(var.$color4, 40%)};
+
+  // Bordo (leggermente più chiaro dello sfondo per essere visibile)
+  --border-color: #{lighten(var.$color1, 15%)};
 }

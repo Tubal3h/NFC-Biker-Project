@@ -17,13 +17,13 @@
   justify-content: space-between;
   align-items: center;
   padding: 1rem 1.5rem;
-  background-color: var(--background-primary);
+  background-color: var(--navbar-background);
 }
 
 .navbar-logo a {
   text-decoration: none;
   h1 {
-    color: var.$color3;
+    color: var(--navbar-text);
     font-size: 2rem;
     font-weight: 800;
     line-height: 1;
@@ -37,7 +37,7 @@
 .theme-toggle {
   background: none;
   border: none;
-  color: var(--text-primary);
+  color: var(--navbar-text);
   cursor: pointer;
   padding: 0;
   width: 40px;
@@ -51,7 +51,7 @@
   transition: background-color 0.3s ease, transform 0.3s ease;
 
   &:hover {
-    background-color: lighten(var.$color3, 15%);
+    background-color: var.$color3;
   }
   
   &:active {
@@ -113,7 +113,7 @@
   .toggler-icon {
     width: 100%;
     height: 3px;
-    background-color: var(--background-secondary);
+    background-color: var.$color3;
     border-radius: 2px;
   }
 }
@@ -138,7 +138,7 @@
   transition: opacity 0.4s ease, transform 0.4s ease;
 
   a {
-    color: var(--text-primary);
+    color: var(--navbar-text);
     text-decoration: none;
     font-size: 2rem;
     font-weight: 700;
@@ -193,7 +193,7 @@
   }
   
   .navbar-links-desktop a {
-    color: var(--text-primary);
+    color: var(--navbar-text);
     text-decoration: none;
     font-weight: 600;
     font-size: 1.1rem;
@@ -213,7 +213,7 @@
     a { text-decoration: none; }
     
     .user-link {
-      color: var(--text-primary);
+      color: var(--navbar-text);
       &:hover { color: var.$color3; }
     }
 
